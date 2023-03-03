@@ -20,15 +20,21 @@ void Population::add(PAgent agent)
   schedule(agent);
   agent->_population = this;
   agent->report();
+  for (auto c : _contacts)
+    c->add(agent.get());
 }
 
 void Population::add(PContact contact)
 {
   _contacts.push_back(contact);
+  for (auto a : _agents)
+    contact->add(a.get());
 }
 
 void Population::report()
 {
+  for (auto c : _contacts)
+    c->finalize();
   Agent::report();
   for (auto a : _agents)
     a->report();
