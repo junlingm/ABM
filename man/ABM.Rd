@@ -142,9 +142,9 @@ sim = Simulation$new(N)
 # add event loggers that counts the individuals in each state.
 # the first variable is the name of the counter, the second is
 # the state for counting. States should be lists. However, for
-simplicity, if the state has a single character value, then we 
-can specify the list as the character, e.g., "S", and the state
-is equivalent to list("S")
+# simplicity, if the state has a single character value, then we 
+# can specify the list as the character, e.g., "S", and the state
+# is equivalent to list("S")
 sim$addLogger(newCounter("S", "S"))
 sim$addLogger(newCounter("E", "E"))
 sim$addLogger(newCounter("I", "I"))
