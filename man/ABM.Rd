@@ -139,30 +139,30 @@ sigma =newExpWaitingTime(0.5)
 N = 10000
 # create a simulation with N agents
 sim = Simulation$new(N)
-# define the states
-S = list("S")
-E = list("E")
-I = list("I")
-R = list("R")
-# add event loggers that counts the individuals in each state
-sim$addLogger(newCounter("S", S))
-sim$addLogger(newCounter("E", E))
-sim$addLogger(newCounter("I", I))
-sim$addLogger(newCounter("R", R))
+# add event loggers that counts the individuals in each state.
+# the first variable is the name of the counter, the second is
+# the state for counting. States should be lists. However, for
+simplicity, if the state has a single character value, then we 
+can specify the list as the character, e.g., "S", and the state
+is equivalent to list("S")
+sim$addLogger(newCounter("S", "S"))
+sim$addLogger(newCounter("E", "E"))
+sim$addLogger(newCounter("I", "I"))
+sim$addLogger(newCounter("R", "R"))
 # create a random mixing contact that manages the population "sim"
 m = newRandomMixing(sim)
 sim$addContact(m)
 # the transition for leaving latent state anbd becoming infectious
-sim$addTransition(E->I, sigma)
+sim$addTransition("E"->"I", sigma)
 # the transition for recovery
-sim$addTransition(I->R, gamma)
+sim$addTransition("I"->"R", gamma)
 # the transition for tranmission, which is caused by the contact m
 # also note that the waiting time can be a number, which is the same
 # as newExpWaitingTime(beta)
-sim$addTransition(I + S -> I + E ~ m, beta)
+sim$addTransition("I" + "S" -> "I" + "E" ~ m, beta)
 # initialize the state for each individual
 for (i in 1:N) {
-  sim$setState(i, if (i <= 5) I else S)
+  sim$setState(i, if (i <= 5) "I" else "S")
 }
 # run the simulation, and get a data.frame object
 result = sim$run(0:100)
