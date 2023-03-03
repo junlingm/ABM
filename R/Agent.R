@@ -24,11 +24,13 @@ Agent <- R6::R6Class(
 #' returned by newAgent, or a list representing the initial state for creating
 #' a new agent, or NULL (an empty state)
     initialize = function(agent=NULL) {
-      if (is.null(agent) || is.list(agent)) {
-        private$agent = newAgent(agent)
-      } else if (typeof(agent) == "externalptr") {
+      if (typeof(agent) == "externalptr") {
         private$agent = agent
-      } else stop("invalid agent argument")
+      } else {
+        if (!is.null(agent) && !is.list(agent))
+          agent = list(agent)
+        private$agent = newAgent(agent)
+      }
     },
     
 #' Check if the state of the agent matches a given state

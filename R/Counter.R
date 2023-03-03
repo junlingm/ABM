@@ -8,27 +8,29 @@
 #' name, which becomes the the column name int eh data.frame.
 
 #' @param name the name of the counter, must be a length-1 character vector
-#' 
-#' @param from a list specifying state of the agent, please see the 
-#' details section
 #'
-#' @param to a list specifying the state of the agent after the state 
-#' change. Can be NULL. Please see the details section.
-#' 
+#' @param from a list specifying state of the agent, or a character or numeric
+#'   value that is equivalent to list(from). please see the details section
+#'
+#' @param to a list (can be NULL) specifying the state of the agent after the
+#'   state change, or a character or numeric value that is equivalent to
+#'   list(from). please see the details section
+#'
 #' @param initial the initial value of the counter. Default to 0.
-#' 
-#' @return an external pointer that can be passed to the addCounter 
-#' function or Simulation$addCounter method.
-#' 
-#' @details if the argument "to" is not NULL, then the counter 
-#' counts the transitions from "state" to "to". Otherwise, it counts
-#' the number of agents in a state that matches the "state" argument.
-#' Specifically, if the agent jumps to "state", then the count increases
-#' by 1. If the agents jumps away from "state", then the count decreases
-#' by 1.
-#' 
+#'
+#' @return an external pointer that can be passed to the addCounter function or
+#'   Simulation$addCounter method.
+#'
+#' @details if the argument "to" is not NULL, then the counter counts the
+#'   transitions from "state" to "to". Otherwise, it counts the number of agents
+#'   in a state that matches the "state" argument. Specifically, if the agent
+#'   jumps to "state", then the count increases by 1. If the agents jumps away
+#'   from "state", then the count decreases by 1.
+#'
 #' @export
 newCounter = function(name, from, to=NULL, initial=0) {
+  if (!is.null(from) && !is.list(from)) from = list(from)
+  if (!is.null(to) && !is.list(to)) to = list(to)
   .Call("newCounter", name, from, to, initial)
 }
 
