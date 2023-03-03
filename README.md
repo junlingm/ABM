@@ -1,7 +1,14 @@
 # ABM R Package: Agent Based Model Simulation Framework
 
-This package provides sa framework to simulate agent based models that are
+This package provides a framework to simulate agent based models that are
 based on states and events.
+
+# Installation
+
+This R package can be installed using the devtoools::install_github method:
+```
+install_github("https://github.com/junlingm/ABM.git")
+```
 
 # Agent
 The concept of this framework is agent, which is an object of the [Agent](https://github.com/junlingm/ABM/wiki/Agent)
