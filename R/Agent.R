@@ -1,0 +1,247 @@
+#' R6 class that represent an agent
+#'
+#' The key task of an agent is to maintain events, and handle them in the
+#' chronological order. Agents also maintain their states, which is a list of
+#' values. The events, when handled, operate on the state of the agent (or other
+#' agents).
+#'
+#' During the simulation the agent with the earliest event in the simulation is
+#' picked out, unscheduled, then its earliest event is handled, which
+#' potentially causes the state change of the agent (or another agent in the
+#' simulation). The state change is then logged by loggers that recognize the
+#' state change.
+#'
+#' An agent itself cannot handle the event. Instead, it has to be added to a
+#' simulation (or a population that itself is added to a simulation).
+#' 
+#' @export
+Agent <- R6::R6Class(
+  "R6Agent",
+  public = list(
+#' Agent 
+#' 
+#' @param agent can be either an external pointer to an agent such as one
+#' returned by newAgent, or a list representing the initial state for creating
+#' a new agent, or NULL (an empty state)
+    initialize = function(agent=NULL) {
+      if (is.null(agent) || is.list(agent)) {
+        private$agent = newAgent(agent)
+      } else if (typeof(agent) == "externalptr") {
+        private$agent = agent
+      } else stop("invalid agent argument")
+    },
+    
+#' Check if the state of the agent matches a given state
+#' 
+#' @param rule the state to match, a list
+#' 
+#' @return a logical value
+    match = function(rule) {
+      matchState(private$agent, rule)
+    },
+    
+#' Schedule an event
+#' 
+#' @param event an object of the R6 class Event, or an external pointer 
+#' returned by newEvent
+#' 
+#' @return the agent itself
+    schedule = function(event) {
+      if (inherits(event, "R6Event"))
+        event = event$get
+      schedule(private$agent, event)
+      return(self)
+    },
+
+#' Unschedule an event
+#' 
+#' @param event an object of the R6 class Event, or an external pointer 
+#' returned by newEvent
+#' 
+#' @return the agent itself
+    unschedule = function(event) {
+      if (inherits(event, "R6Event"))
+        event = event$get
+      unschedule(private$agent, event)
+      return(self)
+    }
+  ),
+  private = list(
+    agent = NULL
+  ),
+  active = list(
+#' @field state
+#' 
+#' Get/set the state of the agent
+    state = function(new.state = NULL) {
+      if (is.null(new.state)) {
+        getState(private$agent)
+      } else {
+        setState(private$agent, new.state)
+      }
+    },
+#' @field id
+#' 
+#' Get the agent ID
+    id = function() { getID(private$agent) },
+#' @field get 
+#' 
+#' Get the external pointer for the agent
+    get = function() { private$agent }
+  )
+)
+
+#' Create an agent with a given state
+#' 
+#' @param state a list giving the initial state of the agent, or NULL (an empty 
+#' list)
+#' 
+#' @return an external pointer pointing to the agent
+#' 
+#' @export
+newAgent = function(state=NULL) {
+  .Call("newAgent", state)
+}
+
+#' Get the ID of the agent.
+#' 
+#' @param agent an external pointer returned by newAgent
+#' 
+#' @return an integer value
+#' 
+#' @details before an agent is added to a population, its id is 0
+#' after it is added, its id is the index in the population 
+#' (starting from 1).
+#' 
+#' If agent is an R6 object, then we should either use agent$schedule, 
+#' or use schedule(agent$get, event)
+#' 
+#' @export
+getID = function(agent) {
+  .Call("getID", agent)
+}
+
+#' Get the state of the agent
+#' 
+#' @param agent an external pointer returned by newAgent
+#' 
+#' @return a list holding the state
+#' 
+#' @details If agent is an R6 object, then we should either use agent$schedule, 
+#' or use schedule(agent$get, event)
+#' 
+#' @export
+getState = function(agent) {
+  .Call("getState", agent)
+}
+
+#' Set the state of the agent
+#' 
+#' @param agent an external pointer returned by newAgent
+#' 
+#' @param state an R list giveng the components of the state to be
+#' undated.
+#' 
+#' @return the agent itself
+#' 
+#' @details In this framework, a state is a list, each named
+#' component is called a domain. This function only updates the 
+#' values of the domain given in the "value" list, while leave the
+#' other components not in the "value" list unchanged.
+#' 
+#' If agent is an R6 object, then we should either use agent$schedule, 
+#' or use schedule(agent$get, event)
+#' 
+#' @export
+setState = function(agent, state) {
+  .Call("setState", agent, state)
+}
+
+#' Check if two states match
+#' 
+#' @param state a list holding a state to check
+#' 
+#' @param rule a list holding the state to match against
+#' 
+#' @return a logical value
+#'
+#' @details The state matches the rule if and only if each domain (names of the
+#' list) in rule has the same value as in state. The domains in domains of the 
+#' state not listed in rule are not matched
+#' 
+#' @export
+stateMatch = function(state, rule) {
+  .Call("stateMatch", state, rule)
+}
+
+#' Check if the state of an agent matches a given state
+#' 
+#' @param agent an external pointer returned by newAgent
+#' 
+#' @param rule a list holding the state to match against
+#' 
+#' @return a logical value
+#'
+#' @details This function is equivalent to
+#' stateMatch(getState(agent), rule)
+#' 
+#' The state matches the rule if and only if each domain (names of the
+#' list) in rule has the same value as in state. The domains in domains of the 
+#' state not listed in rule are not matched
+#' 
+#' @export
+matchState = function(agent, rule) {
+  .Call("stateMatch", getState(agent), rule)
+}
+
+#' Schedule (attach) an event to an agent
+#' 
+#' @param agent an external pointer returned by newAgent
+#' 
+#' @param event an external pointer returned by newEvent
+#' 
+#' @return the agent itself
+#' 
+#' @details If agent is an R6 object, then we should either use agent$schedule, 
+#' or use schedule(agent$get, event)
+#' 
+#' Similarly, if event is an R6 object, then we should use 
+#' schedule(agent, event$get)
+#' 
+#' @export
+schedule = function(agent, event) {
+  .Call("schedule", agent, event)
+}
+
+#' Unschedule (detach) an event from an agent
+#' 
+#' @param agent an external pointer returned by newAgent
+#' 
+#' @param event an external pointer returned by newEvent
+#' 
+#' @return the agent itself
+#' 
+#' @details If agent is an R6 object, then we should either use agent$schedule, 
+#' or use schedule(agent$get, event)
+#' 
+#' Similarly, if event is an R6 object, then we should use 
+#' schedule(agent, event$get)
+#' 
+#' @export
+unschedule = function(agent, event) {
+  .Call("unschedule", agent, event)
+}
+
+#' Unschedule all event from an agent
+#' 
+#' @param agent an external pointer returned by newAgent
+#' 
+#' @return the agent itself
+#' 
+#' @details If agent is an R6 object, then we should either use agent$schedule, 
+#' or use schedule(agent$get, event)
+#' 
+#' @export
+clearEvents = function(agent) {
+  .Call("clearEvents", agent)
+}
