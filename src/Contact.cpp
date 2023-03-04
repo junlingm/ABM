@@ -31,7 +31,7 @@ const std::vector<PAgent> &RandomMixing::contact(double time, Agent &agent)
   return _neighbors;
 }
 
-void RandomMixing::add(const Agent *agent)
+void RandomMixing::add(const PAgent &agent)
 {
 }
 

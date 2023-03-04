@@ -39,7 +39,7 @@ public:
   virtual const std::vector<PAgent> &contact(double time, Agent &agent) = 0;
   Population &population() { return _population; }
 
-  virtual void add(const Agent *agent) = 0;
+  virtual void add(const PAgent &agent) = 0;
 
   virtual void finalize() = 0;
 
@@ -80,7 +80,7 @@ public:
    */
   virtual const std::vector<PAgent> &contact(double time, Agent &agent);
   
-  virtual void add(const Agent *agent);
+  virtual void add(const PAgent &agent);
   
   virtual void finalize();
   
