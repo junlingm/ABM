@@ -153,7 +153,7 @@ Simulation <- R6::R6Class(
       if (is.numeric(waiting.time))
         waiting.time = .Call("newExpWaitingTime", waiting.time)
       else if (is.function(waiting.time))
-        waiting.time = .Call("waitR", waiting.time)
+        waiting.time = .Call("newRWaitingTime", waiting.time)
       if (!inherits(waiting.time, "WaitingTime"))
         stop("waiting.time must be a WaitingTime object or a number specifying the rate")
       .Call("addTransition", self$get,
