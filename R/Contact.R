@@ -36,7 +36,7 @@ newRandomMixing = function(population) {
 #' $get method.
 #' 
 #' The function rng should take exactly one argument n for the number of degrees
-#' to generate, and should return an integer vector.
+#' to generate, and should return an integer vector of length n.
 #'
 #' @export
 #' 
