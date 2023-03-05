@@ -60,7 +60,7 @@ typedef std::shared_ptr<Contact> PContact;
 class RandomMixing : public Contact {
 public:
   /**
-   * Constructor with the sociated population
+   * Constructor with the associated population
    * 
    * @param population the associated population
    */
