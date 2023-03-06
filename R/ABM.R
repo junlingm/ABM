@@ -135,8 +135,8 @@
 #' sim$addLogger(newCounter("E", "E"))
 #' sim$addLogger(newCounter("I", "I"))
 #' sim$addLogger(newCounter("R", "R"))
-#' # create a random mixing contact that manages the population "sim"
-#' m = newRandomMixing(sim)
+#' # create a random mixing contact pattern and attach it to sim
+#' m = newRandomMixing()
 #' sim$addContact(m)
 #' # the transition for leaving latent state anbd becoming infectious
 #' sim$addTransition("E"->"I", sigma)

@@ -4,12 +4,8 @@
 
 using namespace Rcpp;
 
-Network::Network(Population &population)
-  : Contact(population), _finalized(false)
-{
-}
-
-Network::~Network()
+Network::Network()
+  : Contact()
 {
 }
 
@@ -21,26 +17,22 @@ const std::vector<PAgent> &Network::contact(double time, Agent &agent)
 void Network::add(const PAgent &agent)
 {
   // have we finalized?
-  if (_finalized) grow(agent);
+  if (_population != nullptr) grow(agent);
 }
 
-void Network::finalize()
+void Network::build()
 {
-  if (!_finalized) {
-    size_t n = _population.size();
-    for (size_t i = 0; i < n; ++i)
-      _neighbors = std::vector< std::vector<PAgent> >(n);
-    build();
-    _finalized = true;
-  }
+  size_t n = _population->size();
+  _neighbors.resize(n);
+  buildNetwork();
 }
 
-ConfigurationModel::ConfigurationModel(Population &population, Function degree_rng)
-  : Network(population), _rng(degree_rng)
+ConfigurationModel::ConfigurationModel(Function degree_rng)
+  : Network(), _rng(degree_rng)
 {
 }
 
-void ConfigurationModel::build()
+void ConfigurationModel::buildNetwork()
 {
   IntegerVector d = _rng(_neighbors.size());
   size_t L = sum(d) + 0.5;
@@ -63,11 +55,11 @@ void Network::connect(int from, int to)
 {
   if (from == to) return;
   // avoid multiple loops
-  auto t = _population.agent(to);
+  auto t = _population->agent(to);
   for (auto c : _neighbors[from])
     if (c == t) return;
   _neighbors[from].push_back(t);
-  _neighbors[to].push_back(_population.agent(from));
+  _neighbors[to].push_back(_population->agent(from));
 }
 
 void ConfigurationModel::grow(const PAgent &agent)
@@ -75,10 +67,8 @@ void ConfigurationModel::grow(const PAgent &agent)
   stop("not implemented yet");
 }
 
-SEXP newConfigurationModel(SEXP population, SEXP rng)
+SEXP newConfigurationModel(SEXP rng)
 {
-  XP<Population> p(population);
-  Function f(rng);
-  return XP<ConfigurationModel>(std::make_shared<ConfigurationModel>(**p, f));
+  return XP<ConfigurationModel>(std::make_shared<ConfigurationModel>(Function(rng)));
 }
 

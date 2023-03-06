@@ -4,10 +4,7 @@
 \alias{newRandomMixing}
 \title{Creates a RandomMixing object}
 \usage{
-newRandomMixing(population)
-}
-\arguments{
-\item{population}{an external pointer pointing to a population}
+newRandomMixing()
 }
 \value{
 an external pointer.
@@ -24,5 +21,5 @@ $get method.
 # creates a simulation with 100 agents
 sim = Simulation$new(100)
 # add a random mixing contact pattern for these agents.
-sim$addContact(newRandomMixing(sim$get))
+sim$addContact(newRandomMixing())
 }

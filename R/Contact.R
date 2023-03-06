@@ -13,20 +13,24 @@
 Contact = R6::R6Class(
   "R6Contact",
   public = list(
-#' Contact
-#'
-#' @param population the population that this Contact object is attached to. An external 
-#' pointer or an R6Population object.
-    initialize = function(population) {
-      if (inherits(population, "R6Population"))
-        population = population$get
-      if (typeof(population) != "externalptr")
-        stop("invalid population argument")
-      private$population = population
-      private$pointer = .Call("newContact", population, self)
+#' @description the constructor
+    initialize = function() {
+      private$pointer = .Call("_newContact", self)
     },
   
-#' Returns the contacts of the given agent
+#' @description attach to a population
+#'
+#' @param population the population to attach to. An external pointer
+#' 
+#' @details. This method should be called from teh C++ side. Users should not
+#' call this directly.
+    attach = function(population) {
+      if (!is.null(private$population))
+        stop("Already attached to a population")
+      private$population = population
+    },
+
+#' @description Returns the contacts of the given agent
 #' 
 #' @param time the current time in the simulation, a number
 #' 
@@ -35,7 +39,7 @@ Contact = R6::R6Class(
 #' @return a list of external pointers pointing to the contacting agents
     contact = function(time, agent) { list() },
     
-#' Add an agent to the contact pattern
+#' @description Add an agent to the contact pattern
 #' 
 #' @param agent the agent whose contacts are requested. An external pointer
 #' 
@@ -51,7 +55,7 @@ Contact = R6::R6Class(
 #' adding an agent after build is called.
     addAgent = function(agent) { },
     
-#' Build the contact pattern
+#' @description Build the contact pattern
 #' 
 #' @details This method is called immediately before the simulation is run, 
 #' when the attached population reports the states to the simulation object.
@@ -81,8 +85,6 @@ Contact = R6::R6Class(
 
 #' Creates a RandomMixing object
 #' 
-#' @param population an external pointer pointing to a population
-#' 
 #' @return an external pointer.
 #' 
 #' @details The population must be an external pointer, not an R6 object
@@ -95,18 +97,12 @@ Contact = R6::R6Class(
 #' # creates a simulation with 100 agents
 #' sim = Simulation$new(100)
 #' # add a random mixing contact pattern for these agents.
-#' sim$addContact(newRandomMixing(sim$get))
-newRandomMixing = function(population) {
-  if (inherits(population, "R6Population"))
-    population = population$get
-  if (!inherits(population, "Population"))
-    stop("invalid population")
-  .Call("newRandomMixing", population)
+#' sim$addContact(newRandomMixing())
+newRandomMixing = function() {
+  .Call("newRandomMixing")
 }
 
-#' Creates a random network using the configvuration model
-#' 
-#' @param population an external pointer pointing to a population
+#' Creates a random network using the configuration model
 #' 
 #' @param rng a function that generates random degrees
 #'
@@ -125,13 +121,9 @@ newRandomMixing = function(population) {
 #' # creates a simulation with 100 agents
 #' sim = Simulation$new(100)
 #' # add a Poisson network with a mean degree 5
-#' sim$addContact(newConfigurationModel(sim$get, function(n) rpois(n, 5)))
-newConfigurationModel = function(population, rng) {
-  if (inherits(population, "R6Population"))
-    population = population$get
-  if (!inherits(population, "Population"))
-    stop("invalid population")
+#' sim$addContact(newConfigurationModel(function(n) rpois(n, 5)))
+newConfigurationModel = function(rng) {
   if (!is.function(rng))
     stop("rng must be a function")
-  .Call("newConfigurationModel", population, rng)
+  .Call("newConfigurationModel", rng)
 }

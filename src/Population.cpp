@@ -27,16 +27,16 @@ void Population::add(PAgent agent)
 void Population::add(PContact contact)
 {
   _contacts.push_back(contact);
-  for (auto a : _agents)
+  for (auto &a : _agents)
     contact->add(a);
 }
 
 void Population::report()
 {
-  for (auto c : _contacts)
-    c->finalize();
+  for (auto &c : _contacts)
+    c->attach(*this);
   Agent::report();
-  for (auto a : _agents)
+  for (auto &a : _agents)
     a->report();
 }
 

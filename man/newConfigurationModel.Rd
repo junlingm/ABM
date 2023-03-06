@@ -2,20 +2,18 @@
 % Please edit documentation in R/Contact.R
 \name{newConfigurationModel}
 \alias{newConfigurationModel}
-\title{Creates a random network using the configvuration model}
+\title{Creates a random network using the configuration model}
 \usage{
-newConfigurationModel(population, rng)
+newConfigurationModel(rng)
 }
 \arguments{
-\item{population}{an external pointer pointing to a population}
-
 \item{rng}{a function that generates random degrees}
 }
 \value{
 an external pointer.
 }
 \description{
-Creates a random network using the configvuration model
+Creates a random network using the configuration model
 }
 \details{
 The population must be an external pointer, not an R6 object
@@ -29,5 +27,5 @@ to generate, and should return an integer vector of length n.
 # creates a simulation with 100 agents
 sim = Simulation$new(100)
 # add a Poisson network with a mean degree 5
-sim$addContact(newConfigurationModel(sim$get, function(n) rpois(n, 5)))
+sim$addContact(newConfigurationModel(function(n) rpois(n, 5)))
 }

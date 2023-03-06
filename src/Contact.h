@@ -16,11 +16,9 @@ class Population;
 class Contact {
 public:
   /**
-   * Constructor with the associated population
-   * 
-   * @param population the associated population
+   * Constructor
    */
-  Contact(Population &population);
+  Contact();
   
   /**
    * Destructor
@@ -37,7 +35,7 @@ public:
    * @return a vector of shared_ptr<Agent> that holds the contacts
    */
   virtual const std::vector<PAgent> &contact(double time, Agent &agent) = 0;
-  Population &population() { return _population; }
+  Population *population() { return _population; }
 
   /** 
    * Add an agent to the contact pattern
@@ -60,6 +58,8 @@ public:
   /** 
    * Finalize the contact pattern
    * 
+   * @param population the associated population
+   * 
    * @details This method is called immediately before the simulation is run, 
    * when the attached population reports the states to the simulation object.
    * 
@@ -72,8 +72,19 @@ public:
    * model contact network, cannot be built while adding agents one by one.
    * It must be generated when all agents are present. This is unlike the 
    * Albert-Barabasi networkm which can be built while adding the agents.
+   * 
+   * This method set the _population field, then calls the build method
    */
-  virtual void finalize() = 0;
+  void attach(Population &population);
+
+  /** 
+   * Finalize the contact pattern
+   * 
+   * @details This method is called from the attach method when the contact
+   * pattern is attached to a population. The subclasses must implement this
+   * method to build the contact pattern, e.g., the contact network.
+   */
+  virtual void build() = 0;
 
   static Rcpp::CharacterVector classes;
   
@@ -81,7 +92,7 @@ protected:
   /**
    * The associated population
    */
-  Population &_population;
+  Population *_population;
 };
 
 typedef std::shared_ptr<Contact> PContact;
@@ -96,7 +107,7 @@ public:
    * 
    * @param population the associated population
    */
-  RandomMixing(Population &population);
+  RandomMixing();
 
   /**
    * Return the contacts of an agent at a given time
@@ -114,7 +125,7 @@ public:
   
   virtual void add(const PAgent &agent);
   
-  virtual void finalize();
+  virtual void build();
   
 private:
   /**
@@ -136,7 +147,7 @@ public:
    * 
    * @param r6 the R6 object representing a contact pattern
    */
-  RContact(Population &population, Rcpp::Environment r6);
+  RContact(Rcpp::Environment r6);
   
   /**
    * Return the contacts of an agent at a given time
@@ -154,7 +165,7 @@ public:
   
   virtual void add(const PAgent &agent);
   
-  virtual void finalize();
+  virtual void build();
   
 private:
   /**
@@ -179,33 +190,21 @@ private:
   Rcpp::Function _r6_addAgent;
 
   /** 
-   * The R6 finalize
+   * The R6 build
    */
   Rcpp::Function _r6_build;
+
+  /** 
+   * The R6 attach
+   */
+  Rcpp::Function _r6_attach;
 };
 
 extern "C" {
   /**
-   * Create an object of the RandomMixing class and wrap it
-   * as an external pointer
+   * Create an object of the RandomMixing class
    * 
-   * @param population an external pointer that points to 
-   * the associating population.
+   * @return an external pointer
    */
-  SEXP newRandomMixing(SEXP population);
-  
-  SEXP newContact(SEXP population, SEXP contact);
-}
-
-extern "C" {
-  /**
-   * Create an object of the RandomMixing class and wrap it
-   * as an external pointer
-   * 
-   * @param population an external pointer that points to 
-   * the associating population.
-   */
-  SEXP newRandomMixing(SEXP population);
-  
-  SEXP newContact(SEXP population, SEXP contact);
+  SEXP newRandomMixing();
 }

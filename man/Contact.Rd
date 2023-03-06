@@ -4,15 +4,46 @@
 \alias{Contact}
 \title{An R6 class that implements a contact pattern in R}
 \description{
+An R6 class that implements a contact pattern in R
+
+An R6 class that implements a contact pattern in R
+}
+\details{
 The main task of the class is to return the contacts of a given agent. Each
 object of this class is associated to a population. A population may have
 multiple contacts attached, e.g., a random mixing contact pattern and a
 network contact pattern.
-}
-\details{
+
 This class must be subclassed in order to implement specific functionality.
 To subclass, it must imp,ement three methods, namely contact, addAgent, and
 build. See more details in the documentation of each method.
+
+. This method should be called from teh C++ side. Users should not
+call this directly.
+
+When an agent is added to a population, it is added to each of the
+contact patterns. When a contact pattern is added to a population, all
+agents in a population is added to the contact pattern, one by one.
+
+Note that, immediately before the simulation is run, while reporting
+the states to the simulation object, the population will call the
+build method for each Contact object. Thus a contact object may choose
+to ignore addin agents before build is called, and handle all agents
+within the finalize method. However, the contact object must handle
+adding an agent after build is called.
+
+This method is called immediately before the simulation is run,
+when the attached population reports the states to the simulation object.
+
+Thus this method can be considered as a callback function to notify the
+contact object the population state, such as its agents, states, events,
+and contact patterns are all initialized, so the contact pattern should
+finish initialization, for example, building the contact network.
+
+This is needed because some contact patterns, such as a configuration-
+model contact network, cannot be built while adding agents one by one.
+It must be generated when all agents are present. This is unlike the
+Albert-Barabasi networkm which can be built while adding the agents.
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -25,6 +56,7 @@ build. See more details in the documentation of each method.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-R6Contact-new}{\code{Contact$new()}}
+\item \href{#method-R6Contact-attach}{\code{Contact$attach()}}
 \item \href{#method-R6Contact-contact}{\code{Contact$contact()}}
 \item \href{#method-R6Contact-addAgent}{\code{Contact$addAgent()}}
 \item \href{#method-R6Contact-build}{\code{Contact$build()}}
@@ -35,16 +67,25 @@ build. See more details in the documentation of each method.
 \if{html}{\out{<a id="method-R6Contact-new"></a>}}
 \if{latex}{\out{\hypertarget{method-R6Contact-new}{}}}
 \subsection{Method \code{new()}}{
+the constructor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Contact$new(population)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Contact$new()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-R6Contact-attach"></a>}}
+\if{latex}{\out{\hypertarget{method-R6Contact-attach}{}}}
+\subsection{Method \code{attach()}}{
+attach to a population
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Contact$attach(population)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{population}}{the population that this Contact object is attached to. An external
-pointer or an R6Population object.
-Returns the contacts of the given agent}
+\item{\code{population}}{the population to attach to. An external pointer}
 }
 \if{html}{\out{</div>}}
 }
@@ -53,6 +94,7 @@ Returns the contacts of the given agent}
 \if{html}{\out{<a id="method-R6Contact-contact"></a>}}
 \if{latex}{\out{\hypertarget{method-R6Contact-contact}{}}}
 \subsection{Method \code{contact()}}{
+Returns the contacts of the given agent
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Contact$contact(time, agent)}\if{html}{\out{</div>}}
 }
@@ -68,13 +110,13 @@ Returns the contacts of the given agent}
 }
 \subsection{Returns}{
 a list of external pointers pointing to the contacting agents
-Add an agent to the contact pattern
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-R6Contact-addAgent"></a>}}
 \if{latex}{\out{\hypertarget{method-R6Contact-addAgent}{}}}
 \subsection{Method \code{addAgent()}}{
+Add an agent to the contact pattern
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Contact$addAgent(agent)}\if{html}{\out{</div>}}
 }
@@ -86,42 +128,14 @@ Add an agent to the contact pattern
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-When an agent is added to a population, it is added to each of the
-contact patterns. When a contact pattern is added to a population, all
-agents in a population is added to the contact pattern, one by one.
-
-Note that, immediately before the simulation is run, while reporting
-the states to the simulation object, the population will call the
-build method for each Contact object. Thus a contact object may choose
-to ignore addin agents before build is called, and handle all agents
-within the finalize method. However, the contact object must handle
-adding an agent after build is called.
-Build the contact pattern
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-R6Contact-build"></a>}}
 \if{latex}{\out{\hypertarget{method-R6Contact-build}{}}}
 \subsection{Method \code{build()}}{
+Build the contact pattern
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Contact$build()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-This method is called immediately before the simulation is run,
-when the attached population reports the states to the simulation object.
-
-Thus this method can be considered as a callback function to notify the
-contact object the population state, such as its agents, states, events,
-and contact patterns are all initialized, so the contact pattern should
-finish initialization, for example, building the contact network.
-
-This is needed because some contact patterns, such as a configuration-
-model contact network, cannot be built while adding agents one by one.
-It must be generated when all agents are present. This is unlike the
-Albert-Barabasi networkm which can be built while adding the agents.
 }
 
 }
