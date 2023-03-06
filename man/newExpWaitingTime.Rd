@@ -3,9 +3,6 @@
 \name{newExpWaitingTime}
 \alias{newExpWaitingTime}
 \title{Creates an exponentially distributed waiting time}
-\usage{
-newExpWaitingTime(rate)
-}
 \arguments{
 \item{rate}{the rate of the exponential distribution}
 }

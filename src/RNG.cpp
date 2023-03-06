@@ -1,4 +1,4 @@
-#include "RNG.h"
+#include "../inst/include/RNG.h"
 
 using namespace Rcpp;
 

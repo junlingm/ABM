@@ -3,9 +3,6 @@
 \name{newGammaWaitingTime}
 \alias{newGammaWaitingTime}
 \title{Creates an gamma distributed waiting time}
-\usage{
-newGammaWaitingTime(shape, scale)
-}
 \arguments{
 \item{shape}{the shape parameter of the gamma distribution}
 

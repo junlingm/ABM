@@ -3,9 +3,6 @@
 \name{newCounter}
 \alias{newCounter}
 \title{Creates a logger of the Counter class}
-\usage{
-newCounter(name, from, to = NULL, initial = 0)
-}
 \arguments{
 \item{name}{the name of the counter, must be a length-1 character vector}
 

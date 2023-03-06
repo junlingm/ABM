@@ -3,9 +3,6 @@
 \name{newPopulation}
 \alias{newPopulation}
 \title{Create a new population}
-\usage{
-newPopulation(n = 0)
-}
 \arguments{
 \item{n}{an integer specifying the population size.}
 }

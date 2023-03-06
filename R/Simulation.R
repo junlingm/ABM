@@ -28,7 +28,7 @@ Simulation <- R6::R6Class(
         simulation = NULL
       }
       if (is.null(simulation)) {
-        simulation = .Call("newSimulation", size)
+        simulation = newSimulation(size)
       } else if (inherits(simulation, "R6Simulation")) {
         simulation = simulation$get
       } 
@@ -55,7 +55,7 @@ Simulation <- R6::R6Class(
 #' the first event, then call the resume method to actually run it.
 #'
     run = function(time) {
-      as.data.frame(.Call("runSimulation", self$get, time))
+      as.data.frame(runSimulation(self$get, time))
     },
     
 #' Continue running the simulation
@@ -72,8 +72,8 @@ Simulation <- R6::R6Class(
 #' The Simulation object repetitively handle the events until the the 
 #' last time point in "time" is reached. ASt each time point, the 
 #' logger states are collected in put in a list to return.
-  resume = function(time) {
-      as.data.frame(.Call("resumeSimulation", self$get, time))
+    resume = function(time) {
+      as.data.frame(resumeSimulation(self$get, time))
     },
 
 #' Add a logger to the simulation
@@ -85,8 +85,8 @@ Simulation <- R6::R6Class(
 #' 
 #' @details without adding a logger, there will be no useful simulation
 #' results returned.
-  addLogger = function(logger) {
-      .Call("addLogger", self$get, logger)
+    addLogger = function(logger) {
+      addLogger(self$get, logger)
       self
     },
 
@@ -151,12 +151,12 @@ Simulation <- R6::R6Class(
     {
       l = private$parse(substitute(rule), parent.frame())
       if (is.numeric(waiting.time))
-        waiting.time = .Call("newExpWaitingTime", waiting.time)
+        waiting.time = newExpWaitingTime(waiting.time)
       else if (is.function(waiting.time))
-        waiting.time = .Call("newRWaitingTime", waiting.time)
+        waiting.time = newRWaitingTime(waiting.time)
       if (!inherits(waiting.time, "WaitingTime"))
         stop("waiting.time must be a WaitingTime object or a number specifying the rate")
-      .Call("addTransition", self$get,
+      addTransition(self$get,
             l$from$first, l$from$second, l$to$first, l$to$second, l$contact,
             waiting.time, to_change_callback, changed_callback)
       self

@@ -3,9 +3,6 @@
 \name{clearEvents}
 \alias{clearEvents}
 \title{Unschedule all event from an agent}
-\usage{
-clearEvents(agent)
-}
 \arguments{
 \item{agent}{an external pointer returned by newAgent}
 }

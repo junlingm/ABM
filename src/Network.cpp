@@ -1,6 +1,6 @@
-#include "Network.h"
-#include "Population.h"
-#include "RNG.h"
+#include "../inst/include/Network.h"
+#include "../inst/include/Population.h"
+#include "../inst/include/RNG.h"
 
 using namespace Rcpp;
 
@@ -67,8 +67,9 @@ void ConfigurationModel::grow(const PAgent &agent)
   stop("not implemented yet");
 }
 
-SEXP newConfigurationModel(SEXP rng)
+// [[Rcpp::export]]
+XP<ConfigurationModel> newConfigurationModel(Function rng)
 {
-  return XP<ConfigurationModel>(std::make_shared<ConfigurationModel>(Function(rng)));
+  return XP<ConfigurationModel>(std::make_shared<ConfigurationModel>(rng));
 }
 

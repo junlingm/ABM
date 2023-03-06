@@ -3,9 +3,6 @@
 \name{schedule}
 \alias{schedule}
 \title{Schedule (attach) an event to an agent}
-\usage{
-schedule(agent, event)
-}
 \arguments{
 \item{agent}{an external pointer returned by newAgent}
 

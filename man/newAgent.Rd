@@ -3,9 +3,6 @@
 \name{newAgent}
 \alias{newAgent}
 \title{Create an agent with a given state}
-\usage{
-newAgent(state = NULL)
-}
 \arguments{
 \item{state}{a list giving the initial state of the agent, or NULL (an empty
 list)}

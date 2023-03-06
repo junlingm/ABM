@@ -1,5 +1,4 @@
-#include "Population.h"
-#include "State.h"
+#include "../inst/include/Population.h"
 
 using namespace Rcpp;
 
@@ -42,34 +41,35 @@ void Population::report()
 
 CharacterVector Population::classes = CharacterVector::create("Population", "Agent", "Event");
 
-extern "C" {
-  SEXP newPopulation(SEXP n)
-  {
-    int m = (n == R_NilValue) ? 0 : as<int>(n);
-    if (m < 0) m = 0;
-    return XP<Population>(std::make_shared<Population>(m));
-  }
-  
-  SEXP addAgent(SEXP population, SEXP agent)
-  {
-    XP<Population>(population)->add(XP<Agent>(agent));
-    return population;
-  }
+// [[Rcpp::export]]
+XP<Population> newPopulation(int n = 0)
+{
+  if (n < 0) n = 0;
+  return XP<Population>(std::make_shared<Population>(n));
+}
 
-  SEXP getSize(SEXP population)
-  {
-    return wrap(XP<Population>(population)->size());
-  }
-  
-  SEXP getAgent(SEXP population, SEXP i)
-  {
-    int pos = as<int>(i) - 1;
-    return XP<Agent>(XP<Population>(population)->agent(pos));
-  }
+// [[Rcpp::export]]
+XP<Population> addAgent(XP<Population> population, XP<Agent> agent)
+{
+  population->add(agent);
+  return population;
+}
 
-  SEXP addContact(SEXP population, SEXP contact)
-  {
-    XP<Population>(population)->add(XP<Contact>(contact));
-    return population;
-  }
+// [[Rcpp::export]]
+int getSize(XP<Population> population)
+{
+  return population->size();
+}
+  
+// [[Rcpp::export]]
+XP<Agent> getAgent(XP<Population> population, int i)
+{
+  return population->agent(i - 1);
+}
+
+// [[Rcpp::export]]
+XP<Population> addContact(XP<Population> population, XP<Contact> contact)
+{
+  population->add(contact);
+  return population;
 }

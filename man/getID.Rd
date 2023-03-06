@@ -3,9 +3,6 @@
 \name{getID}
 \alias{getID}
 \title{Get the ID of the agent.}
-\usage{
-getID(agent)
-}
 \arguments{
 \item{agent}{an external pointer returned by newAgent}
 }

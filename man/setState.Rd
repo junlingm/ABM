@@ -3,9 +3,6 @@
 \name{setState}
 \alias{setState}
 \title{Set the state of the agent}
-\usage{
-setState(agent, state)
-}
 \arguments{
 \item{agent}{an external pointer returned by newAgent}
 

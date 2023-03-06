@@ -144,32 +144,3 @@ protected:
    */
   Rcpp::Function _handler;
 };
-
-
-extern "C" {
-  /**
-   * Creates a new event (an REvent object)
-   * 
-   * @param time the event time
-   * 
-   * @param handler the R handler function
-   * 
-   * @return the new REvent as an external pointer.
-   * 
-   * @details The R handler function should take exactly 3 arguments
-   *   1. time: the current time in the simulation
-   *   2. sim: the simulation object, an external pointer
-   *   3. agent: the agent to whom this event is attached to. 
-   *   
-   * The return value of the handler function is ignored.
-   */
-  SEXP newEvent(SEXP time, SEXP handler);
-
-  /**
-   * returns the time of an event
-   * 
-   * @param event an external pointer pointing to the event. It must
-   * be created by the newEvent function.
-   */
-  SEXP getTime(SEXP event);
-}

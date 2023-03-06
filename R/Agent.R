@@ -95,17 +95,17 @@ Agent <- R6::R6Class(
 
 #' Create an agent with a given state
 #' 
+#' @name newAgent
+#' 
 #' @param state a list giving the initial state of the agent, or NULL (an empty 
 #' list)
 #' 
 #' @return an external pointer pointing to the agent
-#' 
-#' @export
-newAgent = function(state=NULL) {
-  .Call("newAgent", state)
-}
+NULL
 
 #' Get the ID of the agent.
+#' 
+#' @name getID
 #' 
 #' @param agent an external pointer returned by newAgent
 #' 
@@ -117,13 +117,11 @@ newAgent = function(state=NULL) {
 #' 
 #' If agent is an R6 object, then we should either use agent$schedule, 
 #' or use schedule(agent$get, event)
-#' 
-#' @export
-getID = function(agent) {
-  .Call("getID", agent)
-}
+NULL
 
 #' Get the state of the agent
+#' 
+#' @name getState
 #' 
 #' @param agent an external pointer returned by newAgent
 #' 
@@ -131,13 +129,11 @@ getID = function(agent) {
 #' 
 #' @details If agent is an R6 object, then we should either use agent$schedule, 
 #' or use schedule(agent$get, event)
-#' 
-#' @export
-getState = function(agent) {
-  .Call("getState", agent)
-}
+NULL
 
 #' Set the state of the agent
+#' 
+#' @name setState
 #' 
 #' @param agent an external pointer returned by newAgent
 #' 
@@ -153,13 +149,11 @@ getState = function(agent) {
 #' 
 #' If agent is an R6 object, then we should either use agent$schedule, 
 #' or use schedule(agent$get, event)
-#' 
-#' @export
-setState = function(agent, state) {
-  .Call("setState", agent, state)
-}
+NULL
 
 #' Check if two states match
+#' 
+#' @name stateMatch
 #' 
 #' @param state a list holding a state to check
 #' 
@@ -170,11 +164,7 @@ setState = function(agent, state) {
 #' @details The state matches the rule if and only if each domain (names of the
 #' list) in rule has the same value as in state. The domains in domains of the 
 #' state not listed in rule are not matched
-#' 
-#' @export
-stateMatch = function(state, rule) {
-  .Call("stateMatch", state, rule)
-}
+NULL
 
 #' Check if the state of an agent matches a given state
 #' 
@@ -193,11 +183,13 @@ stateMatch = function(state, rule) {
 #' 
 #' @export
 matchState = function(agent, rule) {
-  .Call("stateMatch", getState(agent), rule)
+  stateMatch(getState(agent), rule)
 }
 
 #' Schedule (attach) an event to an agent
 #' 
+#' @name schedule
+#' 
 #' @param agent an external pointer returned by newAgent
 #' 
 #' @param event an external pointer returned by newEvent
@@ -209,14 +201,12 @@ matchState = function(agent, rule) {
 #' 
 #' Similarly, if event is an R6 object, then we should use 
 #' schedule(agent, event$get)
-#' 
-#' @export
-schedule = function(agent, event) {
-  .Call("schedule", agent, event)
-}
+NULL
 
 #' Unschedule (detach) an event from an agent
 #' 
+#' @name unschedule
+#' 
 #' @param agent an external pointer returned by newAgent
 #' 
 #' @param event an external pointer returned by newEvent
@@ -228,13 +218,11 @@ schedule = function(agent, event) {
 #' 
 #' Similarly, if event is an R6 object, then we should use 
 #' schedule(agent, event$get)
-#' 
-#' @export
-unschedule = function(agent, event) {
-  .Call("unschedule", agent, event)
-}
+NULL
 
 #' Unschedule all event from an agent
+#' 
+#' @name clearEvents
 #' 
 #' @param agent an external pointer returned by newAgent
 #' 
@@ -242,8 +230,4 @@ unschedule = function(agent, event) {
 #' 
 #' @details If agent is an R6 object, then we should either use agent$schedule, 
 #' or use schedule(agent$get, event)
-#' 
-#' @export
-clearEvents = function(agent) {
-  .Call("clearEvents", agent)
-}
+NULL

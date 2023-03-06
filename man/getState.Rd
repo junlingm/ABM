@@ -3,9 +3,6 @@
 \name{getState}
 \alias{getState}
 \title{Get the state of the agent}
-\usage{
-getState(agent)
-}
 \arguments{
 \item{agent}{an external pointer returned by newAgent}
 }

@@ -3,9 +3,6 @@
 \name{newRandomMixing}
 \alias{newRandomMixing}
 \title{Creates a RandomMixing object}
-\usage{
-newRandomMixing()
-}
 \value{
 an external pointer.
 }

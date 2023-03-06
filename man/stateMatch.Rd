@@ -3,9 +3,6 @@
 \name{stateMatch}
 \alias{stateMatch}
 \title{Check if two states match}
-\usage{
-stateMatch(state, rule)
-}
 \arguments{
 \item{state}{a list holding a state to check}
 

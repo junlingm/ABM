@@ -1,7 +1,7 @@
-#include "Contact.h"
-#include "Agent.h"
-#include "Population.h"
-#include "RNG.h"
+#include "../inst/include/Contact.h"
+#include "../inst/include/Agent.h"
+#include "../inst/include/Population.h"
+#include "../inst/include/RNG.h"
 
 using namespace Rcpp;
 
@@ -79,23 +79,28 @@ void RContact::build()
 
 CharacterVector Contact::classes = CharacterVector::create("Contact");
 
-extern "C" {
-  SEXP newRandomMixing()
-  {
-    return XP<RandomMixing>(std::make_shared<RandomMixing>());
-  }
+/**
+ * Create an object of the RandomMixing class
+ * 
+ * @return an external pointer
+ */
+// [[Rcpp::export]]
+XP<Contact> newRandomMixing()
+{
+  return XP<Contact>(std::make_shared<RandomMixing>());
+}
   
-  /**
-   * Create an RContact object
-   * 
-   * @param an R6Contact object
-   * 
-   * @return an external pointer
-   * 
-   * @details this is an internal method used by the R6Contact class
-   */
-  SEXP _newContact(SEXP r6)
-  {
-    return XP<RContact>(std::make_shared<RContact>(r6));
-  }
+/**
+ * Create an RContact object
+ * 
+ * @param an R6Contact object
+ * 
+ * @return an external pointer
+ * 
+ * @details this is an internal method used by the R6Contact class
+ */
+// [[Rcpp::export]]
+XP<Contact> newContact(Environment r6)
+{
+  return XP<Contact>(std::make_shared<RContact>(r6));
 }

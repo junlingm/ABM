@@ -1,4 +1,4 @@
-#include "Simulation.h"
+#include "../inst/include/Simulation.h"
 #include <cmath>
 
 using namespace Rcpp;
@@ -84,68 +84,67 @@ void Simulation::add(Transition *rule)
 
 CharacterVector Simulation::classes = CharacterVector::create("Simulation", "Population", "Agent", "Event");
 
-extern "C" {
-  SEXP newSimulation(SEXP n)
-  {
-    int m = (TYPEOF(n) == NILSXP) ? 0 : as<int>(n);
-    return XP<Simulation>(std::make_shared<Simulation>(m));
-  }
+// [[Rcpp::export]]
+XP<Simulation> newSimulation(int n = 0)
+{
+  if (n < 0) n = 0;
+  return XP<Simulation>(std::make_shared<Simulation>(n));
+}
 
-  SEXP runSimulation(SEXP sim, SEXP time)
-  {
-    return XP<Simulation>(sim)->run(as<NumericVector>(time));
-  }
+// [[Rcpp::export]]
+List runSimulation(XP<Simulation> sim, NumericVector time)
+{
+  return sim->run(time);
+}
 
-  SEXP resumeSimulation(SEXP sim, SEXP time)
-  {
-    return XP<Simulation>(sim)->resume(as<NumericVector>(time));
-  }
+// [[Rcpp::export]]
+List resumeSimulation(XP<Simulation> sim, NumericVector time)
+{
+  return sim->resume(time);
+}
 
-  SEXP addLogger(SEXP sim, SEXP logger)
-  {
-    XP<Simulation>(sim)->add(XP<Logger>(logger));
-    return sim;
-  }
+// [[Rcpp::export]]
+XP<Simulation> addLogger(XP<Simulation> sim, XP<Logger> logger)
+{
+  sim->add(logger);
+  return sim;
+}
 
-  SEXP addTransition(SEXP sim, 
-                     SEXP from, SEXP contact_from, 
-                     SEXP to, SEXP contact_to, SEXP contact,
-                     SEXP waiting_time, 
-                     SEXP to_change_callback, SEXP changed_callback)
-  {
-    XP<Simulation> s(sim);
-    List f(from);
-    List t(to);
-    Nullable<List> cf(contact_from);
-    Nullable<List> ct(contact_to);
-    Nullable<XP<Contact> > c(contact);
-    PWaitingTime w;
-    switch (TYPEOF(waiting_time)) {
-    case EXTPTRSXP: 
-      w = *as<XP<WaitingTime> >(waiting_time).get();
-      break;
-    case CLOSXP:
-    case SPECIALSXP:
-    case BUILTINSXP: 
-      w = std::make_shared<RWaitingTime>(as<Function>(waiting_time));
-      break;
-    case REALSXP:
-      w = std::make_shared<ExpWaitingTime>(as<double>(waiting_time));
-      break;
-    default:
-      throw std::range_error("waiting_time is invalid");
-    }
-    Nullable<Function> tc(to_change_callback);
-    Nullable<Function> cc(changed_callback);
-    if (c.isNull())
-      s->add(new Transition(f, t, w, tc, cc));
-    else {
-      if (cf.isNull())
-        std::range_error("contact from state is NULL");
-      if (ct.isNull())
-        std::range_error("contact to state is NULL");
-      s->add(new ContactTransition(f, cf.as(), t, ct.as(), **c.as(), w, tc, cc));
-    }
-    return sim;
+// [[Rcpp::export]]
+XP<Simulation> addTransition(
+    XP<Simulation> sim, 
+    List from, Nullable<List> contact_from, 
+    List to, Nullable<List> contact_to, Nullable<XP<Contact> > contact,
+    SEXP waiting_time, 
+    Nullable<Function> to_change_callback = R_NilValue, 
+    Nullable<Function> changed_callback = R_NilValue)
+{
+  PWaitingTime w;
+  switch (TYPEOF(waiting_time)) {
+  case EXTPTRSXP: 
+    w = as<XP<WaitingTime> >(waiting_time);
+    break;
+  case CLOSXP:
+  case SPECIALSXP:
+  case BUILTINSXP: 
+    w = std::make_shared<RWaitingTime>(as<Function>(waiting_time));
+    break;
+  case REALSXP:
+    w = std::make_shared<ExpWaitingTime>(as<double>(waiting_time));
+    break;
+  default:
+    throw std::range_error("waiting_time is invalid");
   }
+  if (contact.isNull())
+    sim->add(new Transition(from, to, w, to_change_callback, changed_callback));
+  else {
+    if (contact_from.isNull())
+      std::range_error("contact from state is NULL");
+    if (contact_to.isNull())
+      std::range_error("contact to state is NULL");
+    sim->add(new ContactTransition(
+        from, contact_from.as(), to, contact_to.as(),
+        **contact.as(), w, to_change_callback, changed_callback));
+  }
+  return sim;
 }

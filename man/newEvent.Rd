@@ -3,9 +3,6 @@
 \name{newEvent}
 \alias{newEvent}
 \title{Creates a new event in R}
-\usage{
-newEvent(time, handler)
-}
 \arguments{
 \item{time}{the time that this event will occur. A length-1
 numeric vector.}

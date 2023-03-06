@@ -34,7 +34,7 @@ Population <- R6::R6Class(
       t = typeof(population)
       if (t != "double" && t != "integer")
         stop("invalid population argument")
-      private$agent = .Call("newPopulation", population, initializer)
+      private$agent = newPopulation(population)
       private$managed = TRUE
     },
 
@@ -49,12 +49,11 @@ Population <- R6::R6Class(
 #' is already added to a simulation, the agent will report its state
 #' to the simulation.
     addAgent = function(agent) {
-      method = if (private$managed) "addAgent" else "x_addAgent"
       if (inherits(agent, "R6Agent"))
         agent = agent$get
       if (!inherits(agent, "Agent"))
         stop("invalid agent argument")
-      .Call(method, private$agent, agent)
+      addAgent(private$agent, agent)
       self
     },
     
@@ -70,7 +69,7 @@ Population <- R6::R6Class(
         contact = contact$get
       if (!inherits(contact, "Contact"))
         stop("invalid contact argument")
-      .Call("addContact", private$agent, contact)
+      addContact(private$agent, contact)
       self
     },
     
@@ -80,7 +79,7 @@ Population <- R6::R6Class(
 #' 
 #' @return an external pointer pointing to the agent
   agent = function(i) {
-      .Call("getAgent", private$agent, i)
+      getAgent(private$agent, i)
     },
     
 #' set the state of a specific agent by index
@@ -91,8 +90,8 @@ Population <- R6::R6Class(
 #' 
 #' @return an external pointer pointing to the agent
     setState = function(i, state) {
-      a = .Call("getAgent", private$agent, i)
-      .Call("setState", a, state)
+      a = getAgent(private$agent, i)
+      setState(a, state)
       self
     }
   ),
@@ -107,26 +106,22 @@ Population <- R6::R6Class(
 
 #' Create a new population
 #'
+#' @name newPopulation
+#'
 #' @param n an integer specifying the population size.
 #' 
 #' @details The population will be created with "n" individuals in it.
 #' These individuals have an empty state upon created. Note that 
 #' individuals can be added later by the "add" method, the initial
 #' population size is for convenience, not required
-#' 
-#' @export
-newPopulation = function(n=0) {
-  .Call("newPopulation", n)
-}
+NULL
 
 #' Get the size of a population
+#' 
+#' @name getSize
 #' 
 #' @param population an external pointer to a population, for example,
 #' one returned by newPopulaton
 #' 
 #' @return the population size, an integer
-#' 
-#' @export
-getSize = function(population) {
-  .Call("getSize", population)
-}
+NULL

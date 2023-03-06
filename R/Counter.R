@@ -6,7 +6,9 @@
 #' where the columns represent variables, and rows represent the 
 #' observation at each time point given to each run. Each logger has a 
 #' name, which becomes the the column name int eh data.frame.
-
+#' 
+#' @name newCounter
+#'
 #' @param name the name of the counter, must be a length-1 character vector
 #'
 #' @param from a list specifying state of the agent, or a character or numeric
@@ -26,13 +28,7 @@
 #'   in a state that matches the "state" argument. Specifically, if the agent
 #'   jumps to "state", then the count increases by 1. If the agents jumps away
 #'   from "state", then the count decreases by 1.
-#'
-#' @export
-newCounter = function(name, from, to=NULL, initial=0) {
-  if (!is.null(from) && !is.list(from)) from = list(from)
-  if (!is.null(to) && !is.list(to)) to = list(to)
-  .Call("newCounter", name, from, to, initial)
-}
+NULL
 
 #' Create a logger of the StateLogger class
 #' 
@@ -43,6 +39,8 @@ newCounter = function(name, from, to=NULL, initial=0) {
 #' observation at each time point given to each run. Each logger has a 
 #' name, which becomes the the column name int eh data.frame.
 #' 
+#' @name newStateLogger
+#'
 #' @param name the name of the logger. A length-1 character vector
 #' 
 #' @param agent the agent whose state will be logged. An external pointer
@@ -58,8 +56,4 @@ newCounter = function(name, from, to=NULL, initial=0) {
 #' to use its $get method to get the external pointer.
 #' 
 #' The state that can be logged must have a numeric value.
-#'
-#' @export
-newStateLogger = function(name, agent, state.name) {
-  .Call("newStateLogger", name, agent, state.name)
-}
+NULL

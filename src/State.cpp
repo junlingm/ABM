@@ -1,4 +1,4 @@
-#include "State.h"
+#include "../inst/include/State.h"
 #include <string>
 
 using namespace Rcpp;

@@ -3,9 +3,6 @@
 \name{newStateLogger}
 \alias{newStateLogger}
 \title{Create a logger of the StateLogger class}
-\usage{
-newStateLogger(name, agent, state.name)
-}
 \arguments{
 \item{name}{the name of the logger. A length-1 character vector}
 

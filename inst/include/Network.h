@@ -110,19 +110,3 @@ protected:
   
   Rcpp::Function _rng;
 }; 
-
-extern "C" {
-  /**
-   * Create a random network Contact object using the configuration models
-   * 
-   * @param population an external pointer pointing to the population that
-   * this Contact object is associated with
-   * 
-   * @param rng an R function that generates random degrees. 
-   * 
-   * @details rng takes one argument n, giving the number of degrees to 
-   * generate and returns a Rcpp::IntegerVector of length n holding the 
-   * generated degrees.
-   */
-  SEXP newConfigurationModel(SEXP rng);
-}

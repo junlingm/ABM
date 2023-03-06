@@ -1,4 +1,4 @@
-#include "Counter.h"
+#include "../inst/include/Counter.h"
 
 using namespace Rcpp;
 
@@ -53,27 +53,20 @@ long StateLogger::report()
   return _value;
 }
 
-extern "C" {
-  SEXP newCounter(SEXP name, SEXP from, SEXP to, SEXP initial)
-  {
-    std::string n = as<std::string>(name);
-    List f(from);
-    Nullable<List> t(to);
-    int i0 = as<int>(initial);
-    return XP<Counter>(std::make_shared<Counter>(n, f, t, i0));
-  }
+// [[Rcpp::export]]
+XP<Counter> newCounter(std::string name, List from, Nullable<List> to=R_NilValue, int initial=0)
+{
+  return XP<Counter>(std::make_shared<Counter>(name, from, to, initial));
+}
 
-  SEXP newStateLogger(SEXP name, SEXP agent, SEXP state)
-  {
-    std::shared_ptr<Agent> pa;
-    if (agent != R_NilValue) {
-      XP<Agent> a(agent);
-      pa = *a;
-    }
-    std::string n = as<std::string>(name);
-    std::string s = as<std::string>(state);
-    return XP<StateLogger>(std::make_shared<StateLogger>(n, pa, s));
+// [[Rcpp::export]]
+XP<StateLogger> newStateLogger(std::string name, Nullable<XP<Agent> > agent, std::string state)
+{
+  std::shared_ptr<Agent> pa;
+  if (!agent.isNull()) {
+    pa = agent.as();
   }
+  return std::make_shared<StateLogger>(name, pa, state);
 }
 
 Rcpp::CharacterVector Counter::classes = CharacterVector::create("Counter", "Logger");

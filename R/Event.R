@@ -47,7 +47,7 @@ Event <- R6::R6Class(
     #'  
     #' The return value of the handler function is ignored.
     initialize = function(time, handler) {
-      private$event = .Call("newEvent", time, handler)
+      private$event = newEvent(time, handler)
     }
   ),
   private = list(
@@ -59,7 +59,7 @@ Event <- R6::R6Class(
     #' returns the event time
     #' 
     time = function() {
-      .Call("getTime", private$event)
+      getTime(private$event)
     },
     
     #' @field get
@@ -74,6 +74,8 @@ Event <- R6::R6Class(
 
 #' Creates a new event in R
 #' 
+#' @name newEvent
+#'
 #' @param time the time that this event will occur. A length-1
 #' numeric vector.
 #' 
@@ -91,13 +93,11 @@ Event <- R6::R6Class(
 #' 
 #' This function avoids the overhead of an R6 class, and is thus faster.
 #' This is the recommended method to create an event in an event handler.
-#' 
-#' @export
-newEvent = function(time, handler) {
-  .Call("newEvent", time, handler)
-}
+NULL
 
 #' returns the event time
+#' 
+#' @name getTime
 #' 
 #' @param event an external pointer returned by the newEvent function.
 #' 
@@ -105,8 +105,4 @@ newEvent = function(time, handler) {
 #' 
 #' This function avoids the overhead of an R6 class, and is thus faster.
 #' This is the recommended method to get event time in an event handler.
-#' 
-#' @export
-getTime = function(event) {
-  .Call("getTime", event)
-}
+NULL

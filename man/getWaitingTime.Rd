@@ -3,9 +3,6 @@
 \name{getWaitingTime}
 \alias{getWaitingTime}
 \title{Generate a waiting time from an WaitingTime object}
-\usage{
-getWaitingTime(generator, time)
-}
 \arguments{
 \item{generator}{an external pointer to a WaitingTime object, e.g.,
 one returned by newExpWaitingTime or newGammaWaitingTime}

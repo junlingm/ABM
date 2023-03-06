@@ -1,6 +1,4 @@
-#include "Transition.h"
-#include "Simulation.h"
-#include "State.h"
+#include "../inst/include/Simulation.h"
 
 using namespace Rcpp;
 
@@ -189,27 +187,26 @@ CharacterVector WaitingTime::classes = CharacterVector::create("WaitingTime");
 
 CharacterVector Transition::classes = CharacterVector::create("Transition");
 
-extern "C" {
-  SEXP newExpWaitingTime(SEXP rate)
-  {
-    return XP<WaitingTime>(std::make_shared<ExpWaitingTime>(
-        1.0 / as<double>(rate)));
-  }
+// [[Rcpp::export]]
+XP<WaitingTime> newExpWaitingTime(double rate)
+{
+  return XP<WaitingTime>(std::make_shared<ExpWaitingTime>(1.0 / rate));
+}
 
-  SEXP newGammaWaitingTime(SEXP shape, SEXP scale)
-  {
-    return XP<WaitingTime>(std::make_shared<GammaWaitingTime>(
-        as<double>(shape), as<double>(scale)));
-  }
+// [[Rcpp::export]]
+XP<WaitingTime> newGammaWaitingTime(double shape, double scale)
+{
+  return XP<WaitingTime>(std::make_shared<GammaWaitingTime>(shape, scale));
+}
 
-  SEXP newRWaitingTime(SEXP function) 
-  {
-    Function f(function);
-    return XP<WaitingTime>(std::make_shared<RWaitingTime>(f));
-  }
-  
-  SEXP getWaitingTime(SEXP generator, SEXP time)
-  {
-    return wrap(XP<WaitingTime>(generator)->waitingTime(as<double>(time)));
-  }
+// [[Rcpp::export]]
+XP<WaitingTime> newRWaitingTime(Function rng) 
+{
+  return XP<WaitingTime>(std::make_shared<RWaitingTime>(rng));
+}
+
+// [[Rcpp::export]]
+double getWaitingTime(XP<WaitingTime> generator, double time)
+{
+  return generator->waitingTime(time);
 }

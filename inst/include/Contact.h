@@ -199,12 +199,3 @@ private:
    */
   Rcpp::Function _r6_attach;
 };
-
-extern "C" {
-  /**
-   * Create an object of the RandomMixing class
-   * 
-   * @return an external pointer
-   */
-  SEXP newRandomMixing();
-}

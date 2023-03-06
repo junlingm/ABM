@@ -3,9 +3,6 @@
 \name{unschedule}
 \alias{unschedule}
 \title{Unschedule (detach) an event from an agent}
-\usage{
-unschedule(agent, event)
-}
 \arguments{
 \item{agent}{an external pointer returned by newAgent}
 

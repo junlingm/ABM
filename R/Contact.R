@@ -15,7 +15,7 @@ Contact = R6::R6Class(
   public = list(
 #' @description the constructor
     initialize = function() {
-      private$pointer = .Call("_newContact", self)
+      private$pointer = newContact(self)
     },
   
 #' @description attach to a population
@@ -91,6 +91,8 @@ Contact = R6::R6Class(
 #' To use an R6 object, we should use its pointer representation from its
 #' $get method.
 #' 
+#' @name newRandomMixing
+#'
 #' @export
 #' 
 #' @examples
@@ -98,11 +100,11 @@ Contact = R6::R6Class(
 #' sim = Simulation$new(100)
 #' # add a random mixing contact pattern for these agents.
 #' sim$addContact(newRandomMixing())
-newRandomMixing = function() {
-  .Call("newRandomMixing")
-}
+NULL
 
 #' Creates a random network using the configuration model
+#'
+#' @name newConfigurationModel
 #' 
 #' @param rng a function that generates random degrees
 #'
@@ -115,15 +117,9 @@ newRandomMixing = function() {
 #' The function rng should take exactly one argument n for the number of degrees
 #' to generate, and should return an integer vector of length n.
 #'
-#' @export
-#' 
 #' @examples
 #' # creates a simulation with 100 agents
 #' sim = Simulation$new(100)
 #' # add a Poisson network with a mean degree 5
 #' sim$addContact(newConfigurationModel(function(n) rpois(n, 5)))
-newConfigurationModel = function(rng) {
-  if (!is.function(rng))
-    stop("rng must be a function")
-  .Call("newConfigurationModel", rng)
-}
+NULL

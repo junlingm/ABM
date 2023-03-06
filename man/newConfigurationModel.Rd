@@ -3,9 +3,6 @@
 \name{newConfigurationModel}
 \alias{newConfigurationModel}
 \title{Creates a random network using the configuration model}
-\usage{
-newConfigurationModel(rng)
-}
 \arguments{
 \item{rng}{a function that generates random degrees}
 }

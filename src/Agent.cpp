@@ -1,5 +1,5 @@
-#include "Agent.h"
-#include "Simulation.h"
+#include "../inst/include/Agent.h"
+#include "../inst/include/Simulation.h"
 
 using namespace Rcpp;
 
@@ -107,53 +107,54 @@ void Agent::report()
 
 CharacterVector Agent::classes = CharacterVector::create("Agent", "Event");
 
-extern "C" {
-  SEXP newAgent(SEXP state)
-  {
-    auto t = TYPEOF(state);
-    if (t == NILSXP)
-      return XP<Agent>(std::make_shared<Agent>());
-    if (t != VECSXP)
-      stop("state must be a list");
-    return XP<Agent>(std::make_shared<Agent>(List(state)));
-  }
+// [[Rcpp::export]]
+XP<Agent> newAgent(SEXP state)
+{
+  Nullable<List> s(state);
+  if (s.isNull())
+    return XP<Agent>(std::make_shared<Agent>());
+  return XP<Agent>(std::make_shared<Agent>(s.as()));
+}
   
-  SEXP getID(SEXP agent) 
-  {
-    return wrap(XP<Agent>(agent)->id());
-  }
+// [[Rcpp::export]]
+int getID(XP<Agent> agent) 
+{
+  return agent->id();
+}
 
-  SEXP getState(SEXP agent)
-  {
-    return XP<Agent>(agent)->state();
-
-  }
+// [[Rcpp::export]]
+List getState(XP<Agent> agent)
+{
+  return agent->state();
+}
   
-  SEXP schedule(SEXP agent, SEXP event)
-  {
-    XP<Agent>(agent)->schedule(XP<Event>(event));
-    return agent;
-  }
+// [[Rcpp::export]]
+XP<Agent> schedule(XP<Agent> agent, XP<Event> event)
+{
+  agent->schedule(event);
+  return agent;
+}
 
-  SEXP unschedule(SEXP agent, SEXP event)
-  {
-    XP<Agent>(agent)->unschedule(XP<Event>(event));
-    return agent;
-  }
+// [[Rcpp::export]]
+XP<Agent> unschedule(XP<Agent> agent, XP<Event> event)
+{
+  agent->unschedule(event);
+  return agent;
+}
 
-  SEXP clearEvents(SEXP agent)
-  {
-    XP<Agent>(agent)->clearEvents();
-    return agent;
-  }
-  
-  SEXP setState(SEXP agent, SEXP value)
-  {
-    XP<Agent> a(agent);
-    Nullable<List> s(value);
-    if (!s.isNull())
-      a->set(s.as());
-    return agent;
-  }
+// [[Rcpp::export]]
+XP<Agent> clearEvents(XP<Agent> agent)
+{
+  agent->clearEvents();
+  return agent;
+}
+
+// [[Rcpp::export]]
+XP<Agent> setState(XP<Agent> agent, SEXP value)
+{
+  Nullable<List> s(value);
+  if (!s.isNull())
+    agent->set(s.as());
+  return agent;
 }
 

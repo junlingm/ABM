@@ -3,9 +3,6 @@
 \name{getTime}
 \alias{getTime}
 \title{returns the event time}
-\usage{
-getTime(event)
-}
 \arguments{
 \item{event}{an external pointer returned by the newEvent function.}
 }

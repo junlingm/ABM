@@ -1,6 +1,4 @@
-#include "Event.h"
-#include "Agent.h"
-#include "Simulation.h"
+#include "../inst/include/Simulation.h"
 
 using namespace Rcpp;
 
@@ -24,18 +22,16 @@ bool REvent::handle(Simulation &sim, Agent &agent)
   return false;
 }
 
-extern "C" {
-  SEXP newEvent(SEXP time, SEXP handler)
-  {
-    Function h(handler);
-    return XP<Event>(std::make_shared<REvent>(as<double>(time), h));
-  }
+// [[Rcpp::export]]
+XP<Event> newEvent(double time, Function handler)
+{
+  return XP<Event>(std::make_shared<REvent>(time, handler));
+}
   
-  SEXP getTime(SEXP event)
-  {
-    XP<Event> e(event);
-    return wrap(e->time());
-  }
+// [[Rcpp::export]]
+double getTime(XP<Event> event)
+{
+  return event->time();
 }
 
 CharacterVector Event::classes = CharacterVector::create("Event");

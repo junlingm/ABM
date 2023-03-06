@@ -3,9 +3,6 @@
 \name{getSize}
 \alias{getSize}
 \title{Get the size of a population}
-\usage{
-getSize(population)
-}
 \arguments{
 \item{population}{an external pointer to a population, for example,
 one returned by newPopulaton}
