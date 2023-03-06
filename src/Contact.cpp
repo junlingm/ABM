@@ -39,6 +39,35 @@ void RandomMixing::finalize()
 {
 }
 
+RContact::RContact(Population &population, Environment r6)
+  : Contact(population), _r6(r6), 
+    _r6_contact(r6["contact"]),
+    _r6_addAgent(r6["addAgent"]),
+    _r6_build(r6["build"])
+{
+}
+
+const std::vector<PAgent> &RContact::contact(double time, Agent &agent)
+{
+  GenericVector c = _r6_contact(time, XP<Agent>(agent));
+  size_t n = c.size();
+  _neighbors.resize(n);
+  for (size_t i = 0; i < n; ++i) {
+    XP<Agent> a = c[i];
+    _neighbors[i] = a;
+  }
+  return _neighbors;
+}
+
+void RContact::add(const PAgent &agent)
+{
+  _r6_addAgent(XP<Agent>(agent));
+}
+
+void RContact::finalize()
+{
+  _r6_build();
+}
 
 CharacterVector Contact::classes = CharacterVector::create("Contact");
 
@@ -46,5 +75,11 @@ extern "C" {
   SEXP newRandomMixing(SEXP population)
   {
     return XP<RandomMixing>(std::make_shared<RandomMixing>(**XP<Population>(population)));
+  }
+  
+  SEXP newContact(SEXP population, SEXP contact)
+  {
+    XP<Population> p(population);
+    return XP<RContact>(std::make_shared<RContact>(**p, contact));
   }
 }

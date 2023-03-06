@@ -65,7 +65,9 @@ Population <- R6::R6Class(
 #' 
 #' @details If the contact has already been added, this called does 
 #' nothing.
-  addContact = function(contact) {
+    addContact = function(contact) {
+      if (inherits(contact, "R6Contact"))
+        contact = contact$get
       if (!inherits(contact, "Contact"))
         stop("invalid contact argument")
       .Call("addContact", private$agent, contact)

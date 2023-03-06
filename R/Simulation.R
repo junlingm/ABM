@@ -194,6 +194,8 @@ Simulation <- R6::R6Class(
         if (!exists(side[[3]], envir=envir))
           stop(paste("the contact", as.character(contact), "does not exist"))
         contact = get(side[[3]], envir=envir)
+        if (inherits(contact, "R6Contact"))
+          contact = contact$get
         side = side[[2]]
       } else contact = NULL
       if (is.call(side)) {
