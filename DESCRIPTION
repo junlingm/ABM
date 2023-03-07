@@ -11,5 +11,7 @@ License: GPL (>= 2)
 Imports: Rcpp, R6
 Roxygen: list(markdown = TRUE)
 LinkingTo: Rcpp
+URL: https://github.com/junlingm/ABM
+BugReports: https://github.com/junlingm/ABM/issues
 Encoding: UTF-8
 RoxygenNote: 7.2.3
