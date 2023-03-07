@@ -1,7 +1,8 @@
 # ABM R Package: Agent Based Model Simulation Framework
 
-This package provides a framework to simulate agent based models that are
-based on states and events.
+The ABM package provides a high-performance, flexible framework for agent-based modeling. It has an easy-to-use state transition mechanism, that makes it especially suitable for modeling agent based models. For example, an SEIR model can be implemented in 18 lines. 
+
+In addition, this framework is a general event-based framework.  Yet this framework allows the state of an agent to be quite general, described by a R list taking arbitrary R values. The states are modified by events, which can be easily defined. Thus, it is suitable for a wide range of applications, such as implementing  the Gillespie algorithm.
 
 # Installation
 
