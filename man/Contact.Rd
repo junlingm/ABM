@@ -49,6 +49,9 @@ Albert-Barabasi networkm which can be built while adding the agents.
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{get}}{.The external pointer pointing to the C++ RContact object.}
+
+\item{\code{attached}}{a logical value indicating whether the object has been attached
+to a population}
 }
 \if{html}{\out{</div>}}
 }

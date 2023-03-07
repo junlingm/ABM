@@ -15,9 +15,9 @@ the agent itself
 Unschedule (detach) an event from an agent
 }
 \details{
-If agent is an R6 object, then we should either use agent$schedule,
-or use schedule(agent$get, event)
+If agent is an R6 object, then we should use either
+agent$unschedule(event) or unschedule(agent$get, event)
 
 Similarly, if event is an R6 object, then we should use
-schedule(agent, event$get)
+unschedule(agent, event$get)
 }

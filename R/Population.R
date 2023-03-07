@@ -114,6 +114,8 @@ Population <- R6::R6Class(
 #' These individuals have an empty state upon created. Note that 
 #' individuals can be added later by the "add" method, the initial
 #' population size is for convenience, not required
+#' 
+#' @export
 NULL
 
 #' Get the size of a population
@@ -124,4 +126,6 @@ NULL
 #' one returned by newPopulaton
 #' 
 #' @return the population size, an integer
+#' 
+#' @export
 NULL

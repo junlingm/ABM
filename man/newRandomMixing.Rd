@@ -19,4 +19,5 @@ $get method.
 sim = Simulation$new(100)
 # add a random mixing contact pattern for these agents.
 sim$addContact(newRandomMixing())
+
 }

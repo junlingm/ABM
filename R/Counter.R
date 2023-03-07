@@ -28,6 +28,8 @@
 #'   in a state that matches the "state" argument. Specifically, if the agent
 #'   jumps to "state", then the count increases by 1. If the agents jumps away
 #'   from "state", then the count decreases by 1.
+#' 
+#' @export
 NULL
 
 #' Create a logger of the StateLogger class
@@ -56,4 +58,6 @@ NULL
 #' to use its $get method to get the external pointer.
 #' 
 #' The state that can be logged must have a numeric value.
+#' 
+#' @export
 NULL

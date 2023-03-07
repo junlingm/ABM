@@ -13,6 +13,6 @@ the agent itself
 Unschedule all event from an agent
 }
 \details{
-If agent is an R6 object, then we should either use agent$schedule,
-or use schedule(agent$get, event)
+If agent is an R6 object, then we should use either
+agent$clearEvents() or clearEvents(agent$get)
 }

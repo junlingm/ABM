@@ -93,6 +93,8 @@ Event <- R6::R6Class(
 #' 
 #' This function avoids the overhead of an R6 class, and is thus faster.
 #' This is the recommended method to create an event in an event handler.
+#' 
+#' @export
 NULL
 
 #' returns the event time
@@ -105,4 +107,6 @@ NULL
 #' 
 #' This function avoids the overhead of an R6 class, and is thus faster.
 #' This is the recommended method to get event time in an event handler.
+#' 
+#' @export
 NULL

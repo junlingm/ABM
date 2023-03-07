@@ -101,6 +101,8 @@ Agent <- R6::R6Class(
 #' list)
 #' 
 #' @return an external pointer pointing to the agent
+#' 
+#' @export
 NULL
 
 #' Get the ID of the agent.
@@ -117,6 +119,8 @@ NULL
 #' 
 #' If agent is an R6 object, then we should either use agent$schedule, 
 #' or use schedule(agent$get, event)
+#' 
+#' @export
 NULL
 
 #' Get the state of the agent
@@ -129,6 +133,8 @@ NULL
 #' 
 #' @details If agent is an R6 object, then we should either use agent$schedule, 
 #' or use schedule(agent$get, event)
+#' 
+#' @export
 NULL
 
 #' Set the state of the agent
@@ -149,6 +155,8 @@ NULL
 #' 
 #' If agent is an R6 object, then we should either use agent$schedule, 
 #' or use schedule(agent$get, event)
+#' 
+#' @export
 NULL
 
 #' Check if two states match
@@ -164,6 +172,8 @@ NULL
 #' @details The state matches the rule if and only if each domain (names of the
 #' list) in rule has the same value as in state. The domains in domains of the 
 #' state not listed in rule are not matched
+#' 
+#' @export
 NULL
 
 #' Check if the state of an agent matches a given state
@@ -196,11 +206,13 @@ matchState = function(agent, rule) {
 #' 
 #' @return the agent itself
 #' 
-#' @details If agent is an R6 object, then we should either use agent$schedule, 
-#' or use schedule(agent$get, event)
+#' @details If agent is an R6 object, then we should use either 
+#' agent$schedule(event) or schedule(agent$get, event)
 #' 
 #' Similarly, if event is an R6 object, then we should use 
 #' schedule(agent, event$get)
+#' 
+#' @export
 NULL
 
 #' Unschedule (detach) an event from an agent
@@ -213,11 +225,13 @@ NULL
 #' 
 #' @return the agent itself
 #' 
-#' @details If agent is an R6 object, then we should either use agent$schedule, 
-#' or use schedule(agent$get, event)
+#' @details If agent is an R6 object, then we should use either 
+#' agent$unschedule(event) or unschedule(agent$get, event)
 #' 
 #' Similarly, if event is an R6 object, then we should use 
-#' schedule(agent, event$get)
+#' unschedule(agent, event$get)
+#' 
+#' @export
 NULL
 
 #' Unschedule all event from an agent
@@ -228,6 +242,8 @@ NULL
 #' 
 #' @return the agent itself
 #' 
-#' @details If agent is an R6 object, then we should either use agent$schedule, 
-#' or use schedule(agent$get, event)
+#' @details If agent is an R6 object, then we should use either
+#' agent$clearEvents() or clearEvents(agent$get)
+#' 
+#' @export
 NULL

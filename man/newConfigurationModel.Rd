@@ -25,4 +25,5 @@ to generate, and should return an integer vector of length n.
 sim = Simulation$new(100)
 # add a Poisson network with a mean degree 5
 sim$addContact(newConfigurationModel(function(n) rpois(n, 5)))
+
 }

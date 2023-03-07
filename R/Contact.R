@@ -82,8 +82,10 @@ Contact = R6::R6Class(
 #'.The external pointer pointing to the C++ RContact object.
     get = function() { private$pointer },
     
-    #' @description a logical value indicating whether the object has been attached
-    #' to a population
+  #' @field attached 
+  #' 
+  #' a logical value indicating whether the object has been attached
+  #' to a population
     attached = function() { !is.null(private$population) }
   )
 )
@@ -105,6 +107,8 @@ Contact = R6::R6Class(
 #' sim = Simulation$new(100)
 #' # add a random mixing contact pattern for these agents.
 #' sim$addContact(newRandomMixing())
+#' 
+#' @export
 NULL
 
 #' Creates a random network using the configuration model
@@ -127,4 +131,6 @@ NULL
 #' sim = Simulation$new(100)
 #' # add a Poisson network with a mean degree 5
 #' sim$addContact(newConfigurationModel(function(n) rpois(n, 5)))
+#' 
+#' @export
 NULL

@@ -11,6 +11,8 @@
 #' specify the waiting time for a transition. As a C++ object, it is faster
 #' than using an R function to generate waiting times because there is
 #' no need to call an R function from C++.
+#' 
+#' @export
 NULL
 
 #' Creates an gamma distributed waiting time
@@ -28,6 +30,8 @@ NULL
 #' specify the waiting time for a transition. As a C++ object, it is faster
 #' than using an R function to generate waiting times because there is
 #' no need to call an R function from C++.
+#' 
+#' @export
 NULL
 
 #' Generate a waiting time from an WaitingTime object
@@ -40,4 +44,6 @@ NULL
 #' @param time the current simulation time, a numeric value
 #' 
 #' @return a numeric value
+#' 
+#' @export
 NULL
