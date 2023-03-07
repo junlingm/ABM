@@ -73,3 +73,23 @@ XP<Population> addContact(XP<Population> population, XP<Contact> contact)
   population->add(contact);
   return population;
 }
+
+// [[Rcpp::export]]
+XP<Population> setStates(XP<Population> population, SEXP states)
+{
+  if (Rf_isFunction(states)) {
+    Function f(states);
+    size_t n = population->size();
+    for (size_t i = 0; i < n; ++i)
+      population->agent(i)->set(f(i+1));
+  } else if (Rf_isVector(states)) {
+    List l(states);
+    size_t n = l.size();
+    if (n != population->size())
+      stop("The length of the states and the population size must agree");
+    for (size_t i = 0; i < n; ++i)
+      population->agent(i)->set(l[i]);
+  } else stop("invalid states. Must be a function or a list");
+  return population;
+}
+

@@ -35,6 +35,7 @@ network.
 \item \href{#method-R6Population-addContact}{\code{Population$addContact()}}
 \item \href{#method-R6Population-agent}{\code{Population$agent()}}
 \item \href{#method-R6Population-setState}{\code{Population$setState()}}
+\item \href{#method-R6Population-setStates}{\code{Population$setStates()}}
 \item \href{#method-R6Population-clone}{\code{Population$clone()}}
 }
 }
@@ -159,6 +160,33 @@ set the state of a specific agent by index
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+the population object itself for chaining actions
+Set the states for the agents
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-R6Population-setStates"></a>}}
+\if{latex}{\out{\hypertarget{method-R6Population-setStates}{}}}
+\subsection{Method \code{setStates()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Population$setStates(states)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{states}}{either a list holding the states (one for each agent), or a
+function}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+If \code{states} is a function then it takes a single argument
+\code{i}, specifying the index of the agent (starting from 1), and returns
+a state.
+}
+
 \subsection{Returns}{
 the population object itself for chaining actions
 }

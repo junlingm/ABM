@@ -92,6 +92,20 @@ Population <- R6::R6Class(
       a = getAgent(private$agent, i)
       setState(a, state)
       self
+    },
+
+#' Set the states for the agents
+#' 
+#' @param states either a list holding the states (one for each agent), or a
+#' function
+#' 
+#' @return the population object itself for chaining actions
+#' 
+#' @details If ```states``` is a function then it takes a single argument 
+#' ```i```, specifying the index of the agent (starting from 1), and returns
+#' a state.
+    setStates = function(states) {
+      setStates(self$get, states)
     }
   ),
 
@@ -125,6 +139,25 @@ NULL
 #' one returned by [newPopulation](newPopulation)
 #' 
 #' @return the population size, an integer
+#' 
+#' @export
+NULL
+
+#' Set the state for each agent in a population
+#' 
+#' @name setStates
+#' 
+#' @param population an external pointer to a population, for example,
+#' one returned by [newPopulation](newPopulation)
+#' 
+#' @param states either a list holding the states (one for each agent), or a
+#' function
+#' 
+#' @return the population object itself for chaining actions
+#' 
+#' @details If ```states``` is a function then it takes a single argument 
+#' ```i```, specifying the index of the agent (starting from 1), and returns
+#' a state.
 #' 
 #' @export
 NULL

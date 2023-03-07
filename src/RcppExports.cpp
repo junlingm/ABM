@@ -231,6 +231,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// setStates
+XP<Population> setStates(XP<Population> population, SEXP states);
+RcppExport SEXP _ABM_setStates(SEXP populationSEXP, SEXP statesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XP<Population> >::type population(populationSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type states(statesSEXP);
+    rcpp_result_gen = Rcpp::wrap(setStates(population, states));
+    return rcpp_result_gen;
+END_RCPP
+}
 // newSimulation
 XP<Simulation> newSimulation(int n);
 RcppExport SEXP _ABM_newSimulation(SEXP nSEXP) {
@@ -376,6 +388,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_getSize", (DL_FUNC) &_ABM_getSize, 1},
     {"_ABM_getAgent", (DL_FUNC) &_ABM_getAgent, 2},
     {"_ABM_addContact", (DL_FUNC) &_ABM_addContact, 2},
+    {"_ABM_setStates", (DL_FUNC) &_ABM_setStates, 2},
     {"_ABM_newSimulation", (DL_FUNC) &_ABM_newSimulation, 1},
     {"_ABM_runSimulation", (DL_FUNC) &_ABM_runSimulation, 2},
     {"_ABM_resumeSimulation", (DL_FUNC) &_ABM_resumeSimulation, 2},

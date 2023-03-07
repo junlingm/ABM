@@ -77,6 +77,10 @@ addContact <- function(population, contact) {
     .Call(`_ABM_addContact`, population, contact)
 }
 
+setStates <- function(population, states) {
+    .Call(`_ABM_setStates`, population, states)
+}
+
 newSimulation <- function(n = 0L) {
     .Call(`_ABM_newSimulation`, n)
 }
