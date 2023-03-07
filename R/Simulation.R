@@ -169,7 +169,7 @@ Simulation <- R6::R6Class(
     # environment envir
     parse.state = function(state, envir) {
       if (is.call(state)) {
-        op = as.character(side[[1]])
+        op = as.character(state[[1]])
         if (op != "list" && tolower(op) != "state")
           stop("invalid state ", as.character(state))
         return(as.list(state)[-1])
