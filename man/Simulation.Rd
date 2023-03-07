@@ -36,6 +36,7 @@ times.
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Population" data-id="addContact"><a href='../../ABM/html/R6Population.html#method-R6Population-addContact'><code>ABM::R6Population$addContact()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Population" data-id="agent"><a href='../../ABM/html/R6Population.html#method-R6Population-agent'><code>ABM::R6Population$agent()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Population" data-id="setState"><a href='../../ABM/html/R6Population.html#method-R6Population-setState'><code>ABM::R6Population$setState()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="ABM" data-topic="R6Population" data-id="setStates"><a href='../../ABM/html/R6Population.html#method-R6Population-setStates'><code>ABM::R6Population$setStates()</code></a></span></li>
 </ul>
 </details>
 }}
