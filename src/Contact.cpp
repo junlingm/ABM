@@ -49,7 +49,6 @@ RContact::RContact(Environment r6)
   : Contact(), _r6(r6), 
     _r6_contact(r6["contact"]),
     _r6_addAgent(r6["addAgent"]),
-    _r6_build(r6["build"]),
     _r6_attach(r6["attach"])
 {
 }
@@ -74,7 +73,6 @@ void RContact::add(const PAgent &agent)
 void RContact::build()
 {
   _r6_attach(XP<Population>(*_population));
-  _r6_build();
 }
 
 CharacterVector Contact::classes = CharacterVector::create("Contact");

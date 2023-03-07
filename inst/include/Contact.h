@@ -190,11 +190,6 @@ private:
   Rcpp::Function _r6_addAgent;
 
   /** 
-   * The R6 build
-   */
-  Rcpp::Function _r6_build;
-
-  /** 
    * The R6 attach
    */
   Rcpp::Function _r6_attach;

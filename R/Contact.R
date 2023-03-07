@@ -28,6 +28,7 @@ Contact = R6::R6Class(
       if (!is.null(private$population))
         stop("Already attached to a population")
       private$population = population
+      self$build()
     },
 
 #' @description Returns the contacts of the given agent
@@ -79,7 +80,11 @@ Contact = R6::R6Class(
 #' @field get
 #'
 #'.The external pointer pointing to the C++ RContact object.
-    get = function() { private$pointer }
+    get = function() { private$pointer },
+    
+    #' @description a logical value indicating whether the object has been attached
+    #' to a population
+    attached = function() { !is.null(private$population) }
   )
 )
 
