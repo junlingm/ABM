@@ -94,11 +94,6 @@ Simulation <- R6::R6Class(
 #' 
 #' @param rule is a formula that gives the transition rule
 #' 
-#' @param waiting_time the waiting_time for the transition to occur,
-#' a shared_ptr<WaitingTime> point to a WaitingTime object. It can
-#' also be a numeric value, which is equivalent to 
-#' newExpWaitingTime(waiting_time)
-#' 
 #' @param waiting.time either an external pointer to a WaitingTime object
 #' such as one returned by newExpWaitingTime or newGammaWaitingTime, or
 #' a function (see the details section)
