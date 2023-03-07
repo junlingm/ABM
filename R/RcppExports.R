@@ -97,6 +97,10 @@ addTransition <- function(sim, from, contact_from, to, contact_to, contact, wait
     .Call(`_ABM_addTransition`, sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback, changed_callback)
 }
 
+stateMatch <- function(state, rule) {
+    .Call(`_ABM_stateMatch`, state, rule)
+}
+
 newExpWaitingTime <- function(rate) {
     .Call(`_ABM_newExpWaitingTime`, rate)
 }

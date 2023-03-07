@@ -297,6 +297,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// stateMatch
+bool stateMatch(List state, SEXP rule);
+RcppExport SEXP _ABM_stateMatch(SEXP stateSEXP, SEXP ruleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type state(stateSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type rule(ruleSEXP);
+    rcpp_result_gen = Rcpp::wrap(stateMatch(state, rule));
+    return rcpp_result_gen;
+END_RCPP
+}
 // newExpWaitingTime
 XP<WaitingTime> newExpWaitingTime(double rate);
 RcppExport SEXP _ABM_newExpWaitingTime(SEXP rateSEXP) {
@@ -369,6 +381,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_resumeSimulation", (DL_FUNC) &_ABM_resumeSimulation, 2},
     {"_ABM_addLogger", (DL_FUNC) &_ABM_addLogger, 2},
     {"_ABM_addTransition", (DL_FUNC) &_ABM_addTransition, 9},
+    {"_ABM_stateMatch", (DL_FUNC) &_ABM_stateMatch, 2},
     {"_ABM_newExpWaitingTime", (DL_FUNC) &_ABM_newExpWaitingTime, 1},
     {"_ABM_newGammaWaitingTime", (DL_FUNC) &_ABM_newGammaWaitingTime, 2},
     {"_ABM_newRWaitingTime", (DL_FUNC) &_ABM_newRWaitingTime, 1},

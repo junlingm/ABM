@@ -135,14 +135,13 @@ State &State::operator&=(const List &y)
   return *this;
 }
 
-extern "C" {
-  SEXP stateMatch(SEXP state, SEXP rule)
-  {
-    if (TYPEOF(rule) == FUNSXP) {
-      Function f(rule);
-      return f(state);
-    }
-    List s(state), r(rule);
-    return wrap(State(s).match(r));
+// [[Rcpp::export]]
+bool stateMatch(List state, SEXP rule)
+{
+  if (Rf_isFunction(rule)) {
+    Function f(rule);
+    return f(state);
   }
+  List r(rule);
+  return State(state).match(r);
 }
