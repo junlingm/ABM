@@ -117,8 +117,7 @@ e.g., created from newRandomMixing.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-If the contact has already been added, this called does
-nothing.
+If the contact has already been added, this call does nothing.
 return a specific agent by index
 }
 
@@ -161,7 +160,7 @@ set the state of a specific agent by index
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-an external pointer pointing to the agent
+the population object itself for chaining actions
 }
 }
 \if{html}{\out{<hr>}}

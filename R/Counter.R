@@ -1,11 +1,11 @@
-#' Creates a logger of the Counter class
+#' Create a logger of the Counter class
 #' 
 #' When state changes occur, it is passed to each logger, which then
 #' change its value. At the specified time points in a run, the
 #' values of the logger are reported and recorded in a data.frame object,
 #' where the columns represent variables, and rows represent the 
 #' observation at each time point given to each run. Each logger has a 
-#' name, which becomes the the column name int eh data.frame.
+#' name, which becomes the the column name in the data.frame.
 #' 
 #' @name newCounter
 #'
@@ -20,14 +20,14 @@
 #'
 #' @param initial the initial value of the counter. Default to 0.
 #'
-#' @return an external pointer that can be passed to the addCounter function or
-#'   Simulation$addCounter method.
+#' @return an external pointer that can be passed to the [Simulation] class' 
+#' ```$addLogger```.
 #'
 #' @details if the argument "to" is not NULL, then the counter counts the
-#'   transitions from "state" to "to". Otherwise, it counts the number of agents
-#'   in a state that matches the "state" argument. Specifically, if the agent
-#'   jumps to "state", then the count increases by 1. If the agents jumps away
-#'   from "state", then the count decreases by 1.
+#'   transitions from "from" to "to". Otherwise, it counts the number of agents
+#'   in a state that matches the "from" argument. Specifically, if the agent
+#'   jumps to "from", then the count increases by 1. If the agents jumps away
+#'   from "from", then the count decreases by 1.
 #' 
 #' @export
 NULL
@@ -39,7 +39,7 @@ NULL
 #' values of the logger are reported and recorded in a data.frame object,
 #' where the columns represent variables, and rows represent the 
 #' observation at each time point given to each run. Each logger has a 
-#' name, which becomes the the column name int eh data.frame.
+#' name, which becomes the the column name in the data.frame.
 #' 
 #' @name newStateLogger
 #'
@@ -51,13 +51,14 @@ NULL
 #' A character vector of length 1.
 #' 
 #' @details If a state changed happened to any agent, the specified state 
-#' of the agent given by the "agent" argument will be logged. If "state"
-#' is NULL, then the state of the agent who just changed is logged.
+#' of the agent given by the "agent" argument will be logged. If 
+#' ```state.name==NULL``` then the state of the agent who just changed is 
+#' logged.
 #' 
-#' The sgent must be an external pointer. To use an R6 object, we need
+#' The agent must be an external pointer. To use an R6 object, we need
 #' to use its $get method to get the external pointer.
 #' 
-#' The state that can be logged must have a numeric value.
+#' The state to be logged must have a numeric value.
 #' 
 #' @export
 NULL

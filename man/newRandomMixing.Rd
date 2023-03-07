@@ -9,11 +9,6 @@ an external pointer.
 \description{
 Creates a RandomMixing object
 }
-\details{
-The population must be an external pointer, not an R6 object
-To use an R6 object, we should use its pointer representation from its
-$get method.
-}
 \examples{
 # creates a simulation with 100 agents
 sim = Simulation$new(100)

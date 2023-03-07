@@ -177,11 +177,6 @@ the change should occur. See the details section.}
 
 \item{\code{changed_callback}}{the R callback function after the change
 happened. See the details section.}
-
-\item{\code{waiting_time}}{the waiting_time for the transition to occur,
-a shared_ptr\if{html}{\out{<WaitingTime>}} point to a WaitingTime object. It can
-also be a numeric value, which is equivalent to
-newExpWaitingTime(waiting_time)}
 }
 \if{html}{\out{</div>}}
 }

@@ -6,7 +6,7 @@
 #' network contact pattern.
 #'
 #' @details This class must be subclassed in order to implement specific functionality.
-#' To subclass, it must imp,ement three methods, namely contact, addAgent, and
+#' To subclass, we must implement three methods, namely contact, addAgent, and
 #' build. See more details in the documentation of each method.
 #' 
 #' @export
@@ -22,7 +22,7 @@ Contact = R6::R6Class(
 #'
 #' @param population the population to attach to. An external pointer
 #' 
-#' @details. This method should be called from teh C++ side. Users should not
+#' @details. This method should be called from the C++ side. Users should not
 #' call this directly.
     attach = function(population) {
       if (!is.null(private$population))
@@ -93,10 +93,6 @@ Contact = R6::R6Class(
 #' Creates a RandomMixing object
 #' 
 #' @return an external pointer.
-#' 
-#' @details The population must be an external pointer, not an R6 object
-#' To use an R6 object, we should use its pointer representation from its
-#' $get method.
 #' 
 #' @name newRandomMixing
 #'

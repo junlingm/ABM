@@ -17,15 +17,16 @@ change its value. At the specified time points in a run, the
 values of the logger are reported and recorded in a data.frame object,
 where the columns represent variables, and rows represent the
 observation at each time point given to each run. Each logger has a
-name, which becomes the the column name int eh data.frame.
+name, which becomes the the column name in the data.frame.
 }
 \details{
 If a state changed happened to any agent, the specified state
-of the agent given by the "agent" argument will be logged. If "state"
-is NULL, then the state of the agent who just changed is logged.
+of the agent given by the "agent" argument will be logged. If
+\code{state.name==NULL} then the state of the agent who just changed is
+logged.
 
-The sgent must be an external pointer. To use an R6 object, we need
+The agent must be an external pointer. To use an R6 object, we need
 to use its $get method to get the external pointer.
 
-The state that can be logged must have a numeric value.
+The state to be logged must have a numeric value.
 }

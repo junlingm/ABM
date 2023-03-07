@@ -15,10 +15,10 @@ multiple contacts attached, e.g., a random mixing contact pattern and a
 network contact pattern.
 
 This class must be subclassed in order to implement specific functionality.
-To subclass, it must imp,ement three methods, namely contact, addAgent, and
+To subclass, we must implement three methods, namely contact, addAgent, and
 build. See more details in the documentation of each method.
 
-. This method should be called from teh C++ side. Users should not
+. This method should be called from the C++ side. Users should not
 call this directly.
 
 When an agent is added to a population, it is added to each of the

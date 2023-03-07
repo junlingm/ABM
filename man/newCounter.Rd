@@ -2,7 +2,7 @@
 % Please edit documentation in R/Counter.R
 \name{newCounter}
 \alias{newCounter}
-\title{Creates a logger of the Counter class}
+\title{Create a logger of the Counter class}
 \arguments{
 \item{name}{the name of the counter, must be a length-1 character vector}
 
@@ -16,8 +16,8 @@ list(from). please see the details section}
 \item{initial}{the initial value of the counter. Default to 0.}
 }
 \value{
-an external pointer that can be passed to the addCounter function or
-Simulation$addCounter method.
+an external pointer that can be passed to the \link{Simulation} class'
+\verb{$addLogger}.
 }
 \description{
 When state changes occur, it is passed to each logger, which then
@@ -25,12 +25,12 @@ change its value. At the specified time points in a run, the
 values of the logger are reported and recorded in a data.frame object,
 where the columns represent variables, and rows represent the
 observation at each time point given to each run. Each logger has a
-name, which becomes the the column name int eh data.frame.
+name, which becomes the the column name in the data.frame.
 }
 \details{
 if the argument "to" is not NULL, then the counter counts the
-transitions from "state" to "to". Otherwise, it counts the number of agents
-in a state that matches the "state" argument. Specifically, if the agent
-jumps to "state", then the count increases by 1. If the agents jumps away
-from "state", then the count decreases by 1.
+transitions from "from" to "to". Otherwise, it counts the number of agents
+in a state that matches the "from" argument. Specifically, if the agent
+jumps to "from", then the count increases by 1. If the agents jumps away
+from "from", then the count decreases by 1.
 }

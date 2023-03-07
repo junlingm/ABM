@@ -62,8 +62,7 @@ Population <- R6::R6Class(
 #' @param contact an external pointer pointing to a Contact object,
 #' e.g., created from newRandomMixing.
 #' 
-#' @details If the contact has already been added, this called does 
-#' nothing.
+#' @details If the contact has already been added, this call does nothing.
     addContact = function(contact) {
       if (inherits(contact, "R6Contact"))
         contact = contact$get
@@ -88,7 +87,7 @@ Population <- R6::R6Class(
 #' 
 #' @param state a list holding the state to set
 #' 
-#' @return an external pointer pointing to the agent
+#' @return the population object itself for chaining actions
     setState = function(i, state) {
       a = getAgent(private$agent, i)
       setState(a, state)
@@ -123,7 +122,7 @@ NULL
 #' @name getSize
 #' 
 #' @param population an external pointer to a population, for example,
-#' one returned by newPopulaton
+#' one returned by [newPopulation](newPopulation)
 #' 
 #' @return the population size, an integer
 #' 
