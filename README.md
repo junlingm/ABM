@@ -41,23 +41,8 @@ then logged by loggers (see [newCounter](https://github.com/junlingm/ABM/wiki/ne
 change.
 
 # Usage
-To use this framework, we start by creating a simulation
-object, populate the simulation with agents (either using the argument in
-the constructor, or use its ```addAgent``` method), and
-initialize the agents with their initial states using its ```setState``` method.
 
-We then attach ([schedule](https://github.com/junlingm/ABM/wiki/schedule)) events to agents (possibly to the populations or
-the simulation object too), so that these events change the agents' state.
-For models which agents' states are defined by discrete states, such as the
-SIR epidemic model, the events are managed by the framework through state
-transitions, using rules defined by the ```addTransition``` method of
-the [Simulation](https://github.com/junlingm/ABM/wiki/Simulation) class.
-
-At last, we add loggers to the simulation using
-the [Simulation](https://github.com/junlingm/ABM/wiki/Simulation) class' ```addLogger``` method` and either [newCounter](https://github.com/junlingm/ABM/wiki/newCounter) or
-[newStateLogger](https://github.com/junlingm/ABM/wiki/newStateLogger). At last, run the simulation using
-its ```run``` method, which returns the observations of the loggers
-at the requested time points as a data.frame object.
+See more information on the [Wiki page](https://github.com/junlingm/ABM/wiki/#Usage)
 
 # Examples
   1. [Simulate an SIR model using the Gillespie method](https://github.com/junlingm/ABM/wiki/Gillespie-SIR)
