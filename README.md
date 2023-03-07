@@ -62,3 +62,6 @@ at the requested time points as a data.frame object.
 # Examples
   1. [Simulate an SIR model using the Gillespie method](https://github.com/junlingm/ABM/wiki/Gillespie-SIR)
   2. [Simulate an agent based SEIR model](https://github.com/junlingm/ABM/wiki/Agent-SIR)
+  3. [Simulate a multi-group SEIR model](https://github.com/junlingm/ABM/wiki/Agent-Multigroup)
+  4. [Simulate a contact network SIR model](https://github.com/junlingm/ABM/wiki/Agent-Network-SIR)
+
