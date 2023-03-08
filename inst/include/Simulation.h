@@ -11,13 +11,30 @@ public:
   /**
    * Constructor
    * 
-   * @param n the initial population size, a nonnegative integer or
-   * NULL (meaning 0)
+   * @param n the initial population size
    * 
-   * @details if n is not 0, then n agents initially population
-   * the simulation with empty state.
+   * @param initializer an R function that returns a state for a each agent
+   * 
+   * @details The simulation object will be created with "n" individuals in it.
+   * Note that individuals can be added later by the "add" method, the initial
+   * population size is for convenience, not required.
+   * 
+   * If initializer is R_NilValue, then these individuals have an empty state 
+   * upon creation. However, if it is an R function, it must take a single
+   * argument "i" giving the iondex or an agent (starting from 1), and return
+   * the initial state of the agent.
    */
-  Simulation(size_t n = 0);
+  Simulation(size_t n = 0, Rcpp::Nullable<Rcpp::Function> initializer = R_NilValue);
+  
+  /**
+   * Constructor 
+   * 
+   * @param states an R list of initial states, one for each agents
+   * 
+   * @details The length of the list is the population size, and each element
+   * corresponds to the state of the agent at the corresponding index. 
+   */
+  Simulation(Rcpp::List states);
   
   /**
    * Destructor

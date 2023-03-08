@@ -53,7 +53,7 @@ network.
 \if{latex}{\out{\hypertarget{method-R6Population-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Population$new(population = 0)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Population$new(population = 0, initializer = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -62,6 +62,8 @@ network.
 \item{\code{population}}{can be either an external pointer pointing to
 a population object returned from newPopulation, or an integer
 specifying the population size.}
+
+\item{\code{initializer}}{a function or NULL}
 }
 \if{html}{\out{</div>}}
 }
@@ -70,6 +72,9 @@ The population will be created with "n" individuals in it.
 These individuals have an empty state upon created. Note that
 individuals can be added later by the "add" method, the initial
 population size is for convenience, not required
+
+If population is a number (the population size), then initializer can be
+a function that take the index of an agent and return its initial state.
 Add an agent
 }
 

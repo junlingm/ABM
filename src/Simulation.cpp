@@ -3,8 +3,13 @@
 
 using namespace Rcpp;
 
-Simulation::Simulation(size_t n)
-  : Population(n), _current_time(R_NaN)
+Simulation::Simulation(size_t n, Rcpp::Nullable<Rcpp::Function> initializer)
+  : Population(n, initializer), _current_time(R_NaN)
+{
+}
+
+Simulation::Simulation(List states)
+  : Population(states), _current_time(R_NaN)
 {
 }
 
@@ -85,10 +90,17 @@ void Simulation::add(Transition *rule)
 CharacterVector Simulation::classes = CharacterVector::create("Simulation", "Population", "Agent", "Event");
 
 // [[Rcpp::export]]
-XP<Simulation> newSimulation(int n = 0)
+XP<Simulation> newSimulation(SEXP n, Nullable<Function> initializer = R_NilValue)
 {
-  if (n < 0) n = 0;
-  return XP<Simulation>(std::make_shared<Simulation>(n));
+  if (n == R_NilValue)
+    return XP<Simulation>(std::make_shared<Simulation>());
+  if (Rf_isVector(n))
+    return XP<Simulation>(std::make_shared<Simulation>(List(n)));
+  if (!Rf_isNumeric(n))
+    stop("n must be an integer or a list");
+  int N = as<int>(n); 
+  if (N < 0) N = 0;
+  return XP<Simulation>(std::make_shared<Simulation>(N, initializer));
 }
 
 // [[Rcpp::export]]

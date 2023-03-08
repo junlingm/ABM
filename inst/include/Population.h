@@ -29,12 +29,28 @@ public:
    * 
    * @param n the initial population size
    * 
+   * @param initializer an R function that returns a state for a each agent
+   * 
    * @details The population will be created with "n" individuals in it.
-   * These individuals have an empty state upon created. Note that 
-   * individuals can be added later by the "add" method, the initial
+   * Note that individuals can be added later by the "add" method, the initial
    * population size is for convenience, not required.
+   * 
+   * If initializer is R_NilValue, then these individuals have an empty state 
+   * upon creation. However, if it is an R function, it must take a single
+   * argument "i" giving the iondex or an agent (starting from 1), and return
+   * the initial state of the agent.
    */
-  Population(size_t n = 0);
+  Population(size_t n = 0, Rcpp::Nullable<Rcpp::Function> initializer = R_NilValue);
+
+  /**
+   * Constructor 
+   * 
+   * @param states an R list of initial states, one for each agents
+   * 
+   * @details The length of the list is the population size, and each element
+   * corresponds to the state of the agent at the corresponding index. 
+   */
+  Population(Rcpp::List states);
 
   /**
    * Add an agent to the populaton

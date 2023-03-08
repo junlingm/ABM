@@ -12,12 +12,12 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // newAgent
-XP<Agent> newAgent(SEXP state);
+XP<Agent> newAgent(Nullable<List> state);
 RcppExport SEXP _ABM_newAgent(SEXP stateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type state(stateSEXP);
+    Rcpp::traits::input_parameter< Nullable<List> >::type state(stateSEXP);
     rcpp_result_gen = Rcpp::wrap(newAgent(state));
     return rcpp_result_gen;
 END_RCPP
@@ -174,13 +174,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // newPopulation
-XP<Population> newPopulation(int n);
-RcppExport SEXP _ABM_newPopulation(SEXP nSEXP) {
+XP<Population> newPopulation(SEXP n, Nullable<Function> initializer);
+RcppExport SEXP _ABM_newPopulation(SEXP nSEXP, SEXP initializerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(newPopulation(n));
+    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
+    Rcpp::traits::input_parameter< Nullable<Function> >::type initializer(initializerSEXP);
+    rcpp_result_gen = Rcpp::wrap(newPopulation(n, initializer));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -244,13 +245,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // newSimulation
-XP<Simulation> newSimulation(int n);
-RcppExport SEXP _ABM_newSimulation(SEXP nSEXP) {
+XP<Simulation> newSimulation(SEXP n, Nullable<Function> initializer);
+RcppExport SEXP _ABM_newSimulation(SEXP nSEXP, SEXP initializerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(newSimulation(n));
+    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
+    Rcpp::traits::input_parameter< Nullable<Function> >::type initializer(initializerSEXP);
+    rcpp_result_gen = Rcpp::wrap(newSimulation(n, initializer));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -383,13 +385,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_newEvent", (DL_FUNC) &_ABM_newEvent, 2},
     {"_ABM_getTime", (DL_FUNC) &_ABM_getTime, 1},
     {"_ABM_newConfigurationModel", (DL_FUNC) &_ABM_newConfigurationModel, 1},
-    {"_ABM_newPopulation", (DL_FUNC) &_ABM_newPopulation, 1},
+    {"_ABM_newPopulation", (DL_FUNC) &_ABM_newPopulation, 2},
     {"_ABM_addAgent", (DL_FUNC) &_ABM_addAgent, 2},
     {"_ABM_getSize", (DL_FUNC) &_ABM_getSize, 1},
     {"_ABM_getAgent", (DL_FUNC) &_ABM_getAgent, 2},
     {"_ABM_addContact", (DL_FUNC) &_ABM_addContact, 2},
     {"_ABM_setStates", (DL_FUNC) &_ABM_setStates, 2},
-    {"_ABM_newSimulation", (DL_FUNC) &_ABM_newSimulation, 1},
+    {"_ABM_newSimulation", (DL_FUNC) &_ABM_newSimulation, 2},
     {"_ABM_runSimulation", (DL_FUNC) &_ABM_runSimulation, 2},
     {"_ABM_resumeSimulation", (DL_FUNC) &_ABM_resumeSimulation, 2},
     {"_ABM_addLogger", (DL_FUNC) &_ABM_addLogger, 2},

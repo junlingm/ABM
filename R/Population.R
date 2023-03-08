@@ -22,20 +22,25 @@ Population <- R6::R6Class(
 #' a population object returned from newPopulation, or an integer 
 #' specifying the population size.
 #' 
+#' @param initializer a function or NULL
+#' 
 #' @details The population will be created with "n" individuals in it.
 #' These individuals have an empty state upon created. Note that 
 #' individuals can be added later by the "add" method, the initial
 #' population size is for convenience, not required
-    initialize = function(population=0) {
+#' 
+#' If population is a number (the population size), then initializer can be 
+#' a function that take the index of an agent and return its initial state.
+    initialize = function(population=0, initializer=NULL) {
       if (typeof(population) == "externalptr") {
         super$initialize(population)
         return()
       }
-      t = typeof(population)
-      if (t != "double" && t != "integer")
-        stop("invalid population argument")
-      private$agent = newPopulation(population)
-      private$managed = TRUE
+      if (is.list(population)) {
+        private$agent = newPopulation(population)
+      } else if (is.numeric(population)) {
+        private$agent = newPopulation(population, initializer)
+      } else stop("invalid population argument")
     },
 
 #' Add an agent

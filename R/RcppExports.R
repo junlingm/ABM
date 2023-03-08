@@ -57,8 +57,8 @@ newConfigurationModel <- function(rng) {
     .Call(`_ABM_newConfigurationModel`, rng)
 }
 
-newPopulation <- function(n = 0L) {
-    .Call(`_ABM_newPopulation`, n)
+newPopulation <- function(n, initializer = NULL) {
+    .Call(`_ABM_newPopulation`, n, initializer)
 }
 
 addAgent <- function(population, agent) {
@@ -81,8 +81,8 @@ setStates <- function(population, states) {
     .Call(`_ABM_setStates`, population, states)
 }
 
-newSimulation <- function(n = 0L) {
-    .Call(`_ABM_newSimulation`, n)
+newSimulation <- function(n, initializer = NULL) {
+    .Call(`_ABM_newSimulation`, n, initializer)
 }
 
 runSimulation <- function(sim, time) {

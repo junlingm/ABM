@@ -2,12 +2,36 @@
 
 using namespace Rcpp;
 
-Population::Population(size_t n)
+Population::Population(size_t n, Nullable<Function> initializer)
   : Agent()
 {
   if (n) _agents.reserve(n);
+  if (initializer == R_NilValue) {
+    for (size_t i = 0; i < n; ++i) {
+      auto agent = std::make_shared<Agent>();
+      add(agent);
+    }
+  } else {
+    Function f(initializer.as());
+    for (size_t i = 0; i < n; ++i) {
+      SEXP s = f(i);
+      if (!Rf_isList(s) && s != R_NilValue)
+        s = List(s);
+      auto agent = std::make_shared<Agent>(Nullable<List>(s));
+      add(agent);
+    }
+  }
+}
+
+Population::Population(List states)
+  : Agent()
+{
+  size_t n = states.size();
   for (size_t i = 0; i < n; ++i) {
-    auto agent = std::make_shared<Agent>();
+    SEXP s= states[i];
+    if (!Rf_isList(s) && s != R_NilValue)
+      s = List(s);
+    auto agent = std::make_shared<Agent>(s);
     add(agent);
   }
 }
@@ -42,10 +66,17 @@ void Population::report()
 CharacterVector Population::classes = CharacterVector::create("Population", "Agent", "Event");
 
 // [[Rcpp::export]]
-XP<Population> newPopulation(int n = 0)
+XP<Population> newPopulation(SEXP n, Nullable<Function> initializer = R_NilValue)
 {
-  if (n < 0) n = 0;
-  return XP<Population>(std::make_shared<Population>(n));
+  if (n == R_NilValue)
+    return XP<Population>(std::make_shared<Population>());
+  if (Rf_isList(n))
+    return XP<Population>(std::make_shared<Population>(List(n)));
+  if (!Rf_isNumeric(n))
+    stop("n must be an integer or a list");
+  int N = as<int>(n); 
+  if (N < 0) N = 0;
+  return XP<Population>(std::make_shared<Population>(N, initializer));
 }
 
 // [[Rcpp::export]]
@@ -87,8 +118,12 @@ XP<Population> setStates(XP<Population> population, SEXP states)
     size_t n = l.size();
     if (n != population->size())
       stop("The length of the states and the population size must agree");
-    for (size_t i = 0; i < n; ++i)
-      population->agent(i)->set(l[i]);
+    for (size_t i = 0; i < n; ++i) {
+      SEXP s = l[i];
+      if (!Rf_isVector(s))
+        s = List(s);
+      population->agent(i)->set(s);
+    }
   } else stop("invalid states. Must be a function or a list");
   return population;
 }

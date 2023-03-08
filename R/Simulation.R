@@ -16,27 +16,29 @@ Simulation <- R6::R6Class(
 #' @method initialize
 #' Constructor
 #'
-#' @param simulation an external pointer pointing to a simulation object.
-#' If not NULL, it wraps an external pointer. If it is NULL, it will
-#' create an object then wraps it. If it is a numeric value, then
-#' it is equivalent to size=simulation and simulation=NULL 
+#' @param simulation can be either an external pointer pointing to 
+#' a population object returned from newSimulation, or an integer 
+#' specifying the population size.
 #' 
-#' @param size the population size, a nonnegative integer
-    initialize = function(simulation = NULL, size=0) {
-      if (is.numeric(simulation)) {
-        size = simulation
-        simulation = NULL
-      }
-      if (is.null(simulation)) {
-        simulation = newSimulation(size)
-      } else if (inherits(simulation, "R6Simulation")) {
-        simulation = simulation$get
-      } 
+#' @param initializer a function or NULL
+#' 
+#' @details The simulation will be created with "n" individuals in it.
+#' These individuals have an empty state upon created. Note that 
+#' individuals can be added later by the "add" method, the initial
+#' population size is for convenience, not required
+#' 
+#' If simulation is a number (the population size), then initializer can be 
+#' a function that take the index of an agent and return its initial state.
+    initialize = function(simulation = 0, initializer = NULL) {
       if (typeof(simulation) == "externalptr") {
         super$initialize(simulation)
         return()
       }
-      stop("invalid simulation argement")
+      if (is.list(simulation)) {
+        private$agent = newSimulation(simulation)
+      } else if (is.numeric(simulation)) {
+        private$agent = newSimulation(simulation, initializer)
+      } else stop("invalid simulation argument")
     },
     
 #' Run the simulation

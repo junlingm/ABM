@@ -45,22 +45,31 @@ times.
 \if{latex}{\out{\hypertarget{method-R6Simulation-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Simulation$new(simulation = NULL, size = 0)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Simulation$new(simulation = 0, initializer = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{simulation}}{an external pointer pointing to a simulation object.
-If not NULL, it wraps an external pointer. If it is NULL, it will
-create an object then wraps it. If it is a numeric value, then
-it is equivalent to size=simulation and simulation=NULL}
+\item{\code{simulation}}{can be either an external pointer pointing to
+a population object returned from newSimulation, or an integer
+specifying the population size.}
 
-\item{\code{size}}{the population size, a nonnegative integer
-Run the simulation}
+\item{\code{initializer}}{a function or NULL}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The simulation will be created with "n" individuals in it.
+These individuals have an empty state upon created. Note that
+individuals can be added later by the "add" method, the initial
+population size is for convenience, not required
+
+If simulation is a number (the population size), then initializer can be
+a function that take the index of an agent and return its initial state.
+Run the simulation
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-R6Simulation-run"></a>}}
