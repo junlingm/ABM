@@ -4,14 +4,10 @@
 
 using namespace Rcpp;
 
-Agent::Agent()
+Agent::Agent(Nullable<List> state)
   : Event(R_PosInf), _population(nullptr)
 {
-}
-
-Agent::Agent(const List &state)
-  : Event(R_PosInf), _population(nullptr), _state(clone(state))
-{
+  if (state != R_NilValue) _state &= state.as();
 }
 
 Agent::~Agent()
@@ -109,12 +105,9 @@ void Agent::report()
 CharacterVector Agent::classes = CharacterVector::create("Agent", "Event");
 
 // [[Rcpp::export]]
-XP<Agent> newAgent(SEXP state)
+XP<Agent> newAgent(Nullable<List> state)
 {
-  Nullable<List> s(state);
-  if (s.isNull())
-    return XP<Agent>(std::make_shared<Agent>());
-  return XP<Agent>(std::make_shared<Agent>(s.as()));
+  return XP<Agent>(std::make_shared<Agent>(state));
 }
   
 // [[Rcpp::export]]

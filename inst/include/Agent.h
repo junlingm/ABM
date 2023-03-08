@@ -23,16 +23,13 @@ class Population;
  */
 class Agent : public Event {
 public:
-  /** 
-   * Constructor that creates an agent with empty state 
-   */
-  Agent();
   /**
    * Constructor that creates an agent with a given state
    * 
-   * @param state an Rcpp List object
+   * @param state an Rcpp List object giving the initial state or R_NilValue 
+   * (giving an empty state).
    */
-  Agent(const Rcpp::List &state);
+  Agent(Rcpp::Nullable<Rcpp::List> state = R_NilValue);
   /**
    * Destructor
    */
