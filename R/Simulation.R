@@ -18,17 +18,14 @@ Simulation <- R6::R6Class(
 #'
 #' @param simulation can be either an external pointer pointing to 
 #' a population object returned from newSimulation, or an integer 
-#' specifying the population size.
+#' specifying the population size, or a list
 #' 
 #' @param initializer a function or NULL
 #' 
-#' @details The simulation will be created with "n" individuals in it.
-#' These individuals have an empty state upon created. Note that 
-#' individuals can be added later by the "add" method, the initial
-#' population size is for convenience, not required
-#' 
-#' If simulation is a number (the population size), then initializer can be 
-#' a function that take the index of an agent and return its initial state.
+#' @details If simulation is a number (the population size), then initializer 
+#' can be a function that take the index of an agent and return its initial 
+#' state. If it is a list, the length is the population size, and each element
+#' corresponds to the initial state of an agent (with the same index).
     initialize = function(simulation = 0, initializer = NULL) {
       if (typeof(simulation) == "externalptr") {
         super$initialize(simulation)

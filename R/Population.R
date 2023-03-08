@@ -20,17 +20,14 @@ Population <- R6::R6Class(
 #'
 #' @param population can be either an external pointer pointing to 
 #' a population object returned from newPopulation, or an integer 
-#' specifying the population size.
+#' specifying the population size, or a list.
 #' 
 #' @param initializer a function or NULL
 #' 
-#' @details The population will be created with "n" individuals in it.
-#' These individuals have an empty state upon created. Note that 
-#' individuals can be added later by the "add" method, the initial
-#' population size is for convenience, not required
-#' 
-#' If population is a number (the population size), then initializer can be 
-#' a function that take the index of an agent and return its initial state.
+#' @details If population is a number (the population size), then initializer 
+#' can be a function that take the index of an agent and return its initial 
+#' state.  If it is a list, the length is the population size, and each element
+#' corresponds to the initial state of an agent (with the same index).
     initialize = function(population=0, initializer=NULL) {
       if (typeof(population) == "externalptr") {
         super$initialize(population)

@@ -53,20 +53,17 @@ times.
 \describe{
 \item{\code{simulation}}{can be either an external pointer pointing to
 a population object returned from newSimulation, or an integer
-specifying the population size.}
+specifying the population size, or a list}
 
 \item{\code{initializer}}{a function or NULL}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The simulation will be created with "n" individuals in it.
-These individuals have an empty state upon created. Note that
-individuals can be added later by the "add" method, the initial
-population size is for convenience, not required
-
-If simulation is a number (the population size), then initializer can be
-a function that take the index of an agent and return its initial state.
+If simulation is a number (the population size), then initializer
+can be a function that take the index of an agent and return its initial
+state. If it is a list, the length is the population size, and each element
+corresponds to the initial state of an agent (with the same index).
 Run the simulation
 }
 
