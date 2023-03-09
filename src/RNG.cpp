@@ -26,12 +26,12 @@ NumericVector RUnif::refill(size_t size) {
 }
 
 RExp::RExp(double rate, size_t cache_size)
-  : RealRN(cache_size), _scale(rate == 0 ? R_PosInf : 1.0 / rate)
+  : RealRN(cache_size), _rate(rate)
 {
 }
 
-NumericVector RExp::refill(size_t size) {
-  return rexp(size, _scale);
+NumericVector RExp::refill(size_t size){
+  return _rate == 0 ? NumericVector(size, R_PosInf) : rexp(size, _rate);
 }
 
 RUnif RUnif::stdUnif;

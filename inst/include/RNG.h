@@ -119,5 +119,5 @@ private:
   /**
    * the scale (i.e., 1/rate) of the random numbers
    */
-  double _scale;
+  double _rate;
 };

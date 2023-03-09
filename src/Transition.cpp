@@ -190,7 +190,7 @@ CharacterVector Transition::classes = CharacterVector::create("Transition");
 // [[Rcpp::export]]
 XP<WaitingTime> newExpWaitingTime(double rate)
 {
-  return XP<WaitingTime>(std::make_shared<ExpWaitingTime>(1.0 / rate));
+  return XP<WaitingTime>(std::make_shared<ExpWaitingTime>(rate));
 }
 
 // [[Rcpp::export]]
