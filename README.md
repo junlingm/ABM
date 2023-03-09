@@ -20,4 +20,5 @@ See more information on the [Wiki](https://github.com/junlingm/ABM/wiki/)
   2. [Simulate an agent based SEIR model](https://github.com/junlingm/ABM/wiki/Agent-SEIR)
   3. [Simulate a multi-group SEIR model](https://github.com/junlingm/ABM/wiki/Agent-Multigroup)
   4. [Simulate a contact network SIR model](https://github.com/junlingm/ABM/wiki/Agent-Network-SIR)
+  5. [Simulate contact tracing on an SIR model](https://github.com/junlingm/ABM/wiki/Contact-Tracing-SIR)
 
