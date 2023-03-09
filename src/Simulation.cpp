@@ -94,13 +94,14 @@ XP<Simulation> newSimulation(SEXP n, Nullable<Function> initializer = R_NilValue
 {
   if (n == R_NilValue)
     return XP<Simulation>(std::make_shared<Simulation>());
+  if (Rf_isNumeric(n)) {
+    int N = as<int>(n); 
+    if (N < 0) N = 0;
+    return XP<Simulation>(std::make_shared<Simulation>(N, initializer));
+  }
   if (Rf_isVector(n))
     return XP<Simulation>(std::make_shared<Simulation>(List(n)));
-  if (!Rf_isNumeric(n))
-    stop("n must be an integer or a list");
-  int N = as<int>(n); 
-  if (N < 0) N = 0;
-  return XP<Simulation>(std::make_shared<Simulation>(N, initializer));
+  stop("n must be an integer or a list");
 }
 
 // [[Rcpp::export]]
@@ -132,21 +133,14 @@ XP<Simulation> addTransition(
     Nullable<Function> changed_callback = R_NilValue)
 {
   PWaitingTime w;
-  switch (TYPEOF(waiting_time)) {
-  case EXTPTRSXP: 
+  if (TYPEOF(waiting_time) == EXTPTRSXP)
     w = as<XP<WaitingTime> >(waiting_time);
-    break;
-  case CLOSXP:
-  case SPECIALSXP:
-  case BUILTINSXP: 
+  else if (Rf_isFunction(waiting_time)) 
     w = std::make_shared<RWaitingTime>(as<Function>(waiting_time));
-    break;
-  case REALSXP:
+  else if (Rf_isNumeric(waiting_time))
     w = std::make_shared<ExpWaitingTime>(as<double>(waiting_time));
-    break;
-  default:
+  else
     throw std::range_error("waiting_time is invalid");
-  }
   if (contact.isNull())
     sim->add(new Transition(from, to, w, to_change_callback, changed_callback));
   else {

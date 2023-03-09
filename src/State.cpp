@@ -43,12 +43,15 @@ LogicalVector compare(Vector<RTYPE> x, Vector<RTYPE> y) {
 }
 
 bool comp(SEXP x, SEXP y) {
-  auto t = TYPEOF(y);
   bool ok;
-  if (t == FUNSXP) {
+  if (y == R_NilValue)
+    return true;
+  if (Rf_isFunction(y)) {
     Function f(y);
-    ok = all(f(x));
-  } else if (TYPEOF(x) == t) {
+    return all(f(x));
+  }
+  auto t = TYPEOF(y);
+  if (TYPEOF(x) == t) {
     switch (t) {
     case INTSXP:
       ok = all(compare<INTSXP>(x, y));
@@ -58,9 +61,6 @@ bool comp(SEXP x, SEXP y) {
       break;
     case STRSXP:
       ok = all(compare<STRSXP>(x, y));
-      break;
-    case NILSXP:
-      ok = true;
       break;
     default:
       ok = false;
