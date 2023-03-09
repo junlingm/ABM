@@ -61,23 +61,24 @@ bool TransitionEvent::handle(Simulation &sim, Agent &agent)
 
 Transition::Transition(const List &from, const List &to, 
                        PWaitingTime waiting_time, 
-                       Rcpp::Nullable<Rcpp::Function> to_change_callback, 
-                       Rcpp::Nullable<Rcpp::Function> changed_callback)
-  : _from(from), _to(to), _waiting_time(waiting_time), 
-    _to_change(to_change_callback), _changed(changed_callback)
+                       Nullable<Function> to_change_callback, 
+                       Nullable<Function> changed_callback)
+  : _from(from), _to(to), _waiting_time(waiting_time)
 {
+  _to_change = to_change_callback.isNull() ? nullptr : new Function(to_change_callback);
+  _changed = changed_callback.isNull()? nullptr : new Function(changed_callback);
 }
 
 bool Transition::toChange(double time, Agent &agent)
 {
-  if (_to_change.isNull()) return true;
-  return as<bool>(_to_change.as()(NumericVector::create(time), XP<Agent>(agent)));
+  if (_to_change == nullptr) return true;
+  return as<bool>((*_to_change)(NumericVector::create(time), XP<Agent>(agent)));
 }
 
 void Transition::changed(double time, Agent &agent)
 {
-  if (!_changed.isNull())
-    _changed.as()(NumericVector::create(time), XP<Agent>(agent));
+  if (_changed != nullptr)
+    (*_changed)(NumericVector::create(time), XP<Agent>(agent));
 }
 
 
@@ -125,14 +126,14 @@ ContactTransition::ContactTransition(
 
 bool ContactTransition::toChange(double time, Agent &agent, Agent &contact)
 {
-  if (_to_change.isNull()) return true;
-  return as<bool>(_to_change.as()(NumericVector::create(time), XP<Agent>(agent), XP<Agent>(contact)));
+  if (_to_change == nullptr) return true;
+  return as<bool>((*_to_change)(NumericVector::create(time), XP<Agent>(agent), XP<Agent>(contact)));
 }
 
 void ContactTransition::changed(double time, Agent &agent, Agent &contact)
 {
-  if (!_changed.isNull())
-    _changed.as()(NumericVector::create(time), XP<Agent>(agent), XP<Agent>(contact));
+  if (_changed != nullptr)
+    (*_changed)(NumericVector::create(time), XP<Agent>(agent), XP<Agent>(contact));
 }
 
 void ContactTransition::schedule(double time, Agent &agent)

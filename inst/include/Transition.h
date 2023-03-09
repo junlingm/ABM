@@ -150,11 +150,11 @@ protected:
    * if the state change should happen (if return true) or not (if
    * return false)
    */
-  Rcpp::Nullable<Rcpp::Function> _to_change;
+  Rcpp::Function *_to_change;
   /**
    * The R callback function after the state has changed
    */
-  Rcpp::Nullable<Rcpp::Function> _changed;
+  Rcpp::Function *_changed;
 };
 
 /**
