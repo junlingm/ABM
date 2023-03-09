@@ -138,7 +138,7 @@ NULL
 #' @name getSize
 #' 
 #' @param population an external pointer to a population, for example,
-#' one returned by [newPopulation](newPopulation)
+#' one returned by [newPopulation()]
 #' 
 #' @return the population size, an integer
 #' 
@@ -150,7 +150,7 @@ NULL
 #' @name setStates
 #' 
 #' @param population an external pointer to a population, for example,
-#' one returned by [newPopulation](newPopulation)
+#' one returned by [newPopulation()]
 #' 
 #' @param states either a list holding the states (one for each agent), or a
 #' function

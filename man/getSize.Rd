@@ -5,7 +5,7 @@
 \title{Get the size of a population}
 \arguments{
 \item{population}{an external pointer to a population, for example,
-one returned by \url{newPopulation}}
+one returned by \code{\link[=newPopulation]{newPopulation()}}}
 }
 \value{
 the population size, an integer

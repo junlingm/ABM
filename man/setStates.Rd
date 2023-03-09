@@ -5,7 +5,7 @@
 \title{Set the state for each agent in a population}
 \arguments{
 \item{population}{an external pointer to a population, for example,
-one returned by \url{newPopulation}}
+one returned by \code{\link[=newPopulation]{newPopulation()}}}
 
 \item{states}{either a list holding the states (one for each agent), or a
 function}
