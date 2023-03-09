@@ -123,13 +123,14 @@
 #' sigma =newExpWaitingTime(0.5)
 #' # the population size
 #' N = 10000
-#' # create a simulation with N agents
-#' sim = Simulation$new(N)
+#' # create a simulation with N agents, initialize the first 5 with a state "I" 
+#' # and the remaining with "S".
+#' sim = Simulation$new(N, function(i) if (i <= 5) "I" else "S")
 #' # add event loggers that counts the individuals in each state.
 #' # the first variable is the name of the counter, the second is
 #' # the state for counting. States should be lists. However, for
-#' # simplicity, if the state has a single character value, then we 
-#' # can specify the list as the character, e.g., "S", and the state
+#' # simplicity, if the state has a single value, then we 
+#' # can specify the list as the value, e.g., "S", and the state
 #' # is equivalent to list("S")
 #' sim$addLogger(newCounter("S", "S"))
 #' sim$addLogger(newCounter("E", "E"))
@@ -146,10 +147,6 @@
 #' # also note that the waiting time can be a number, which is the same
 #' # as newExpWaitingTime(beta)
 #' sim$addTransition("I" + "S" -> "I" + "E" ~ m, beta)
-#' # initialize the state for each individual
-#' for (i in 1:N) {
-#'   sim$setState(i, if (i <= 5) "I" else "S")
-#' }
 #' # run the simulation, and get a data.frame object
 #' result = sim$run(0:100)
 #' print(result)
