@@ -148,7 +148,7 @@ void ContactTransition::schedule(double time, Agent &agent)
       next_contact = c;
     }
   }
-  PRINT("%lf, %lf, %ld, %ld, NA\n", time, t, agent.id(), c->id());
+  PRINT("%lf, %lf, %ld, %ld, NA\n", time, waiting_time, agent.id(), next_contact->id());
   agent.schedule(std::make_shared<ContactEvent>(waiting_time + time, next_contact, *this));
 }
 
