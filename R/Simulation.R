@@ -144,12 +144,6 @@ Simulation <- R6::R6Class(
                              changed_callback = NULL)
     {
       l = private$parse(substitute(rule), parent.frame())
-      if (is.numeric(waiting.time))
-        waiting.time = newExpWaitingTime(waiting.time)
-      else if (is.function(waiting.time))
-        waiting.time = newRWaitingTime(waiting.time)
-      if (!inherits(waiting.time, "WaitingTime"))
-        stop("waiting.time must be a WaitingTime object or a number specifying the rate")
       addTransition(self$get,
             l$from$first, l$from$second, l$to$first, l$to$second, l$contact,
             waiting.time, to_change_callback, changed_callback)
