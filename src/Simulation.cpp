@@ -141,6 +141,10 @@ XP<Simulation> addTransition(
     w = std::make_shared<ExpWaitingTime>(as<double>(waiting_time));
   else
     throw std::range_error("waiting_time is invalid");
+  if (to_change_callback != R_NilValue && !Rf_isFunction(to_change_callback))
+    std::range_error("to_change_callback must be a function or NULL");
+  if (changed_callback != R_NilValue && !Rf_isFunction(changed_callback))
+    std::range_error("changed_callback must be a function or NULL");
   if (contact.isNull())
     sim->add(new Transition(from, to, w, to_change_callback, changed_callback));
   else {
