@@ -6,7 +6,14 @@ In addition, this framework is a general event-based framework.  Yet this framew
 
 # Installation
 
-This R package can be installed using the devtoools::install_github method:
+## From CRAN
+This R package is included in CRAN.  
+```r
+install.packages("ABM")
+```
+
+## From GitHub
+For the latest development version, use the devtoools::install_github method:
 ```
 install_github("https://github.com/junlingm/ABM.git")
 ```
