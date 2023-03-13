@@ -14,7 +14,7 @@ install.packages("ABM")
 
 ## From GitHub
 For the latest development version, use the devtoools::install_github method:
-```
+```r
 install_github("https://github.com/junlingm/ABM.git")
 ```
 
