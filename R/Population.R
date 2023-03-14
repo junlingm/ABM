@@ -145,6 +145,20 @@ NULL
 #' @export
 NULL
 
+#' Get the agent at an index in the population
+#' 
+#' @name getAgent
+#' 
+#' @param population an external pointer to a population, for example,
+#' one returned by [newPopulation()]
+#' 
+#' @param i the inde of the agent, starting from 1.
+#' 
+#' @return the agent at index i in the population.
+#' 
+#' @export
+NULL
+
 #' Set the state for each agent in a population
 #' 
 #' @name setStates
