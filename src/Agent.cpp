@@ -10,10 +10,6 @@ Agent::Agent(Nullable<List> state)
   if (state != R_NilValue) _state &= state.as();
 }
 
-Agent::~Agent()
-{
-}
-
 bool Agent::handle(Simulation &sim, Agent &agent)
 {
   if (!_events.empty()) {

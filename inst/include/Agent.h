@@ -30,10 +30,6 @@ public:
    * (giving an empty state).
    */
   Agent(Rcpp::Nullable<Rcpp::List> state = R_NilValue);
-  /**
-   * Destructor
-   */
-  virtual ~Agent();
 
   /**
    * Returns the agent id (a long value)
