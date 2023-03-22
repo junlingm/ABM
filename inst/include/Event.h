@@ -3,6 +3,8 @@
 #include "XP.h"
 #include <map>
 
+class Calendar;
+
 class Agent;
 typedef std::shared_ptr<Agent> PAgent;
 
@@ -47,7 +49,7 @@ public:
   /**
    * The agent that this event is attached to (i.e., scheduled)
    */
-  const Agent *owner() const { return _owner; }
+  const Calendar *owner() const { return _owner; }
   
   /**
    * Handle the event
@@ -82,16 +84,16 @@ public:
   
 protected:
   /**
-   * the agent that this event is attached (scheduled to)
+   * the calendar that this event is attached (scheduled to)
    */
-  Agent *_owner;
+  Calendar *_owner;
   /**
    * the time that this event will happen
    */
   double _time;
   
 private:
-  friend class Agent;
+  friend class Calendar;
   /**
    * saves the position in the event tree of the attached agent, to 
    * speed up event unschedule.
@@ -143,4 +145,66 @@ protected:
    * The R handler function.
    */
   Rcpp::Function _handler;
+};
+
+/**
+ * An Event subclass that manages the events.
+ * 
+ * The events in a calendar are sorted chronologically. Its handler executes 
+ * the first event. Events are added to a calendar using the schedule method,
+ * and are removed using the unschedule method.
+ */
+class Calendar : public Event {
+public:
+  /**
+   * Constructor that creates an empty calendar
+   */
+  Calendar();
+  
+  /**
+   * Schedules an event
+   * 
+   * @param a shared_ptr<Event> object that points the event to be scheduled
+   */
+  virtual void schedule(PEvent event);
+  
+  /**
+   * Remove a scheduled event
+   * 
+   * @param a shared_ptr<Event> object that points to the event to be removed.
+   * 
+   * @details The event must be scheduled by the agent, otherwise 
+   * the call returns without any action.
+   */
+  virtual void unschedule(PEvent event);
+
+  /**
+   * Handle the calendar as an event
+   * 
+   * @param sim the simulationb object
+   * 
+   * @agent the agent that this event is attached to (scheduled)
+   * 
+   * @return a boolean value. For an agent, this method always 
+   * returns true
+   * 
+   * @details It first unschedules this calendar, then unschedules the 
+   * first (earliest) event, then call its  handle method. At last, it 
+   * reschedules itself.
+   * 
+   * This method should not be called by the user. It is automatically
+   * called by the Simulation class.
+   */
+  virtual bool handle(Simulation &sim, Agent &agent);
+
+  /**
+   * unschedule all events scheduled to an agent
+   */
+  void clearEvents();
+  
+private:
+  /**
+   * Ordered events
+   */
+  std::multimap<double, PEvent> _events;
 };

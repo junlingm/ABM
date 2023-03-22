@@ -21,7 +21,7 @@ class Population;
  * An agent itself cannot handle the event. Instead, it has to be added to a
  * simulation (or a population that itself is added to a simulation).
  */
-class Agent : public Event {
+class Agent : public Calendar {
 public:
   /**
    * Constructor that creates an agent with a given state
@@ -35,6 +35,7 @@ public:
    * Returns the agent id (a long value)
    */
   unsigned long id() const { return _id; }
+
   /**
    * Handle the agent as an event
    * 
@@ -53,27 +54,6 @@ public:
    * called by the Simulation class.
    */
   virtual bool handle(Simulation &sim, Agent &agent);
-  /**
-   * Schedules an event
-   * 
-   * @param a shared_ptr<Event> object that points the event to be scheduled
-   */
-  virtual void schedule(PEvent event);
-
-  /**
-   * Remove a scheduled event
-   * 
-   * @param a shared_ptr<Event> object that points to the event to be removed.
-   * 
-   * @details The event must be scheduled by the agent, otherwise 
-   * the call returns without any action.
-   */
-  virtual void unschedule(PEvent event);
-
-  /**
-   * unschedule all events scheduled to an agent
-   */
-  void clearEvents();
 
   /**
    * Set the state of the agent
@@ -120,10 +100,6 @@ private:
    * The agent id, i.e., the order in the population
    */
   unsigned long _id;
-  /**
-   * Ordered events
-   */
-  std::multimap<double, PEvent> _events;
   /**
    * The state of the agent
    */
