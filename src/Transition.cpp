@@ -150,7 +150,7 @@ void ContactTransition::schedule(double time, Agent &agent)
     }
   }
   PRINT("%lf, %lf, %ld, %ld, NA\n", time, waiting_time, agent.id(), next_contact->id());
-  agent.schedule(std::make_shared<ContactEvent>(waiting_time + time, next_contact, *this));
+  agent._contactEvents->schedule(std::make_shared<ContactEvent>(waiting_time + time, next_contact, *this));
 }
 
 ExpWaitingTime::ExpWaitingTime(double rate)
