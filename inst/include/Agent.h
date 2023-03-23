@@ -5,6 +5,7 @@
 #include <map>
 
 class Population;
+class ContactTransition;
 
 /**
  * The class is an abstraction of an agent. The key task of an agent is to
@@ -96,6 +97,7 @@ protected:
 
 private:
   friend class Population;
+  friend class ContactTransition;
   /**
    * The agent id, i.e., the order in the population
    */
@@ -104,4 +106,8 @@ private:
    * The state of the agent
    */
   State _state;
+  /**
+   * A calendar holding all the transition events 
+   */
+  PCalendar _contactEvents;
 };

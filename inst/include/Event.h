@@ -166,7 +166,7 @@ public:
    * 
    * @param a shared_ptr<Event> object that points the event to be scheduled
    */
-  virtual void schedule(PEvent event);
+  void schedule(PEvent event);
   
   /**
    * Remove a scheduled event
@@ -176,7 +176,7 @@ public:
    * @details The event must be scheduled by the agent, otherwise 
    * the call returns without any action.
    */
-  virtual void unschedule(PEvent event);
+  void unschedule(PEvent event);
 
   /**
    * Handle the calendar as an event
@@ -208,3 +208,5 @@ private:
    */
   std::multimap<double, PEvent> _events;
 };
+
+typedef std::shared_ptr<Calendar> PCalendar;

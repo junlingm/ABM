@@ -5,9 +5,10 @@
 using namespace Rcpp;
 
 Agent::Agent(Nullable<List> state)
-  : Calendar(), _population(nullptr)
+  : Calendar(), _population(nullptr), _contactEvents(new Calendar)
 {
   if (state != R_NilValue) _state &= state.as();
+  schedule(_contactEvents);
 }
 
 bool Agent::handle(Simulation &sim, Agent &agent)
