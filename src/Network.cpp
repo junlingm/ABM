@@ -1,6 +1,7 @@
 #include "../inst/include/Network.h"
 #include "../inst/include/Population.h"
 #include "../inst/include/RNG.h"
+#include <algorithm>
 
 using namespace Rcpp;
 
@@ -18,6 +19,24 @@ void Network::add(const PAgent &agent)
 {
   // have we finalized?
   if (_population != nullptr) grow(agent);
+}
+
+void Network::remove(Agent &agent)
+{
+  size_t i = agent.id() - 1;
+  for (auto c : _neighbors[i]) {
+    size_t j = c->id() - 1;
+    std::vector<PAgent> &nj = _neighbors[j];
+    size_t m = nj.size();
+    for (size_t k = 0; k < m - 1; ++k) {
+      if (nj[k].get() == &agent) {
+        nj[k] = nj[m-1];
+        break;
+      }
+    }
+    nj.resize(m-1);
+  }
+  _neighbors[i].clear();
 }
 
 void Network::build()
@@ -64,7 +83,25 @@ void Network::connect(int from, int to)
 
 void ConfigurationModel::grow(const PAgent &agent)
 {
-  stop("not implemented yet");
+  size_t i = agent->id() - 1;
+  int degree = as<int>(_rng(1));
+  std::vector<size_t> neighborhood(degree);
+  size_t L = 0;
+  for (auto c : _neighbors)
+    L += c.size();
+  for (int i = 0; i < degree; ++i)
+    neighborhood[i] = L * RUnif::stdUnif.get();
+  std::sort(neighborhood.begin(), neighborhood.end());
+  size_t k = 0;
+  for (auto c : _neighbors) {
+    size_t d = c.size();
+    while (neighborhood[k] < d) {
+      connect(i, ++k);
+      if (k == degree) return;
+    }
+    for (size_t i = k; i < degree; ++i)
+      neighborhood[i] -= d;
+  }
 }
 
 // [[Rcpp::export]]

@@ -38,8 +38,16 @@ Population::Population(List states)
 
 void Population::add(PAgent agent)
 {
-  _agents.push_back(agent);
-  agent->_id = _agents.size();
+  if (agent->_population == this) return;
+  if (_available.empty()) {
+    _agents.push_back(agent);
+    agent->_id = _agents.size();
+  } else {
+    size_t id = _available.back();
+    agent->_id = id;
+    _available.pop_back();
+    _agents[id - 1] = agent;
+  }
   schedule(agent);
   agent->_population = this;
   agent->report();
@@ -61,6 +69,18 @@ void Population::report()
   Agent::report();
   for (auto &a : _agents)
     a->report();
+}
+
+void Population::remove(Agent &agent)
+{
+  if (agent._population == this) {
+    for (auto &c : _contacts)
+      c->remove(agent);
+    size_t i = agent._id;
+    _available.push_back(i);
+    _agents[i - 1]= nullptr;
+    agent._contactEvents->clearEvents();
+  }
 }
 
 CharacterVector Population::classes = CharacterVector::create("Population", "Agent", "Event");

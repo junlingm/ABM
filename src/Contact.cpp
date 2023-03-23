@@ -41,6 +41,10 @@ void RandomMixing::add(const PAgent &agent)
 {
 }
 
+void RandomMixing::remove(Agent &agent)
+{
+}
+
 void RandomMixing::build()
 {
 }
@@ -49,7 +53,8 @@ RContact::RContact(Environment r6)
   : Contact(), _r6(r6), 
     _r6_contact(r6["contact"]),
     _r6_addAgent(r6["addAgent"]),
-    _r6_attach(r6["attach"])
+    _r6_attach(r6["attach"]),
+    _r6_remove(r6["remove"])
 {
 }
 
@@ -74,6 +79,12 @@ void RContact::build()
 {
   _r6_attach(XP<Population>(*_population));
 }
+
+void RContact::remove(Agent &agent)
+{
+  _r6_remove(XP<Agent>(agent));
+}
+
 
 CharacterVector Contact::classes = CharacterVector::create("Contact");
 

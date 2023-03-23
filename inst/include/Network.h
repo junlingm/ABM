@@ -33,6 +33,13 @@ public:
   virtual void add(const PAgent &agent);
   
   /**
+   * remove an agent
+   * 
+   * @param agent the agent to be removed
+   */
+  virtual void remove(Agent &agent);
+  
+  /**
    * Getting ready to return the contacts
    */
   virtual void build();

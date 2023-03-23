@@ -37,6 +37,16 @@ public:
   virtual const std::vector<PAgent> &contact(double time, Agent &agent) = 0;
   Population *population() { return _population; }
 
+  /**
+   * remove an agent
+   * 
+   * @param agent the agent to be removed
+   * 
+   * @details this method is called by the population when an agent is removed
+   * from it.
+   */
+  virtual void remove(Agent &agent) = 0;
+
   /** 
    * Add an agent to the contact pattern
    * 
@@ -127,6 +137,13 @@ public:
   
   virtual void build();
   
+  /**
+   * remove an agent
+   * 
+   * @param agent the agent to be removed
+   */
+  virtual void remove(Agent &agent);
+  
 private:
   /**
    * A vector of length one that holds the random contact. This avoids
@@ -167,6 +184,13 @@ public:
   
   virtual void build();
   
+  /**
+   * remove an agent
+   * 
+   * @param agent the agent to be removed
+   */
+  virtual void remove(Agent &agent);
+  
 private:
   /**
    * A vector of length one that holds the random contact. This avoids
@@ -193,4 +217,9 @@ private:
    * The R6 attach
    */
   Rcpp::Function _r6_attach;
+
+  /** 
+   * The R6 remove
+   */
+  Rcpp::Function _r6_remove;
 };

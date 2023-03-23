@@ -64,6 +64,16 @@ public:
   void add(PAgent agent);
   
   /**
+   * remove an agent to the populaton
+   * 
+   * @param agent the agent to be removed
+   * 
+   * @details The agent is unscheduled from the population, and all its contact
+   * patterns
+   */
+  void remove(Agent &agent);
+  
+  /**
    * Add a contact pattern
    * 
    * @param contact A shared_pre<Contact> pointing to a Contact object.
@@ -124,6 +134,15 @@ protected:
    * A list of shared_ptr<Contact> pointing to the contacts
    */
   std::list<PContact> _contacts;
+  
+private:
+  /**
+   * Available ids to be reused.
+   * 
+   * These are the ids that were used by an agent who have been removed from
+   * the population
+   */
+  std::list<size_t> _available;
 };
 
 typedef std::shared_ptr<Population> PPopulation;
