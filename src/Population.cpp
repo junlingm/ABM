@@ -116,13 +116,6 @@ XP<Population> addAgent(XP<Population> population, XP<Agent> agent)
 }
 
 // [[Rcpp::export]]
-XP<Population> removeAgent(XP<Population> population, XP<Agent> agent)
-{
-  population->remove(**agent);
-  return population;
-}
-
-// [[Rcpp::export]]
 int getSize(XP<Population> population)
 {
   return population->size();

@@ -215,22 +215,3 @@ NULL
 #' 
 #' @export
 NULL
-
-#' remove an agent to a population
-#' 
-#' @name removeAgent
-#' 
-#' @param population an external pointer to a population, for example,
-#' one returned by [newPopulation()]
-#' 
-#' @param agent an external pointer to an agent, returned by [newAgent()] or 
-#' [getAgent()]
-#' 
-#' @return the population pointer itself for chaining actions
-#' 
-#' @details if the agent is an R6 class, we should use ```agent$get``` to get
-#' the external pointer. Similarly, if population is an R6 object, then we
-#' should either use ```population$addAgent()``` or ```population$get```.
-#' 
-#' @export
-NULL
