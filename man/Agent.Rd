@@ -37,6 +37,7 @@ simulation (or a population that itself is added to a simulation).
 \item \href{#method-R6Agent-match}{\code{Agent$match()}}
 \item \href{#method-R6Agent-schedule}{\code{Agent$schedule()}}
 \item \href{#method-R6Agent-unschedule}{\code{Agent$unschedule()}}
+\item \href{#method-R6Agent-leave}{\code{Agent$leave()}}
 \item \href{#method-R6Agent-clone}{\code{Agent$clone()}}
 }
 }
@@ -113,6 +114,26 @@ Unschedule an event
 \describe{
 \item{\code{event}}{an object of the R6 class Event, or an external pointer
 returned by newEvent}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+the agent itself
+leave the population that the agent is in
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-R6Agent-leave"></a>}}
+\if{latex}{\out{\hypertarget{method-R6Agent-leave}{}}}
+\subsection{Method \code{leave()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$leave()}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{agent}}{an external pointer returned by newAgent}
 }
 \if{html}{\out{</div>}}
 }

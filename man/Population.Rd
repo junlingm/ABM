@@ -32,6 +32,7 @@ network.
 \itemize{
 \item \href{#method-R6Population-new}{\code{Population$new()}}
 \item \href{#method-R6Population-addAgent}{\code{Population$addAgent()}}
+\item \href{#method-R6Population-removeAgent}{\code{Population$removeAgent()}}
 \item \href{#method-R6Population-addContact}{\code{Population$addContact()}}
 \item \href{#method-R6Population-agent}{\code{Population$agent()}}
 \item \href{#method-R6Population-setState}{\code{Population$setState()}}
@@ -42,6 +43,7 @@ network.
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
+<li><span class="pkg-link" data-pkg="ABM" data-topic="R6Agent" data-id="leave"><a href='../../ABM/html/R6Agent.html#method-R6Agent-leave'><code>ABM::R6Agent$leave()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Agent" data-id="match"><a href='../../ABM/html/R6Agent.html#method-R6Agent-match'><code>ABM::R6Agent$match()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Agent" data-id="schedule"><a href='../../ABM/html/R6Agent.html#method-R6Agent-schedule'><code>ABM::R6Agent$schedule()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Agent" data-id="unschedule"><a href='../../ABM/html/R6Agent.html#method-R6Agent-unschedule'><code>ABM::R6Agent$unschedule()</code></a></span></li>
@@ -82,6 +84,33 @@ Add an agent
 \subsection{Method \code{addAgent()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Population$addAgent(agent)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{agent}}{either an object of the R6 class Agent, or an external
+pointer returned from newAgent.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+The agent is scheduled in the population. If the population
+is already added to a simulation, the agent will report its state
+to the simulation.
+remove an agent
+}
+
+\subsection{Returns}{
+the object itself for chaining actions.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-R6Population-removeAgent"></a>}}
+\if{latex}{\out{\hypertarget{method-R6Population-removeAgent}{}}}
+\subsection{Method \code{removeAgent()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Population$removeAgent(agent)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

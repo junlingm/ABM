@@ -11,7 +11,7 @@ one returned by \code{\link[=newPopulation]{newPopulation()}}}
 function}
 }
 \value{
-the population object itself for chaining actions
+the population pointer itself for chaining actions
 }
 \description{
 Set the state for each agent in a population
