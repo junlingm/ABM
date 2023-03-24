@@ -7,7 +7,7 @@
 \item{population}{an external pointer to a population, for example,
 one returned by \code{\link[=newPopulation]{newPopulation()}}}
 
-\item{i}{the inde of the agent, starting from 1.}
+\item{i}{the index of the agent, starting from 1.}
 }
 \value{
 the agent at index i in the population.

@@ -8,7 +8,7 @@
 #' The contact patterns are defined by objects of the Contact class that
 #' are associated with the population. A population may have multiple 
 #' Contact objects, for example, one for random mixing, one for close
-#' contacts represented by a contact netowrk, and another for social
+#' contacts represented by a contact network, and another for social
 #' network.
 #' 
 #' @export
@@ -171,7 +171,7 @@ NULL
 #' @param population an external pointer to a population, for example,
 #' one returned by [newPopulation()]
 #' 
-#' @param i the inde of the agent, starting from 1.
+#' @param i the index of the agent, starting from 1.
 #' 
 #' @return the agent at index i in the population.
 #' 

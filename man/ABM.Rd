@@ -5,7 +5,7 @@
 \alias{ABM}
 \title{Agent Based Model Simulation Framework}
 \description{
-This package provides sa framework to simulate agent based models that are
+This package provides a framework to simulate agent based models that are
 based on states and events.
 }
 \details{
@@ -64,6 +64,8 @@ the \link{Simulation} class' \code{addLogger} method` and either \code{\link[=ne
 \code{\link[=newStateLogger]{newStateLogger()}}. At last, run the simulation using
 its \code{run} method, which returns the observations of the loggers
 at the requested time points as a data.frame object.
+
+For more information and examples, please see the \href{https://github.com/junlingm/ABM/wiki/}{Wiki} pages on Github.
 }
 }
 \examples{

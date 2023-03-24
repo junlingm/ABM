@@ -14,7 +14,7 @@ for a population:
 The contact patterns are defined by objects of the Contact class that
 are associated with the population. A population may have multiple
 Contact objects, for example, one for random mixing, one for close
-contacts represented by a contact netowrk, and another for social
+contacts represented by a contact network, and another for social
 network.
 }
 \section{Super class}{

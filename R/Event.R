@@ -65,7 +65,7 @@ Event <- R6::R6Class(
     #' @field get
     #' 
     #' returns the external pointer, which can then be passed to
-    #' functions such as schdule and unschedule.
+    #' functions such as schedule and unschedule.
     get = function() {
       private$event
     }

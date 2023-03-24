@@ -44,7 +44,7 @@ print(sim$run(0:10))
 \item{\code{time}}{returns the event time}
 
 \item{\code{get}}{returns the external pointer, which can then be passed to
-functions such as schdule and unschedule.}
+functions such as schedule and unschedule.}
 }
 \if{html}{\out{</div>}}
 }

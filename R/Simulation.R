@@ -124,7 +124,7 @@ Simulation <- R6::R6Class(
 #' A transition caused by contact, the formula needs to specify the 
 #' states of both the agent who initiate the contact and the contact
 #' agent. The two states are connected by a + sign, the one before the
-#' + sign is the initiator, anbd the one after the sign is the contact.
+#' + sign is the initiator, and the one after the sign is the contact.
 #' The transition must be associated with a Contact object, using 
 #' a ~ operator. The Contact object must be specified by a variable name
 #' that hold the external pointer to the object (created by e.g., 

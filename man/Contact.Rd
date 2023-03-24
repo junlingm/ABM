@@ -28,7 +28,7 @@ agents in a population is added to the contact pattern, one by one.
 Note that, immediately before the simulation is run, while reporting
 the states to the simulation object, the population will call the
 build method for each Contact object. Thus a contact object may choose
-to ignore addin agents before build is called, and handle all agents
+to ignore adding agents before build is called, and handle all agents
 within the finalize method. However, the contact object must handle
 adding an agent after build is called.
 

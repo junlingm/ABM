@@ -1,6 +1,6 @@
 #' Agent Based Model Simulation Framework
 #'
-#' This package provides sa framework to simulate agent based models that are
+#' This package provides a framework to simulate agent based models that are
 #' based on states and events.
 #'
 #' ## Agent
@@ -51,7 +51,9 @@
 #' [newStateLogger()]. At last, run the simulation using
 #' its ```run``` method, which returns the observations of the loggers
 #' at the requested time points as a data.frame object.
-#'
+#' 
+#' For more information and examples, please see the [Wiki](https://github.com/junlingm/ABM/wiki/) pages on Github.
+#' 
 #' @examples
 #' # simulate an SIR model using the Gillespie method
 #' # the population size
