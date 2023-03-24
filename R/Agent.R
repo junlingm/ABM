@@ -86,13 +86,8 @@ Agent <- R6::R6Class(
 #' 
 #' @return the agent itself
 #' 
-#' @details If agent is an R6 object, then we should use either
-#' agent$leave() or leave(agent$get)
-#' 
-#' At the time of death, the agent is removed from the simulation
-#' 
-#' This method should be called exactly once. Calling it multiple times causes
-#' the agent to die at the earliest time.
+#' @details At the time of death, the agent is removed from the simulation. 
+#' Calling it multiple times causes the agent to die at the earliest time.
     setDeathTime = function(time) {
       setDeathTime(private$agent, time)
       self
@@ -178,7 +173,7 @@ NULL
 #' 
 #' @param agent an external pointer returned by newAgent
 #' 
-#' @param state an R list giveng the components of the state to be
+#' @param state an R list giving the components of the state to be
 #' undated.
 #' 
 #' @return the agent itself
@@ -310,10 +305,8 @@ NULL
 #' @details If agent is an R6 object, then we should use either
 #' agent$leave() or leave(agent$get)
 #' 
-#' At the time of death, the agent is removed from the simulation
-#' 
-#' This function should be called exactly once. Calling it multiple times causes
-#' the agent to die at the earliest time.
+#' At the time of death, the agent is removed from the simulation. Calling it 
+#' multiple times causes the agent to die at the earliest time.
 #' 
 #' @export
 NULL

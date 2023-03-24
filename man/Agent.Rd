@@ -23,13 +23,8 @@ Note that specifying death.time is equivalent to call the
 \verb{$setDeathTime} method.
 Check if the state of the agent matches a given state
 
-If agent is an R6 object, then we should use either
-agent$leave() or leave(agent$get)
-
-At the time of death, the agent is removed from the simulation
-
-This method should be called exactly once. Calling it multiple times causes
-the agent to die at the earliest time.
+At the time of death, the agent is removed from the simulation.
+Calling it multiple times causes the agent to die at the earliest time.
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}

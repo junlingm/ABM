@@ -6,7 +6,7 @@
 \arguments{
 \item{agent}{an external pointer returned by newAgent}
 
-\item{state}{an R list giveng the components of the state to be
+\item{state}{an R list giving the components of the state to be
 undated.}
 }
 \value{

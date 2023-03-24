@@ -18,8 +18,6 @@ set the time of death for an agent
 If agent is an R6 object, then we should use either
 agent$leave() or leave(agent$get)
 
-At the time of death, the agent is removed from the simulation
-
-This function should be called exactly once. Calling it multiple times causes
-the agent to die at the earliest time.
+At the time of death, the agent is removed from the simulation. Calling it
+multiple times causes the agent to die at the earliest time.
 }
