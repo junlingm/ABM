@@ -82,7 +82,7 @@ Event <- R6::R6Class(
 #' @param handler an R function that handles the event when it occurs.
 #' 
 #' @return an external pointer, which can then be passed to
-#' functions such as schdule and unschedule.
+#' functions such as schedule and unschedule.
 #' 
 #' @details The R handler function should take exactly 3 arguments
 #'  1. time: the current time in the simulation

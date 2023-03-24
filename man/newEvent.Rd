@@ -11,7 +11,7 @@ numeric vector.}
 }
 \value{
 an external pointer, which can then be passed to
-functions such as schdule and unschedule.
+functions such as schedule and unschedule.
 }
 \description{
 Creates a new event in R
