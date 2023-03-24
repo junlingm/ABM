@@ -66,6 +66,16 @@ Agent <- R6::R6Class(
         event = event$get
       unschedule(private$agent, event)
       return(self)
+    },
+
+#' leave the population that the agent is in
+#' 
+#' @param agent an external pointer returned by newAgent
+#' 
+#' @return the agent itself
+    leave = function() {
+      leave(private$agent)
+      return(self)
     }
   ),
   private = list(
@@ -90,7 +100,7 @@ Agent <- R6::R6Class(
 #' 
 #' Get the external pointer for the agent
     get = function() { private$agent }
-  )
+  ),
 )
 
 #' Create an agent with a given state
@@ -244,6 +254,20 @@ NULL
 #' 
 #' @details If agent is an R6 object, then we should use either
 #' agent$clearEvents() or clearEvents(agent$get)
+#' 
+#' @export
+NULL
+
+#' leave the population that the agent is in
+#' 
+#' @name leave
+#' 
+#' @param agent an external pointer returned by newAgent
+#' 
+#' @return the agent itself
+#' 
+#' @details If agent is an R6 object, then we should use either
+#' agent$leave() or leave(agent$get)
 #' 
 #' @export
 NULL

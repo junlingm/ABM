@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <list>
+#include <set>
 #include <utility>
 #include <Rcpp.h>
 
@@ -88,7 +89,8 @@ public:
    * 
    * It is the number of agents in the population.
    */
-  size_t size() const { return _agents.size(); }
+  size_t size() const { return _agents.size() - _available.size(); }
+
   /**
    * return a specific agent by index
    * 
@@ -96,8 +98,17 @@ public:
    * 
    * @return a shared_ptr<Agent> pointing to the agent requested.
    */
-  PAgent agent(size_t i) const { return _agents[i]; }
-
+  PAgent agentAtIndex(size_t i) const;
+  
+  /**
+   * return a specific agent by ID
+   * 
+   * @param i the index of the agent (starting from 1)
+   * 
+   * @return a shared_ptr<Agent> pointing to the agent requested.
+   */
+  PAgent agentByID(size_t id) const { return _agents[id - 1]; }
+  
   /**
    * Initialize the state of agents in the population using an 
    * initializer function
@@ -142,7 +153,7 @@ private:
    * These are the ids that were used by an agent who have been removed from
    * the population
    */
-  std::list<size_t> _available;
+  std::set<size_t> _available;
 };
 
 typedef std::shared_ptr<Population> PPopulation;

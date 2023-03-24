@@ -13,7 +13,8 @@ Agent::Agent(Nullable<List> state)
 
 bool Agent::handle(Simulation &sim, Agent &agent)
 {
-  return Calendar::handle(sim, *this);
+  Calendar::handle(sim, *this);
+  return _population != nullptr;
 }
 
 void Agent::set(const Rcpp::List &state)
@@ -32,6 +33,12 @@ void Agent::stateChanged(Agent &agent, const State &from)
 {
   if (_population != nullptr)
     _population->stateChanged(agent, from);
+}
+
+void Agent::leave()
+{
+  if (_population != nullptr)
+    _population->remove(*this);
 }
 
 static State empty_state;
@@ -88,6 +95,13 @@ XP<Agent> setState(XP<Agent> agent, SEXP value)
   Nullable<List> s(value);
   if (!s.isNull())
     agent->set(s.as());
+  return agent;
+}
+
+// [[Rcpp::export]]
+XP<Agent> leave(XP<Agent> agent)
+{
+  agent->leave();
   return agent;
 }
 

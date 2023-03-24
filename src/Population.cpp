@@ -43,9 +43,9 @@ void Population::add(PAgent agent)
     _agents.push_back(agent);
     agent->_id = _agents.size();
   } else {
-    size_t id = _available.back();
+    size_t id = *_available.begin();
     agent->_id = id;
-    _available.pop_back();
+    _available.erase(_available.begin());
     _agents[id - 1] = agent;
   }
   schedule(agent);
@@ -62,6 +62,13 @@ void Population::add(PContact contact)
     contact->add(a);
 }
 
+PAgent Population::agentAtIndex(size_t i) const
+{
+  for (auto a : _available)
+    if (a - 1 <= i) ++i;
+  return _agents[i];
+}
+
 void Population::report()
 {
   for (auto &c : _contacts)
@@ -76,10 +83,12 @@ void Population::remove(Agent &agent)
   if (agent._population == this) {
     for (auto &c : _contacts)
       c->remove(agent);
-    size_t i = agent._id;
-    _available.push_back(i);
-    _agents[i - 1]= nullptr;
+    size_t id = agent._id;
     agent._contactEvents->clearEvents();
+    agent._population = nullptr;
+    _available.insert(id);
+    unschedule(_agents[id - 1]);
+    _agents[id - 1]= nullptr;
   }
 }
 
@@ -107,6 +116,13 @@ XP<Population> addAgent(XP<Population> population, XP<Agent> agent)
 }
 
 // [[Rcpp::export]]
+XP<Population> removeAgent(XP<Population> population, XP<Agent> agent)
+{
+  population->remove(**agent);
+  return population;
+}
+
+// [[Rcpp::export]]
 int getSize(XP<Population> population)
 {
   return population->size();
@@ -115,7 +131,7 @@ int getSize(XP<Population> population)
 // [[Rcpp::export]]
 XP<Agent> getAgent(XP<Population> population, int i)
 {
-  return population->agent(i - 1);
+  return population->agentAtIndex(i - 1);
 }
 
 // [[Rcpp::export]]
@@ -132,7 +148,7 @@ XP<Population> setStates(XP<Population> population, SEXP states)
     Function f(states);
     size_t n = population->size();
     for (size_t i = 0; i < n; ++i)
-      population->agent(i)->set(f(i+1));
+      population->agentAtIndex(i)->set(f(i+1));
   } else if (Rf_isVector(states)) {
     List l(states);
     size_t n = l.size();
@@ -142,7 +158,7 @@ XP<Population> setStates(XP<Population> population, SEXP states)
       SEXP s = l[i];
       if (!Rf_isVector(s))
         s = List(s);
-      population->agent(i)->set(s);
+      population->agentAtIndex(i)->set(s);
     }
   } else stop("invalid states. Must be a function or a list");
   return population;

@@ -97,6 +97,10 @@ ContactEvent::ContactEvent(double time, PAgent contact, ContactTransition &rule)
 bool ContactEvent::handle(Simulation &sim, Agent &agent)
 {
   double t = time();
+  if (agent.population() != _contact->population()) {
+    PRINT("%lf, NA, %ld, %ld, 0\n", t, agent.id(), _contact->id());
+    return false;
+  }
   if (agent.match(_rule.from())) {
     if (_contact->match(_rule.contactFrom()) && 
         _rule.toChange(t, agent, *_contact)) {
@@ -149,7 +153,7 @@ void ContactTransition::schedule(double time, Agent &agent)
       next_contact = c;
     }
   }
-  PRINT("%lf, %lf, %ld, %ld, NA\n", time, waiting_time, agent.id(), next_contact->id());
+  PRINT("%lf, %lf, %ld, %ld, NA\n", time, waiting_time+time, agent.id(), next_contact->id());
   agent._contactEvents->schedule(std::make_shared<ContactEvent>(waiting_time + time, next_contact, *this));
 }
 

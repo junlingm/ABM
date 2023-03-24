@@ -79,7 +79,18 @@ public:
    * Reports the state to the population the agent is in.
    */
   virtual void report();
-  
+
+  /**
+   * remove the agent from the population it was in.
+   * 
+   * @details after calling this function, the agent is not in any population
+   */
+  virtual void leave();
+
+  /** the population that it is in */
+  Population *population() { return _population; }
+  const Population *population() const { return _population; }
+
   static Rcpp::CharacterVector classes;
 
 protected:

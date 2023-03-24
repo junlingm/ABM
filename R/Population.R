@@ -40,22 +40,41 @@ Population <- R6::R6Class(
       } else stop("invalid population argument")
     },
 
-#' Add an agent
-#' 
-#' @param agent either an object of the R6 class Agent, or an external
-#' pointer returned from newAgent.
-#' 
-#' @return the object itself for chaining actions.
-#' 
-#' @details The agent is scheduled in the population. If the population 
-#' is already added to a simulation, the agent will report its state
-#' to the simulation.
+    #' Add an agent
+    #' 
+    #' @param agent either an object of the R6 class Agent, or an external
+    #' pointer returned from newAgent.
+    #' 
+    #' @return the object itself for chaining actions.
+    #' 
+    #' @details The agent is scheduled in the population. If the population 
+    #' is already added to a simulation, the agent will report its state
+    #' to the simulation.
     addAgent = function(agent) {
       if (inherits(agent, "R6Agent"))
         agent = agent$get
       if (!inherits(agent, "Agent"))
         stop("invalid agent argument")
       addAgent(private$agent, agent)
+      self
+    },
+    
+    #' remove an agent
+    #' 
+    #' @param agent either an object of the R6 class Agent, or an external
+    #' pointer returned from newAgent.
+    #' 
+    #' @return the object itself for chaining actions.
+    #' 
+    #' @details The agent is scheduled in the population. If the population 
+    #' is already added to a simulation, the agent will report its state
+    #' to the simulation.
+    removeAgent = function(agent) {
+      if (inherits(agent, "R6Agent"))
+        agent = agent$get
+      if (!inherits(agent, "Agent"))
+        stop("invalid agent argument")
+      removeAgent(private$agent, agent)
       self
     },
     
@@ -169,11 +188,49 @@ NULL
 #' @param states either a list holding the states (one for each agent), or a
 #' function
 #' 
-#' @return the population object itself for chaining actions
+#' @return the population pointer itself for chaining actions
 #' 
 #' @details If ```states``` is a function then it takes a single argument 
 #' ```i```, specifying the index of the agent (starting from 1), and returns
 #' a state.
+#' 
+#' @export
+NULL
+
+#' add an agent to a population
+#' 
+#' @name addAgent
+#' 
+#' @param population an external pointer to a population, for example,
+#' one returned by [newPopulation()]
+#' 
+#' @param agent an external pointer to an agent, returned by [newAgent()] or 
+#' [getAgent()]
+#' 
+#' @return the population pointer itself for chaining actions
+#' 
+#' @details if the agent is an R6 class, we should use ```agent$get``` to get
+#' the external pointer. Similarly, if population is an R6 object, then we
+#' should either use ```population$addAgent()``` or ```population$get```.
+#' 
+#' @export
+NULL
+
+#' remove an agent to a population
+#' 
+#' @name removeAgent
+#' 
+#' @param population an external pointer to a population, for example,
+#' one returned by [newPopulation()]
+#' 
+#' @param agent an external pointer to an agent, returned by [newAgent()] or 
+#' [getAgent()]
+#' 
+#' @return the population pointer itself for chaining actions
+#' 
+#' @details if the agent is an R6 class, we should use ```agent$get``` to get
+#' the external pointer. Similarly, if population is an R6 object, then we
+#' should either use ```population$addAgent()``` or ```population$get```.
 #' 
 #' @export
 NULL

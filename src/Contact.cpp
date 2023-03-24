@@ -30,10 +30,19 @@ RandomMixing::RandomMixing()
 const std::vector<PAgent> &RandomMixing::contact(double time, Agent &agent)
 {
   size_t n = _population->size();
-  size_t id = agent.id() - 1;
-  size_t i = unif.get() * (n-1);
-  size_t j = (i >= id) ? i + 1 : i;
-  _neighbors[0] = _population->agent(j);
+  if (n <= 1)
+    _neighbors.resize(0);
+  else {
+    size_t id = agent.id();
+    while (true) {
+      size_t i = unif.get() * n;
+      auto c = _population->agentAtIndex(i);
+      if (c->id() != id) {
+        _neighbors[0] = c;
+        break;
+      }
+    }
+  }
   return _neighbors;
 }
 

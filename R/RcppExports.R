@@ -29,6 +29,10 @@ setState <- function(agent, value) {
     .Call(`_ABM_setState`, agent, value)
 }
 
+leave <- function(agent) {
+    .Call(`_ABM_leave`, agent)
+}
+
 newRandomMixing <- function() {
     .Call(`_ABM_newRandomMixing`)
 }
@@ -63,6 +67,10 @@ newPopulation <- function(n, initializer = NULL) {
 
 addAgent <- function(population, agent) {
     .Call(`_ABM_addAgent`, population, agent)
+}
+
+removeAgent <- function(population, agent) {
+    .Call(`_ABM_removeAgent`, population, agent)
 }
 
 getSize <- function(population) {
