@@ -144,13 +144,6 @@ leave the population that the agent is in
 \if{html}{\out{<div class="r">}}\preformatted{Agent$leave()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{agent}}{an external pointer returned by newAgent}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 the agent itself
 set the time of death for the agent

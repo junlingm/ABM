@@ -74,8 +74,6 @@ Agent <- R6::R6Class(
 
 #' leave the population that the agent is in
 #' 
-#' @param agent an external pointer returned by newAgent
-#' 
 #' @return the agent itself
     leave = function() {
       leave(private$agent)
