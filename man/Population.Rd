@@ -46,6 +46,7 @@ network.
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Agent" data-id="leave"><a href='../../ABM/html/R6Agent.html#method-R6Agent-leave'><code>ABM::R6Agent$leave()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Agent" data-id="match"><a href='../../ABM/html/R6Agent.html#method-R6Agent-match'><code>ABM::R6Agent$match()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Agent" data-id="schedule"><a href='../../ABM/html/R6Agent.html#method-R6Agent-schedule'><code>ABM::R6Agent$schedule()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="ABM" data-topic="R6Agent" data-id="setDeathTime"><a href='../../ABM/html/R6Agent.html#method-R6Agent-setDeathTime'><code>ABM::R6Agent$setDeathTime()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ABM" data-topic="R6Agent" data-id="unschedule"><a href='../../ABM/html/R6Agent.html#method-R6Agent-unschedule'><code>ABM::R6Agent$unschedule()</code></a></span></li>
 </ul>
 </details>

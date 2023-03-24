@@ -4,6 +4,15 @@
 
 using namespace Rcpp;
 
+class DeathEvent : public Event {
+public:
+  DeathEvent(double time) : Event(time) { }
+  virtual bool handle(Simulation & sim, Agent &agent) {
+    agent.leave();
+    return false;
+  }
+};
+
 Agent::Agent(Nullable<List> state)
   : Calendar(), _population(nullptr), _contactEvents(new Calendar)
 {
@@ -46,6 +55,11 @@ void Agent::leave()
   }
 }
 
+void Agent::setDeathTime(double time)
+{
+  schedule(std::make_shared<DeathEvent>(time));
+}
+
 static State empty_state;
 
 void Agent::report()
@@ -56,9 +70,12 @@ void Agent::report()
 CharacterVector Agent::classes = CharacterVector::create("Agent", "Event");
 
 // [[Rcpp::export]]
-XP<Agent> newAgent(Nullable<List> state)
+XP<Agent> newAgent(Nullable<List> state, NumericVector death_time = NA_REAL)
 {
-  return XP<Agent>(std::make_shared<Agent>(state));
+  XP<Agent> a = (std::make_shared<Agent>(state));
+  double d = as<double>(death_time);
+  if (!isnan(d)) a->setDeathTime(d);
+  return a;
 }
   
 // [[Rcpp::export]]
@@ -107,6 +124,13 @@ XP<Agent> setState(XP<Agent> agent, SEXP value)
 XP<Agent> leave(XP<Agent> agent)
 {
   agent->leave();
+  return agent;
+}
+
+// [[Rcpp::export]]
+XP<Agent> setDeathTime(XP<Agent> agent, double time)
+{
+  agent->setDeathTime(time);
   return agent;
 }
 

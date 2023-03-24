@@ -6,10 +6,16 @@
 \arguments{
 \item{state}{a list giving the initial state of the agent, or NULL (an empty
 list)}
+
+\item{death_time}{the death time for the agent, an optional numeric value.}
 }
 \value{
 an external pointer pointing to the agent
 }
 \description{
 Create an agent with a given state
+}
+\details{
+Setting death_time is equivalent to calling the \code{\link[=setDeathTime]{setDeathTime()}}
+function.
 }

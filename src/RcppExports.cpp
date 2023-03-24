@@ -12,13 +12,14 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // newAgent
-XP<Agent> newAgent(Nullable<List> state);
-RcppExport SEXP _ABM_newAgent(SEXP stateSEXP) {
+XP<Agent> newAgent(Nullable<List> state, NumericVector death_time);
+RcppExport SEXP _ABM_newAgent(SEXP stateSEXP, SEXP death_timeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Nullable<List> >::type state(stateSEXP);
-    rcpp_result_gen = Rcpp::wrap(newAgent(state));
+    Rcpp::traits::input_parameter< NumericVector >::type death_time(death_timeSEXP);
+    rcpp_result_gen = Rcpp::wrap(newAgent(state, death_time));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -99,6 +100,18 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
     rcpp_result_gen = Rcpp::wrap(leave(agent));
+    return rcpp_result_gen;
+END_RCPP
+}
+// setDeathTime
+XP<Agent> setDeathTime(XP<Agent> agent, double time);
+RcppExport SEXP _ABM_setDeathTime(SEXP agentSEXP, SEXP timeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
+    Rcpp::traits::input_parameter< double >::type time(timeSEXP);
+    rcpp_result_gen = Rcpp::wrap(setDeathTime(agent, time));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -382,7 +395,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ABM_newAgent", (DL_FUNC) &_ABM_newAgent, 1},
+    {"_ABM_newAgent", (DL_FUNC) &_ABM_newAgent, 2},
     {"_ABM_getID", (DL_FUNC) &_ABM_getID, 1},
     {"_ABM_getState", (DL_FUNC) &_ABM_getState, 1},
     {"_ABM_schedule", (DL_FUNC) &_ABM_schedule, 2},
@@ -390,6 +403,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_clearEvents", (DL_FUNC) &_ABM_clearEvents, 1},
     {"_ABM_setState", (DL_FUNC) &_ABM_setState, 2},
     {"_ABM_leave", (DL_FUNC) &_ABM_leave, 1},
+    {"_ABM_setDeathTime", (DL_FUNC) &_ABM_setDeathTime, 2},
     {"_ABM_newRandomMixing", (DL_FUNC) &_ABM_newRandomMixing, 0},
     {"_ABM_newContact", (DL_FUNC) &_ABM_newContact, 1},
     {"_ABM_newCounter", (DL_FUNC) &_ABM_newCounter, 4},

@@ -86,6 +86,15 @@ public:
    * @details after calling this function, the agent is not in any population
    */
   virtual void leave();
+  
+  /**
+   * set the time of death for the agent
+   * 
+   * @param time the time of death
+   * 
+   * @details at the given time the agent is removed from the simulation 
+   */
+  void setDeathTime(double time);
 
   /** the population that it is in */
   Population *population() { return _population; }
