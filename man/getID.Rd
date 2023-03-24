@@ -13,10 +13,10 @@ an integer value
 Get the ID of the agent.
 }
 \details{
-before an agent is added to a population, its id is 0
-after it is added, its id is the index in the population
+Before an agent is added to a population, its id is 0.
+After it is added, its id is the index in the population
 (starting from 1).
 
-If agent is an R6 object, then we should either use agent$schedule,
-or use schedule(agent$get, event)
+If agent is an R6 object, then we should either use \code{agent$id},
+or use \code{getID(agent$get)}
 }
