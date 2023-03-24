@@ -29,3 +29,5 @@ See more information on the [Wiki](https://github.com/junlingm/ABM/wiki/)
   4. [Simulate a contact network SIR model](https://github.com/junlingm/ABM/wiki/Agent-Network-SIR)
   5. [Simulate contact tracing on an SIR model](https://github.com/junlingm/ABM/wiki/Contact-Tracing-SIR)
   6. [Simulate a household SEIR model](https://github.com/junlingm/ABM/wiki/Household-SEIR)
+  7. [An SIR model with births and deaths](https://github.com/junlingm/ABM/wiki/SIR-Births-Deaths)
+
