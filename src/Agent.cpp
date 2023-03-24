@@ -37,8 +37,13 @@ void Agent::stateChanged(Agent &agent, const State &from)
 
 void Agent::leave()
 {
-  if (_population != nullptr)
+  if (_population != nullptr) {
+    State save = _state;
+    _state = State();
+    stateChanged(*this, save);
     _population->remove(*this);
+    _state = save;
+  }
 }
 
 static State empty_state;
