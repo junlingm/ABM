@@ -1,4 +1,5 @@
 #include "../inst/include/Simulation.h"
+#include "math.h"
 
 using namespace Rcpp;
 
