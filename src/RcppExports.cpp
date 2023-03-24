@@ -208,18 +208,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// removeAgent
-XP<Population> removeAgent(XP<Population> population, XP<Agent> agent);
-RcppExport SEXP _ABM_removeAgent(SEXP populationSEXP, SEXP agentSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< XP<Population> >::type population(populationSEXP);
-    Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
-    rcpp_result_gen = Rcpp::wrap(removeAgent(population, agent));
-    return rcpp_result_gen;
-END_RCPP
-}
 // getSize
 int getSize(XP<Population> population);
 RcppExport SEXP _ABM_getSize(SEXP populationSEXP) {
@@ -411,7 +399,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_newConfigurationModel", (DL_FUNC) &_ABM_newConfigurationModel, 1},
     {"_ABM_newPopulation", (DL_FUNC) &_ABM_newPopulation, 2},
     {"_ABM_addAgent", (DL_FUNC) &_ABM_addAgent, 2},
-    {"_ABM_removeAgent", (DL_FUNC) &_ABM_removeAgent, 2},
     {"_ABM_getSize", (DL_FUNC) &_ABM_getSize, 1},
     {"_ABM_getAgent", (DL_FUNC) &_ABM_getAgent, 2},
     {"_ABM_addContact", (DL_FUNC) &_ABM_addContact, 2},

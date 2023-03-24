@@ -69,10 +69,6 @@ addAgent <- function(population, agent) {
     .Call(`_ABM_addAgent`, population, agent)
 }
 
-removeAgent <- function(population, agent) {
-    .Call(`_ABM_removeAgent`, population, agent)
-}
-
 getSize <- function(population) {
     .Call(`_ABM_getSize`, population)
 }
