@@ -31,3 +31,5 @@ See more information on the [Wiki](https://github.com/junlingm/ABM/wiki/)
   6. [Simulate a household SEIR model](https://github.com/junlingm/ABM/wiki/Household-SEIR)
   7. [An SIR model with births and deaths](https://github.com/junlingm/ABM/wiki/SIR-Births-Deaths)
 
+# Acknowledgement
+This package is supported by a Natural Sciences and Engineering Research Council of Canada (NSERC) Discovery grant, and two NSERC Emerging Infectious Disease Modeling grants (ONMI with Dr. Huaiping Zhu as PI, and MfPH with Dr. V. Kumar Murty and Dr. Jianhong Wu as PI).
