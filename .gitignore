@@ -1,3 +1,5 @@
 src/*.o
 src/*.so
 src/*.o.tmp
+.Rproj.user/*
+*.Rproj
