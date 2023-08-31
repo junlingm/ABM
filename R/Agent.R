@@ -176,8 +176,6 @@ NULL
 #' @param state an R list giving the components of the state to be
 #' undated.
 #' 
-#' @return the agent itself
-#' 
 #' @details In this framework, a state is a list, each named
 #' component is called a domain. This function only updates the 
 #' values of the domain given in the "value" list, while leave the
@@ -234,8 +232,6 @@ matchState = function(agent, rule) {
 #' 
 #' @param event an external pointer returned by newEvent
 #' 
-#' @return the agent itself
-#' 
 #' @details If agent is an R6 object, then we should use either 
 #' agent$schedule(event) or schedule(agent$get, event)
 #' 
@@ -253,8 +249,6 @@ NULL
 #' 
 #' @param event an external pointer returned by newEvent
 #' 
-#' @return the agent itself
-#' 
 #' @details If agent is an R6 object, then we should use either 
 #' agent$unschedule(event) or unschedule(agent$get, event)
 #' 
@@ -270,8 +264,6 @@ NULL
 #' 
 #' @param agent an external pointer returned by newAgent
 #' 
-#' @return the agent itself
-#' 
 #' @details If agent is an R6 object, then we should use either
 #' agent$clearEvents() or clearEvents(agent$get)
 #' 
@@ -283,8 +275,6 @@ NULL
 #' @name leave
 #' 
 #' @param agent an external pointer returned by newAgent
-#' 
-#' @return the agent itself
 #' 
 #' @details If agent is an R6 object, then we should use either
 #' agent$leave() or leave(agent$get)
@@ -299,8 +289,6 @@ NULL
 #' @param agent an external pointer returned by [newAgent()] or [getAgent()]
 #' 
 #' @param time the time of death, a numeric value
-#' 
-#' @return the agent itself
 #' 
 #' @details If agent is an R6 object, then we should use either
 #' agent$leave() or leave(agent$get)

@@ -8,9 +8,6 @@
 
 \item{time}{the time of death, a numeric value}
 }
-\value{
-the agent itself
-}
 \description{
 set the time of death for an agent
 }

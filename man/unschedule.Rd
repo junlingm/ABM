@@ -8,9 +8,6 @@
 
 \item{event}{an external pointer returned by newEvent}
 }
-\value{
-the agent itself
-}
 \description{
 Unschedule (detach) an event from an agent
 }

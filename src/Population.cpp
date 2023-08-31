@@ -109,10 +109,9 @@ XP<Population> newPopulation(SEXP n, Nullable<Function> initializer = R_NilValue
 }
 
 // [[Rcpp::export]]
-XP<Population> addAgent(XP<Population> population, XP<Agent> agent)
+void addAgent(XP<Population> population, XP<Agent> agent)
 {
   population->add(agent);
-  return population;
 }
 
 // [[Rcpp::export]]
@@ -128,14 +127,13 @@ XP<Agent> getAgent(XP<Population> population, int i)
 }
 
 // [[Rcpp::export]]
-XP<Population> addContact(XP<Population> population, XP<Contact> contact)
+void addContact(XP<Population> population, XP<Contact> contact)
 {
   population->add(contact);
-  return population;
 }
 
 // [[Rcpp::export]]
-XP<Population> setStates(XP<Population> population, SEXP states)
+void setStates(XP<Population> population, SEXP states)
 {
   if (Rf_isFunction(states)) {
     Function f(states);
@@ -154,6 +152,5 @@ XP<Population> setStates(XP<Population> population, SEXP states)
       population->agentAtIndex(i)->set(s);
     }
   } else stop("invalid states. Must be a function or a list");
-  return population;
 }
 

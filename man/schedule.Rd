@@ -8,9 +8,6 @@
 
 \item{event}{an external pointer returned by newEvent}
 }
-\value{
-the agent itself
-}
 \description{
 Schedule (attach) an event to an agent
 }

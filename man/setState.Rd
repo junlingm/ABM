@@ -9,9 +9,6 @@
 \item{state}{an R list giving the components of the state to be
 undated.}
 }
-\value{
-the agent itself
-}
 \description{
 Set the state of the agent
 }

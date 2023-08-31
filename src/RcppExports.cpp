@@ -46,73 +46,67 @@ BEGIN_RCPP
 END_RCPP
 }
 // schedule
-XP<Agent> schedule(XP<Agent> agent, XP<Event> event);
+void schedule(XP<Agent> agent, XP<Event> event);
 RcppExport SEXP _ABM_schedule(SEXP agentSEXP, SEXP eventSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
     Rcpp::traits::input_parameter< XP<Event> >::type event(eventSEXP);
-    rcpp_result_gen = Rcpp::wrap(schedule(agent, event));
-    return rcpp_result_gen;
+    schedule(agent, event);
+    return R_NilValue;
 END_RCPP
 }
 // unschedule
-XP<Agent> unschedule(XP<Agent> agent, XP<Event> event);
+void unschedule(XP<Agent> agent, XP<Event> event);
 RcppExport SEXP _ABM_unschedule(SEXP agentSEXP, SEXP eventSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
     Rcpp::traits::input_parameter< XP<Event> >::type event(eventSEXP);
-    rcpp_result_gen = Rcpp::wrap(unschedule(agent, event));
-    return rcpp_result_gen;
+    unschedule(agent, event);
+    return R_NilValue;
 END_RCPP
 }
 // clearEvents
-XP<Agent> clearEvents(XP<Agent> agent);
+void clearEvents(XP<Agent> agent);
 RcppExport SEXP _ABM_clearEvents(SEXP agentSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
-    rcpp_result_gen = Rcpp::wrap(clearEvents(agent));
-    return rcpp_result_gen;
+    clearEvents(agent);
+    return R_NilValue;
 END_RCPP
 }
 // setState
-XP<Agent> setState(XP<Agent> agent, SEXP value);
+void setState(XP<Agent> agent, SEXP value);
 RcppExport SEXP _ABM_setState(SEXP agentSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
     Rcpp::traits::input_parameter< SEXP >::type value(valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(setState(agent, value));
-    return rcpp_result_gen;
+    setState(agent, value);
+    return R_NilValue;
 END_RCPP
 }
 // leave
-XP<Agent> leave(XP<Agent> agent);
+void leave(XP<Agent> agent);
 RcppExport SEXP _ABM_leave(SEXP agentSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
-    rcpp_result_gen = Rcpp::wrap(leave(agent));
-    return rcpp_result_gen;
+    leave(agent);
+    return R_NilValue;
 END_RCPP
 }
 // setDeathTime
-XP<Agent> setDeathTime(XP<Agent> agent, double time);
+void setDeathTime(XP<Agent> agent, double time);
 RcppExport SEXP _ABM_setDeathTime(SEXP agentSEXP, SEXP timeSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
     Rcpp::traits::input_parameter< double >::type time(timeSEXP);
-    rcpp_result_gen = Rcpp::wrap(setDeathTime(agent, time));
-    return rcpp_result_gen;
+    setDeathTime(agent, time);
+    return R_NilValue;
 END_RCPP
 }
 // newRandomMixing
@@ -210,15 +204,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // addAgent
-XP<Population> addAgent(XP<Population> population, XP<Agent> agent);
+void addAgent(XP<Population> population, XP<Agent> agent);
 RcppExport SEXP _ABM_addAgent(SEXP populationSEXP, SEXP agentSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Population> >::type population(populationSEXP);
     Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
-    rcpp_result_gen = Rcpp::wrap(addAgent(population, agent));
-    return rcpp_result_gen;
+    addAgent(population, agent);
+    return R_NilValue;
 END_RCPP
 }
 // getSize
@@ -245,27 +238,25 @@ BEGIN_RCPP
 END_RCPP
 }
 // addContact
-XP<Population> addContact(XP<Population> population, XP<Contact> contact);
+void addContact(XP<Population> population, XP<Contact> contact);
 RcppExport SEXP _ABM_addContact(SEXP populationSEXP, SEXP contactSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Population> >::type population(populationSEXP);
     Rcpp::traits::input_parameter< XP<Contact> >::type contact(contactSEXP);
-    rcpp_result_gen = Rcpp::wrap(addContact(population, contact));
-    return rcpp_result_gen;
+    addContact(population, contact);
+    return R_NilValue;
 END_RCPP
 }
 // setStates
-XP<Population> setStates(XP<Population> population, SEXP states);
+void setStates(XP<Population> population, SEXP states);
 RcppExport SEXP _ABM_setStates(SEXP populationSEXP, SEXP statesSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Population> >::type population(populationSEXP);
     Rcpp::traits::input_parameter< SEXP >::type states(statesSEXP);
-    rcpp_result_gen = Rcpp::wrap(setStates(population, states));
-    return rcpp_result_gen;
+    setStates(population, states);
+    return R_NilValue;
 END_RCPP
 }
 // newSimulation
@@ -305,22 +296,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // addLogger
-XP<Simulation> addLogger(XP<Simulation> sim, XP<Logger> logger);
+void addLogger(XP<Simulation> sim, XP<Logger> logger);
 RcppExport SEXP _ABM_addLogger(SEXP simSEXP, SEXP loggerSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Simulation> >::type sim(simSEXP);
     Rcpp::traits::input_parameter< XP<Logger> >::type logger(loggerSEXP);
-    rcpp_result_gen = Rcpp::wrap(addLogger(sim, logger));
-    return rcpp_result_gen;
+    addLogger(sim, logger);
+    return R_NilValue;
 END_RCPP
 }
 // addTransition
-XP<Simulation> addTransition(XP<Simulation> sim, List from, Nullable<List> contact_from, List to, Nullable<List> contact_to, Nullable<XP<Contact> > contact, SEXP waiting_time, Nullable<Function> to_change_callback, Nullable<Function> changed_callback);
+void addTransition(XP<Simulation> sim, List from, Nullable<List> contact_from, List to, Nullable<List> contact_to, Nullable<XP<Contact> > contact, SEXP waiting_time, Nullable<Function> to_change_callback, Nullable<Function> changed_callback);
 RcppExport SEXP _ABM_addTransition(SEXP simSEXP, SEXP fromSEXP, SEXP contact_fromSEXP, SEXP toSEXP, SEXP contact_toSEXP, SEXP contactSEXP, SEXP waiting_timeSEXP, SEXP to_change_callbackSEXP, SEXP changed_callbackSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Simulation> >::type sim(simSEXP);
     Rcpp::traits::input_parameter< List >::type from(fromSEXP);
@@ -331,8 +320,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type waiting_time(waiting_timeSEXP);
     Rcpp::traits::input_parameter< Nullable<Function> >::type to_change_callback(to_change_callbackSEXP);
     Rcpp::traits::input_parameter< Nullable<Function> >::type changed_callback(changed_callbackSEXP);
-    rcpp_result_gen = Rcpp::wrap(addTransition(sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback, changed_callback));
-    return rcpp_result_gen;
+    addTransition(sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback, changed_callback);
+    return R_NilValue;
 END_RCPP
 }
 // stateMatch

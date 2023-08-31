@@ -6,9 +6,6 @@
 \arguments{
 \item{agent}{an external pointer returned by newAgent}
 }
-\value{
-the agent itself
-}
 \description{
 leave the population that the agent is in
 }

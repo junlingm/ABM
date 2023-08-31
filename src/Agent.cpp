@@ -91,46 +91,40 @@ List getState(XP<Agent> agent)
 }
   
 // [[Rcpp::export]]
-XP<Agent> schedule(XP<Agent> agent, XP<Event> event)
+void schedule(XP<Agent> agent, XP<Event> event)
 {
   agent->schedule(event);
-  return agent;
 }
 
 // [[Rcpp::export]]
-XP<Agent> unschedule(XP<Agent> agent, XP<Event> event)
+void unschedule(XP<Agent> agent, XP<Event> event)
 {
   agent->unschedule(event);
-  return agent;
 }
 
 // [[Rcpp::export]]
-XP<Agent> clearEvents(XP<Agent> agent)
+void clearEvents(XP<Agent> agent)
 {
   agent->clearEvents();
-  return agent;
 }
 
 // [[Rcpp::export]]
-XP<Agent> setState(XP<Agent> agent, SEXP value)
+void setState(XP<Agent> agent, SEXP value)
 {
   Nullable<List> s(value);
   if (!s.isNull())
     agent->set(s.as());
-  return agent;
 }
 
 // [[Rcpp::export]]
-XP<Agent> leave(XP<Agent> agent)
+void leave(XP<Agent> agent)
 {
   agent->leave();
-  return agent;
 }
 
 // [[Rcpp::export]]
-XP<Agent> setDeathTime(XP<Agent> agent, double time)
+void setDeathTime(XP<Agent> agent, double time)
 {
   agent->setDeathTime(time);
-  return agent;
 }
 

@@ -10,9 +10,6 @@ one returned by \code{\link[=newPopulation]{newPopulation()}}}
 \item{agent}{an external pointer to an agent, returned by \code{\link[=newAgent]{newAgent()}} or
 \code{\link[=getAgent]{getAgent()}}}
 }
-\value{
-the population pointer itself for chaining actions
-}
 \description{
 add an agent to a population
 }

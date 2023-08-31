@@ -14,27 +14,27 @@ getState <- function(agent) {
 }
 
 schedule <- function(agent, event) {
-    .Call(`_ABM_schedule`, agent, event)
+    invisible(.Call(`_ABM_schedule`, agent, event))
 }
 
 unschedule <- function(agent, event) {
-    .Call(`_ABM_unschedule`, agent, event)
+    invisible(.Call(`_ABM_unschedule`, agent, event))
 }
 
 clearEvents <- function(agent) {
-    .Call(`_ABM_clearEvents`, agent)
+    invisible(.Call(`_ABM_clearEvents`, agent))
 }
 
 setState <- function(agent, value) {
-    .Call(`_ABM_setState`, agent, value)
+    invisible(.Call(`_ABM_setState`, agent, value))
 }
 
 leave <- function(agent) {
-    .Call(`_ABM_leave`, agent)
+    invisible(.Call(`_ABM_leave`, agent))
 }
 
 setDeathTime <- function(agent, time) {
-    .Call(`_ABM_setDeathTime`, agent, time)
+    invisible(.Call(`_ABM_setDeathTime`, agent, time))
 }
 
 newRandomMixing <- function() {
@@ -70,7 +70,7 @@ newPopulation <- function(n, initializer = NULL) {
 }
 
 addAgent <- function(population, agent) {
-    .Call(`_ABM_addAgent`, population, agent)
+    invisible(.Call(`_ABM_addAgent`, population, agent))
 }
 
 getSize <- function(population) {
@@ -82,11 +82,11 @@ getAgent <- function(population, i) {
 }
 
 addContact <- function(population, contact) {
-    .Call(`_ABM_addContact`, population, contact)
+    invisible(.Call(`_ABM_addContact`, population, contact))
 }
 
 setStates <- function(population, states) {
-    .Call(`_ABM_setStates`, population, states)
+    invisible(.Call(`_ABM_setStates`, population, states))
 }
 
 newSimulation <- function(n, initializer = NULL) {
@@ -102,11 +102,11 @@ resumeSimulation <- function(sim, time) {
 }
 
 addLogger <- function(sim, logger) {
-    .Call(`_ABM_addLogger`, sim, logger)
+    invisible(.Call(`_ABM_addLogger`, sim, logger))
 }
 
 addTransition <- function(sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback = NULL, changed_callback = NULL) {
-    .Call(`_ABM_addTransition`, sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback, changed_callback)
+    invisible(.Call(`_ABM_addTransition`, sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback, changed_callback))
 }
 
 stateMatch <- function(state, rule) {

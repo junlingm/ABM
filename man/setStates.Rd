@@ -10,9 +10,6 @@ one returned by \code{\link[=newPopulation]{newPopulation()}}}
 \item{states}{either a list holding the states (one for each agent), or a
 function}
 }
-\value{
-the population pointer itself for chaining actions
-}
 \description{
 Set the state for each agent in a population
 }
