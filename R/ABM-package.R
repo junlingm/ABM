@@ -153,13 +153,10 @@
 #' result = sim$run(0:100)
 #' print(result)
 #'
-#' @docType package
-#'
-#' @name ABM
 #' @useDynLib ABM, .registration=TRUE
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp evalCpp
-NULL
+"_PACKAGE"
 
 #' The state of an agent
 #'
