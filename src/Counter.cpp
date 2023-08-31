@@ -9,6 +9,7 @@ Logger::Logger(const std::string &name)
 
 Logger::~Logger()
 {
+  Rprintf("delete logger %s\n", _name.c_str());
 }
 
 Counter::Counter(const std::string &name, const List &state, Nullable<List> to, long initial)
@@ -37,15 +38,18 @@ long Counter::report()
   return x;
 }
 
-StateLogger::StateLogger(const std::string &name, PAgent agent, const std::string &state)
+StateLogger::StateLogger(const std::string &name, const PAgent &agent, const std::string &state)
   : Logger(name), _value(R_NaN), _agent(agent), _state(state)
 {
 }
 
 void StateLogger::log(const Agent &agent, const State &from_state)
 {
-  const Agent &a = (_agent) ? *_agent : agent;
-  _value = as<double>(a.state()[_state]);
+  PAgent pa = _agent.lock();
+  if (pa) 
+    _value = as<double>(pa->state()[_state]);
+  else
+    _value = as<double>(agent.state()[_state]);
 }
 
 long StateLogger::report()
@@ -62,10 +66,7 @@ XP<Counter> newCounter(std::string name, List from, Nullable<List> to=R_NilValue
 // [[Rcpp::export]]
 XP<StateLogger> newStateLogger(std::string name, Nullable<XP<Agent> > agent, std::string state)
 {
-  std::shared_ptr<Agent> pa;
-  if (!agent.isNull()) {
-    pa = agent.as();
-  }
+  PAgent pa = agent.isNull() ? nullptr : agent.as();
   return std::make_shared<StateLogger>(name, pa, state);
 }
 
