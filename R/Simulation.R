@@ -80,13 +80,13 @@ Simulation <- R6::R6Class(
 #' @param logger, an external pointer returned by functions like 
 #' newCounter or newStateLogger.
 #' 
-#' @return the exactly same value as sim.
+#' @return the simulation object itself (invisible)
 #' 
 #' @details without adding a logger, there will be no useful simulation
 #' results returned.
     addLogger = function(logger) {
       addLogger(self$get, logger)
-      self
+      invisible(self)
     },
 
 #' Add a transition to the simulation
@@ -102,6 +102,8 @@ Simulation <- R6::R6Class(
 #' 
 #' @param changed_callback the R callback function after the change
 #' happened. See the details section.
+#' 
+#' @return the simulation object itself (invisible)
 #' 
 #' @details If waiting.time is a function then it should take exactly one 
 #' argument time, which is a numeric value holding the current value, and
@@ -147,8 +149,8 @@ Simulation <- R6::R6Class(
       addTransition(self$get,
             l$from$first, l$from$second, l$to$first, l$to$second, l$contact,
             waiting.time, to_change_callback, changed_callback)
-      self
-    }
+      invisible(self)
+  }
   ),
   private = list(
     # parse a state. 

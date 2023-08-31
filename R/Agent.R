@@ -51,12 +51,12 @@ Agent <- R6::R6Class(
 #' @param event an object of the R6 class Event, or an external pointer 
 #' returned by newEvent
 #' 
-#' @return the agent itself
+#' @return the agent itself (invisible)
     schedule = function(event) {
       if (inherits(event, "R6Event"))
         event = event$get
       schedule(private$agent, event)
-      return(self)
+      invisible(self)
     },
 
 #' Unschedule an event
@@ -64,12 +64,12 @@ Agent <- R6::R6Class(
 #' @param event an object of the R6 class Event, or an external pointer 
 #' returned by newEvent
 #' 
-#' @return the agent itself
+#' @return the agent itself (invisible)
     unschedule = function(event) {
       if (inherits(event, "R6Event"))
         event = event$get
       unschedule(private$agent, event)
-      return(self)
+      invisible(self)
     },
 
 #' leave the population that the agent is in
@@ -77,20 +77,20 @@ Agent <- R6::R6Class(
 #' @return the agent itself
     leave = function() {
       leave(private$agent)
-      return(self)
+      invisible(self)
     },
 
 #' set the time of death for the agent
 #' 
 #' @param time the time of death, a numeric value
 #' 
-#' @return the agent itself
+#' @return the agent itself (invisible)
 #' 
 #' @details At the time of death, the agent is removed from the simulation. 
 #' Calling it multiple times causes the agent to die at the earliest time.
     setDeathTime = function(time) {
       setDeathTime(private$agent, time)
-      self
+      invisible(self)
     }
   ),
   private = list(
