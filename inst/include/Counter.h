@@ -133,7 +133,7 @@ public:
    * 
    * @param state the state name of the state of the agent to be logged
    */
-  StateLogger(const std::string &name, const PAgent &agent, const std::string &state);
+  StateLogger(const std::string &name, PAgent agent, const std::string &state);
   /**
    * Log the state transition of the agent
    * 
