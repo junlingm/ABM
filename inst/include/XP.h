@@ -126,12 +126,12 @@ public:
   /**
    * converts to a normal const C++ pointer
    */
-  operator const T*() const { return this->get(); }
+  operator const T*() const { return *this->get(); }
   
   /**
    * converts to a normal C++ pointer
    */
-  operator T*() { return this->get(); }
+  operator T*() { return *this->get(); }
   
   /**
    * converts to a shared_ptr
