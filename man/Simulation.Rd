@@ -157,7 +157,7 @@ Add a transition to the simulation
 }
 
 \subsection{Returns}{
-the exactly same value as sim.
+the simulation object itself (invisible)
 }
 }
 \if{html}{\out{<hr>}}
@@ -233,6 +233,9 @@ the third argument:
 3. contact: the contact agent, an external pointer
 }
 
+\subsection{Returns}{
+the simulation object itself (invisible)
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-R6Simulation-clone"></a>}}

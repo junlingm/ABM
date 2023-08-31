@@ -103,7 +103,7 @@ remove an agent
 }
 
 \subsection{Returns}{
-the object itself for chaining actions.
+the population object itself (invisible) for chaining actions
 }
 }
 \if{html}{\out{<hr>}}
@@ -130,7 +130,7 @@ Add a contact pattern
 }
 
 \subsection{Returns}{
-the object itself for chaining actions.
+the population object itself (invisible) for chaining actions
 }
 }
 \if{html}{\out{<hr>}}
@@ -193,7 +193,7 @@ set the state of a specific agent by index
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-the population object itself for chaining actions
+the population object itself (invisible) for chaining actions
 Set the states for the agents
 }
 }

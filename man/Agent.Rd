@@ -106,7 +106,7 @@ returned by newEvent}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-the agent itself
+the agent itself (invisible)
 Unschedule an event
 }
 }
@@ -127,7 +127,7 @@ returned by newEvent}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-the agent itself
+the agent itself (invisible)
 leave the population that the agent is in
 }
 }
@@ -160,7 +160,7 @@ set the time of death for the agent
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-the agent itself
+the agent itself (invisible)
 }
 }
 \if{html}{\out{<hr>}}
