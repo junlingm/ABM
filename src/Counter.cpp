@@ -9,7 +9,6 @@ Logger::Logger(const std::string &name)
 
 Logger::~Logger()
 {
-  Rprintf("delete logger %s\n", _name.c_str());
 }
 
 Counter::Counter(const std::string &name, const List &state, Nullable<List> to, long initial)
