@@ -85,7 +85,7 @@ public:
    * 
    * @details after calling this function, the agent is not in any population
    */
-  virtual void leave();
+  virtual PAgent leave();
   
   /**
    * set the time of death for the agent

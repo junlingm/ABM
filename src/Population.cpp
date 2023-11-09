@@ -78,18 +78,20 @@ void Population::report()
     a->report();
 }
 
-void Population::remove(Agent &agent)
+PAgent Population::remove(Agent &agent)
 {
-  if (agent._population == this) {
-    for (auto &c : _contacts)
-      c->remove(agent);
-    size_t id = agent._id;
-    agent._contactEvents->clearEvents();
-    agent._population = nullptr;
-    _available.insert(id);
-    unschedule(_agents[id - 1]);
-    _agents[id - 1]= nullptr;
-  }
+  if (agent._population != this) 
+    return NULL;
+  for (auto &c : _contacts)
+    c->remove(agent);
+  size_t id = agent._id;
+  agent._contactEvents->clearEvents();
+  agent._population = nullptr;
+  _available.insert(id);
+  PAgent a = _agents[id - 1];
+  unschedule(a);
+  _agents[id - 1]= nullptr;
+  return a;
 }
 
 CharacterVector Population::classes = CharacterVector::create("Population", "Agent", "Event");

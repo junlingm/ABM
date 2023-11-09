@@ -30,7 +30,7 @@ setState <- function(agent, value) {
 }
 
 leave <- function(agent) {
-    invisible(.Call(`_ABM_leave`, agent))
+    .Call(`_ABM_leave`, agent)
 }
 
 setDeathTime <- function(agent, time) {

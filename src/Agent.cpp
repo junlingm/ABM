@@ -44,15 +44,16 @@ void Agent::stateChanged(Agent &agent, const State &from)
     _population->stateChanged(agent, from);
 }
 
-void Agent::leave()
+PAgent Agent::leave()
 {
-  if (_population != nullptr) {
-    State save = _state;
-    _state = State();
-    stateChanged(*this, save);
-    _population->remove(*this);
-    _state = save;
-  }
+  if (_population == nullptr) 
+    return nullptr;
+  State save = _state;
+  _state = State();
+  stateChanged(*this, save);
+  PAgent agent = _population->remove(*this);
+  _state = save;
+  return agent;
 }
 
 void Agent::setDeathTime(double time)
@@ -117,9 +118,9 @@ void setState(XP<Agent> agent, SEXP value)
 }
 
 // [[Rcpp::export]]
-void leave(XP<Agent> agent)
+XP<Agent> leave(XP<Agent> agent)
 {
-  agent->leave();
+  return agent->leave();
 }
 
 // [[Rcpp::export]]

@@ -69,10 +69,12 @@ public:
    * 
    * @param agent the agent to be removed
    * 
+   * @return returns the agent itself
+   * 
    * @details The agent is unscheduled from the population, and all its contact
    * patterns
    */
-  void remove(Agent &agent);
+  PAgent remove(Agent &agent);
   
   /**
    * Add a contact pattern
