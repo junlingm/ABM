@@ -42,7 +42,7 @@ Contact = R6::R6Class(
     
 #' @description Add an agent to the contact pattern
 #' 
-#' @param agent the agent whose contacts are requested. An external pointer
+#' @param agent the agent to be added. An external pointer
 #' 
 #' @details When an agent is added to a population, it is added to each of the
 #' contact patterns. When a contact pattern is added to a population, all
