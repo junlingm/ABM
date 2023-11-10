@@ -55,7 +55,17 @@ Contact = R6::R6Class(
 #' within the finalize method. However, the contact object must handle
 #' adding an agent after build is called.
     addAgent = function(agent) { },
-    
+
+#' @description Remove an agent from the contact pattern
+#' 
+#' @param agent the agent to be removed. An external pointer
+#' 
+#' @details When an agent leaves a population, it is removed from each of the
+#' contact patterns.
+#' 
+#' This method may also be called in event handlers to remove an agent
+    remove = function(agent) { },
+
 #' @description Build the contact pattern
 #' 
 #' @details This method is called immediately before the simulation is run, 
