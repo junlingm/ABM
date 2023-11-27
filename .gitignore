@@ -4,3 +4,4 @@ src/*.o.tmp
 .Rproj.user/*
 *.Rproj
 .Rproj.user
+.Rhistory
