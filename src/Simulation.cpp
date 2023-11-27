@@ -87,6 +87,16 @@ void Simulation::add(Transition *rule)
   }
 }
 
+Simulation *Simulation::simulation()
+{
+  return this;
+}
+
+const Simulation *Simulation::simulation() const
+{
+  return this;
+}
+
 CharacterVector Simulation::classes = CharacterVector::create("Simulation", "Population", "Agent", "Event");
 
 // [[Rcpp::export]]

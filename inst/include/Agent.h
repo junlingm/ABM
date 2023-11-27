@@ -24,6 +24,7 @@ class ContactTransition;
  */
 class Agent : public Calendar {
 public:
+  typedef unsigned long IDType;
   /**
    * Constructor that creates an agent with a given state
    * 
@@ -35,7 +36,7 @@ public:
   /**
    * Returns the agent id (a long value)
    */
-  unsigned long id() const { return _id; }
+  IDType id() const { return _id; }
 
   /**
    * Handle the agent as an event
@@ -98,8 +99,14 @@ public:
 
   /** the population that it is in */
   Population *population() { return _population; }
+  /** the population that it is in */
   const Population *population() const { return _population; }
 
+  /** the simulation that it is in */
+  virtual Simulation *simulation();
+  /** the simulation that it is in */
+  virtual const Simulation *simulation() const;
+  
   static Rcpp::CharacterVector classes;
 
 protected:
@@ -113,15 +120,31 @@ protected:
    */
   virtual void stateChanged(Agent &agent, const State &from);
 
+  /**
+   * getting noticed that the agent is added to a simulation
+   */
+  virtual void attached(Simulation &sim);
+  
+  /**
+   * The population that the agent is in
+   */
   Population *_population;
 
 private:
   friend class Population;
   friend class ContactTransition;
   /**
-   * The agent id, i.e., the order in the population
+   * The agent id, which is unique in the simulation. 
+   * 
+   * This id is assigned when the agent is attached to the simulation
    */
-  unsigned long _id;
+  IDType _id;
+  /**
+   * The index in the population's agent list
+   * 
+   * This index is assigned when the agent is attached to the population
+   */
+  unsigned int _index;
   /**
    * The state of the agent
    */

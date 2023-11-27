@@ -39,20 +39,15 @@ Population::Population(List states)
 void Population::add(PAgent agent)
 {
   if (agent->_population == this) return;
-  if (_available.empty()) {
-    _agents.push_back(agent);
-    agent->_id = _agents.size();
-  } else {
-    size_t id = *_available.begin();
-    agent->_id = id;
-    _available.erase(_available.begin());
-    _agents[id - 1] = agent;
-  }
+  agent->_index = _agents.size();
+  _agents.push_back(agent);
   schedule(agent);
   agent->_population = this;
   agent->report();
   for (auto c : _contacts)
     c->add(agent);
+  Simulation *sim = simulation();
+  if (agent->_id == 0 && sim) agent->attached(*sim);
 }
 
 void Population::add(PContact contact)
@@ -60,13 +55,6 @@ void Population::add(PContact contact)
   _contacts.push_back(contact);
   for (auto &a : _agents)
     contact->add(a);
-}
-
-PAgent Population::agentAtIndex(size_t i) const
-{
-  for (auto a : _available)
-    if (a - 1 <= i) ++i;
-  return _agents[i];
 }
 
 void Population::report()
@@ -84,14 +72,28 @@ PAgent Population::remove(Agent &agent)
     return NULL;
   for (auto &c : _contacts)
     c->remove(agent);
-  size_t id = agent._id;
   agent._contactEvents->clearEvents();
   agent._population = nullptr;
-  _available.insert(id);
-  PAgent a = _agents[id - 1];
+  unsigned int i = agent._index;
+  agent._index = 0;
+  size_t n = _agents.size();
+  PAgent a = _agents[i];
+  if (n > 1 && i < n - 1) {
+    _agents[i] = _agents[n - 1];
+    _agents[n - 1] = nullptr;
+    _agents[i]->_index = i;
+  } else _agents[i]= nullptr;
+  _agents.resize(n - 1);
   unschedule(a);
-  _agents[id - 1]= nullptr;
   return a;
+}
+
+void Population::attached(Simulation &sim)
+{
+  Agent::attached(sim);
+  printf("attached: %x\n", _id);
+  for (auto &a : _agents)
+    a->attached(sim);
 }
 
 CharacterVector Population::classes = CharacterVector::create("Population", "Agent", "Event");

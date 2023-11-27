@@ -91,7 +91,7 @@ public:
    * 
    * It is the number of agents in the population.
    */
-  size_t size() const { return _agents.size() - _available.size(); }
+  size_t size() const { return _agents.size(); }
 
   /**
    * return a specific agent by index
@@ -100,7 +100,7 @@ public:
    * 
    * @return a shared_ptr<Agent> pointing to the agent requested.
    */
-  PAgent agentAtIndex(size_t i) const;
+  PAgent agentAtIndex(size_t i) const { return _agents[i]; }
   
   /**
    * return a specific agent by ID
@@ -140,6 +140,11 @@ public:
 
 protected:
   /**
+   * getting noticed that the agent is added to a simulation
+   */
+  virtual void attached(Simulation &sim);
+  
+  /**
    * A vector holding all agents in the population
    */
   std::vector<PAgent> _agents;
@@ -147,15 +152,6 @@ protected:
    * A list of shared_ptr<Contact> pointing to the contacts
    */
   std::list<PContact> _contacts;
-  
-private:
-  /**
-   * Available ids to be reused.
-   * 
-   * These are the ids that were used by an agent who have been removed from
-   * the population
-   */
-  std::set<size_t> _available;
 };
 
 typedef std::shared_ptr<Population> PPopulation;

@@ -14,7 +14,7 @@ public:
 };
 
 Agent::Agent(Nullable<List> state)
-  : Calendar(), _population(nullptr), _contactEvents(new Calendar)
+  : Calendar(), _population(nullptr), _id(0), _index(0), _contactEvents(new Calendar)
 {
   if (state != R_NilValue) _state &= state.as();
   schedule(_contactEvents);
@@ -54,6 +54,22 @@ PAgent Agent::leave()
   PAgent agent = _population->remove(*this);
   _state = save;
   return agent;
+}
+
+void Agent::attached(Simulation &sim)
+{
+  if (_id == 0)
+    _id = sim.nextID();
+}
+
+Simulation *Agent::simulation()
+{
+  return _population == nullptr ? nullptr : _population->simulation();
+}
+
+const Simulation *Agent::simulation() const
+{
+  return _population == nullptr ? nullptr : _population->simulation();
 }
 
 void Agent::setDeathTime(double time)
