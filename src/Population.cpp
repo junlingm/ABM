@@ -91,7 +91,6 @@ PAgent Population::remove(Agent &agent)
 void Population::attached(Simulation &sim)
 {
   Agent::attached(sim);
-  printf("attached: %x\n", _id);
   for (auto &a : _agents)
     a->attached(sim);
 }
