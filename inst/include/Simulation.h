@@ -93,9 +93,11 @@ public:
   /**
    * Get the next unique ID in the simulation
    * 
-   * @return the next ID, an unsigned int
+   * @return the next ID, an unsigned integer
+   * 
+   * @details the first ID is 1, and each call to this method will increase by 1.
    */
-  unsigned int nextID() { return _next_id++; }
+  unsigned int nextID() { return ++_next_id; }
 
   /** the simulation that it is in */
   virtual Simulation *simulation();
