@@ -4,6 +4,7 @@
 #include "State.h"
 #include <map>
 
+class Simulation;
 class Population;
 class ContactTransition;
 
@@ -131,6 +132,7 @@ protected:
   Population *_population;
 
 private:
+  friend class Simulation; // so that Simulation can call attached
   friend class Population;
   friend class ContactTransition;
   /**
