@@ -27,17 +27,16 @@ RandomMixing::RandomMixing()
 {
 }
 
-const std::vector<PAgent> &RandomMixing::contact(double time, Agent &agent)
+const std::vector<Agent*> &RandomMixing::contact(double time, Agent &agent)
 {
   size_t n = _population->size();
   if (n <= 1)
     _neighbors.resize(0);
   else {
-    size_t id = agent.id();
     while (true) {
       size_t i = unif.get() * n;
-      auto c = _population->agentAtIndex(i);
-      if (c->id() != id) {
+      auto c = _population->agentAtIndex(i).get();
+      if (c != &agent) {
         _neighbors[0] = c;
         break;
       }
@@ -46,7 +45,7 @@ const std::vector<PAgent> &RandomMixing::contact(double time, Agent &agent)
   return _neighbors;
 }
 
-void RandomMixing::add(const PAgent &agent)
+void RandomMixing::add(Agent &agent)
 {
 }
 
@@ -67,7 +66,7 @@ RContact::RContact(Environment r6)
 {
 }
 
-const std::vector<PAgent> &RContact::contact(double time, Agent &agent)
+const std::vector<Agent*> &RContact::contact(double time, Agent &agent)
 {
   GenericVector c = _r6_contact(time, XP<Agent>(agent));
   size_t n = c.size();
@@ -79,7 +78,7 @@ const std::vector<PAgent> &RContact::contact(double time, Agent &agent)
   return _neighbors;
 }
 
-void RContact::add(const PAgent &agent)
+void RContact::add(Agent &agent)
 {
   _r6_addAgent(XP<Agent>(agent));
 }

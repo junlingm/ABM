@@ -10,12 +10,12 @@ Network::Network()
 {
 }
 
-const std::vector<PAgent> &Network::contact(double time, Agent &agent)
+const std::vector<Agent*> &Network::contact(double time, Agent &agent)
 {
-  return _neighbors[agent.id() - 1];
+  return _neighbors[agent.index()];
 }
 
-void Network::add(const PAgent &agent)
+void Network::add(Agent &agent)
 {
   // have we finalized?
   if (_population != nullptr) grow(agent);
@@ -26,10 +26,10 @@ void Network::remove(Agent &agent)
   size_t i = agent.id() - 1;
   for (auto c : _neighbors[i]) {
     size_t j = c->id() - 1;
-    std::vector<PAgent> &nj = _neighbors[j];
+    std::vector<Agent*> &nj = _neighbors[j];
     size_t m = nj.size();
     for (size_t k = 0; k < m - 1; ++k) {
-      if (nj[k].get() == &agent) {
+      if (nj[k] == &agent) {
         nj[k] = nj[m-1];
         break;
       }
@@ -74,16 +74,16 @@ void Network::connect(int from, int to)
 {
   if (from == to) return;
   // avoid multiple loops
-  auto t = _population->agentAtIndex(to);
+  auto t = _population->agentAtIndex(to).get();
   for (auto c : _neighbors[from])
     if (c == t) return;
   _neighbors[from].push_back(t);
-  _neighbors[to].push_back(_population->agentAtIndex(from));
+  _neighbors[to].push_back(_population->agentAtIndex(from).get());
 }
 
-void ConfigurationModel::grow(const PAgent &agent)
+void ConfigurationModel::grow(Agent &agent)
 {
-  Agent::IndexType i = agent->index();
+  Agent::IndexType i = agent.index();
   int degree = as<int>(_rng(1));
   std::vector<size_t> neighborhood(degree);
   size_t L = 0;

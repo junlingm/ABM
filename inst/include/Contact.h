@@ -34,7 +34,7 @@ public:
    * 
    * @return a vector of shared_ptr<Agent> that holds the contacts
    */
-  virtual const std::vector<PAgent> &contact(double time, Agent &agent) = 0;
+  virtual const std::vector<Agent*> &contact(double time, Agent &agent) = 0;
   Population *population() { return _population; }
 
   /**
@@ -63,7 +63,7 @@ public:
    * within the finalize method. However, the contact object must handle
    * adding an agent after finalize is called.
    */
-  virtual void add(const PAgent &agent) = 0;
+  virtual void add(Agent &agent) = 0;
 
   /** 
    * Finalize the contact pattern
@@ -131,9 +131,9 @@ public:
    * 
    * @return a vector of shared_ptr<Agent> that holds the contacts
    */
-  virtual const std::vector<PAgent> &contact(double time, Agent &agent);
+  virtual const std::vector<Agent*> &contact(double time, Agent &agent);
   
-  virtual void add(const PAgent &agent);
+  virtual void add(Agent &agent);
   
   virtual void build();
   
@@ -149,7 +149,7 @@ private:
    * A vector of length one that holds the random contact. This avoids
    * creating the vector and copying the contact
    */
-  std::vector<PAgent> _neighbors;
+  std::vector<Agent*> _neighbors;
 };
 
 /**
@@ -178,9 +178,9 @@ public:
    * 
    * @return a vector of shared_ptr<Agent> that holds the contacts
    */
-  virtual const std::vector<PAgent> &contact(double time, Agent &agent);
+  virtual const std::vector<Agent*> &contact(double time, Agent &agent);
   
-  virtual void add(const PAgent &agent);
+  virtual void add(Agent &agent);
   
   virtual void build();
   
@@ -196,7 +196,7 @@ private:
    * A vector of length one that holds the random contact. This avoids
    * creating the vector and copying the contact
    */
-  std::vector<PAgent> _neighbors;
+  std::vector<Agent*> _neighbors;
   
   /**
    * The R6 object

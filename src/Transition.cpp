@@ -145,7 +145,7 @@ void ContactTransition::schedule(double time, Agent &agent)
   auto contact = _contact.contact(time, agent);
   if (contact.empty()) return;
   double waiting_time = R_PosInf;
-  std::shared_ptr<Agent> next_contact;
+  Agent* next_contact;
   for (auto c : contact) {
     double t = _waiting_time->waitingTime(time);
     if (t < waiting_time) {
@@ -154,7 +154,8 @@ void ContactTransition::schedule(double time, Agent &agent)
     }
   }
   PRINT("%lf, %lf, %ld, %ld, NA\n", time, waiting_time+time, agent.id(), next_contact->id());
-  agent._contactEvents->schedule(std::make_shared<ContactEvent>(waiting_time + time, next_contact, *this));
+  agent._contactEvents->schedule(std::make_shared<ContactEvent>(
+      waiting_time + time, next_contact->population()->agent(*next_contact), *this));
 }
 
 ExpWaitingTime::ExpWaitingTime(double rate)
