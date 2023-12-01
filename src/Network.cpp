@@ -56,7 +56,7 @@ void ConfigurationModel::buildNetwork()
   IntegerVector d = _rng(_neighbors.size());
   size_t L = sum(d) + 0.5;
   std::vector<int> stubs(L);
-  for (size_t i = 1, k = 0; i <= d.size(); ++i)
+  for (size_t i = 0, k = 0; i < d.size(); ++i)
     for (size_t j = 0; j < d[i]; ++j)
       stubs[k++] = i;
   size_t from, to, n = stubs.size();
@@ -74,33 +74,31 @@ void Network::connect(int from, int to)
 {
   if (from == to) return;
   // avoid multiple loops
-  auto t = _population->agentByID(to);
-  for (auto c : _neighbors[from - 1])
+  auto t = _population->agentAtIndex(to);
+  for (auto c : _neighbors[from])
     if (c == t) return;
-  _neighbors[from - 1].push_back(t);
-  _neighbors[to - 1].push_back(_population->agentByID(from));
+  _neighbors[from].push_back(t);
+  _neighbors[to].push_back(_population->agentAtIndex(from));
 }
 
 void ConfigurationModel::grow(const PAgent &agent)
 {
-  size_t i = agent->id() - 1;
+  Agent::IndexType i = agent->index();
   int degree = as<int>(_rng(1));
   std::vector<size_t> neighborhood(degree);
   size_t L = 0;
   for (auto c : _neighbors)
     L += c.size();
-  for (int i = 0; i < degree; ++i)
-    neighborhood[i] = L * RUnif::stdUnif.get();
+  for (int j = 0; j < degree; ++j)
+    neighborhood[j] = L * RUnif::stdUnif.get();
   std::sort(neighborhood.begin(), neighborhood.end());
-  size_t k = 0;
+  size_t k = 0, total = 0;
   for (auto c : _neighbors) {
-    size_t d = c.size();
-    while (neighborhood[k] < d) {
-      connect(i, ++k);
+    total += c.size();
+    if (neighborhood[k] < total) {
+      connect(i, k++);
       if (k == degree) return;
     }
-    for (size_t i = k; i < degree; ++i)
-      neighborhood[i] -= d;
   }
 }
 
