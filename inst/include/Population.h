@@ -109,7 +109,7 @@ public:
    * 
    * @return a shared_ptr<Agent> pointing to the agent requested.
    */
-  PAgent agentByID(size_t id) const { return _agents[id - 1]; }
+  PAgent agent(const Agent &agent) const { return agent._population == this ? _agents[agent._index] : nullptr; }
   
   /**
    * Initialize the state of agents in the population using an 
