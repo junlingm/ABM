@@ -26,6 +26,7 @@ class ContactTransition;
 class Agent : public Calendar {
 public:
   typedef unsigned long IDType;
+  typedef unsigned int IndexType;
   /**
    * Constructor that creates an agent with a given state
    * 
@@ -38,6 +39,11 @@ public:
    * Returns the agent id (a long value)
    */
   IDType id() const { return _id; }
+
+  /**
+   * Returns the index of the agent in the population
+   */
+  IndexType index() const { return _index; }
 
   /**
    * Handle the agent as an event
@@ -146,7 +152,7 @@ private:
    * 
    * This index is assigned when the agent is attached to the population
    */
-  unsigned int _index;
+  IndexType _index;
   /**
    * The state of the agent
    */
