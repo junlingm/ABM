@@ -2,7 +2,7 @@
 
 #include "Contact.h"
 
-class Network : public Contact {
+class Network : public Contact, public Storage<std::vector<Agent*> > {
 public:
   /**
    * Constructor with the associated population
@@ -40,19 +40,14 @@ public:
   virtual void remove(Agent &agent);
   
   /**
-   * Getting ready to return the contacts
-   */
-  virtual void build();
-
-protected:
-  /**
    * Build the network connections.
    * 
    * @details This function is called in finalize() to let each subclass
    * build the network.
    */
-  virtual void buildNetwork() = 0;
+  virtual void build() = 0;
 
+protected:
   /**
    * Grow the network and add the agent
    * 
@@ -66,18 +61,11 @@ protected:
   /**
    * Connect two nodes
    * 
-   * @param from the index of the starting node 
+   * @param from the starting node 
    * 
-   * @param to the index of the ending node
-   * 
-   * @param from and to are the indices of the agents in the population.
+   * @param to the ending node
    */
-  void connect(int from, int to);
-  
-  /**
-   * The array of neighbors for each node.
-   */
-  std::vector<std::vector<Agent*> > _neighbors;
+  void connect(Agent *from, Agent *to);
 };
 
 /**
@@ -96,15 +84,15 @@ public:
    */
   ConfigurationModel(Rcpp::Function degree_rng);
   
-protected:
   /**
    * Build the network connections.
    * 
    * @details This function is called in finalize() to let each subclass
    * build the network.
    */
-  virtual void buildNetwork();
+  virtual void build();
   
+protected:
   /**
    * Grow the network and add the agent
    * 

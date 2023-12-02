@@ -6,44 +6,42 @@
 using namespace Rcpp;
 
 Network::Network()
-  : Contact()
+  : Contact(), Storage<std::vector<Agent *> >("Network")
 {
 }
 
 const std::vector<Agent*> &Network::contact(double time, Agent &agent)
 {
-  return _neighbors[agent.index()];
+  auto *info = storage(agent);
+  if (!info) throw std::runtime_error("agent not in network");
+  return *info;
 }
 
 void Network::add(Agent &agent)
 {
+  auto *neighbors = storage(agent);
+  if (!neighbors) store(agent, new std::vector<Agent*>());
   // have we finalized?
   if (_population != nullptr) grow(agent);
 }
 
 void Network::remove(Agent &agent)
 {
-  size_t i = agent.id() - 1;
-  for (auto c : _neighbors[i]) {
-    size_t j = c->id() - 1;
-    std::vector<Agent*> &nj = _neighbors[j];
-    size_t m = nj.size();
+  auto *neighbors = storage(agent);
+  if (!neighbors) return;
+  for (auto c : *neighbors) {
+    auto *nj = storage(*c);
+    assert(nj);
+    size_t m = nj->size();
     for (size_t k = 0; k < m - 1; ++k) {
-      if (nj[k] == &agent) {
+      if ((*nj)[k] == &agent) {
         nj[k] = nj[m-1];
         break;
       }
     }
-    nj.resize(m-1);
+    nj->resize(m-1);
   }
-  _neighbors[i].clear();
-}
-
-void Network::build()
-{
-  size_t n = _population->size();
-  _neighbors.resize(n);
-  buildNetwork();
+  neighbors->clear();
 }
 
 ConfigurationModel::ConfigurationModel(Function degree_rng)
@@ -51,14 +49,14 @@ ConfigurationModel::ConfigurationModel(Function degree_rng)
 {
 }
 
-void ConfigurationModel::buildNetwork()
+void ConfigurationModel::build()
 {
-  IntegerVector d = _rng(_neighbors.size());
+  IntegerVector d = _rng(_population->size());
   size_t L = sum(d) + 0.5;
-  std::vector<int> stubs(L);
+  std::vector<Agent *> stubs(L);
   for (size_t i = 0, k = 0; i < d.size(); ++i)
     for (size_t j = 0; j < d[i]; ++j)
-      stubs[k++] = i;
+      stubs[k++] = _population->agentAtIndex(i).get();
   size_t from, to, n = stubs.size();
   while (n > 2) {
     from = RUnif::stdUnif.get() * n;
@@ -70,33 +68,40 @@ void ConfigurationModel::buildNetwork()
   }
 }
 
-void Network::connect(int from, int to)
+void Network::connect(Agent *from, Agent *to)
 {
-  if (from == to) return;
+  if (&from == &to) return;
   // avoid multiple loops
-  auto t = _population->agentAtIndex(to).get();
-  for (auto c : _neighbors[from])
-    if (c == t) return;
-  _neighbors[from].push_back(t);
-  _neighbors[to].push_back(_population->agentAtIndex(from).get());
+  auto *fn = storage(*from);
+  auto *tn = storage(*to);
+  assert(fn != NULL && tn != NULL);
+  for (auto c : *fn)
+    if (c == to) return;
+  fn->push_back(to);
+  tn->push_back(from);
 }
 
 void ConfigurationModel::grow(Agent &agent)
 {
-  Agent::IndexType i = agent.index();
   int degree = as<int>(_rng(1));
   std::vector<size_t> neighborhood(degree);
   size_t L = 0;
-  for (auto c : _neighbors)
-    L += c.size();
+  for (size_t i = 0; i < _population->size(); ++i) {
+    auto a = _population->agentAtIndex(i);
+    auto *n = storage(*a);
+    assert(n);
+    L += n->size();
+  }
   for (int j = 0; j < degree; ++j)
     neighborhood[j] = L * RUnif::stdUnif.get();
   std::sort(neighborhood.begin(), neighborhood.end());
   size_t k = 0, total = 0;
-  for (auto c : _neighbors) {
-    total += c.size();
+  for (size_t i = 0; i < _population->size(); ++i) {
+    auto a = _population->agentAtIndex(i);
+    auto *n = storage(*a);
+    total += n->size();
     if (neighborhood[k] < total) {
-      connect(i, k++);
+      connect(&agent, a.get());
       if (k == degree) return;
     }
   }
