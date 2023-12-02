@@ -84,7 +84,37 @@ void Agent::report()
   stateChanged(*this, empty_state);
 }
 
+unsigned int Agent::requestStorage(const std::string &name)
+{
+  auto i = _infoMap.find(name);
+  if (i == _infoMap.end()) {
+    unsigned int n = _infoMap.size();
+    _infoMap[name] = n;
+    return n;
+  }
+  return i->second;
+}
+
+void Agent::store(unsigned int handle, void *value) 
+{
+  if (handle >= _info.size())
+    _info.resize(handle + 1, NULL);
+  _info[handle] = value;
+}
+
 CharacterVector Agent::classes = CharacterVector::create("Agent", "Event");
+std::map<std::string, unsigned int> Agent::_infoMap;
+
+void AgentInfo::erase(Agent &agent)
+{ 
+  void *data = info(agent); 
+  if (data) free(data);
+  set(agent, NULL);
+}
+
+//--------------------------------------------
+// R interface
+//--------------------------------------------
 
 // [[Rcpp::export]]
 XP<Agent> newAgent(Nullable<List> state, NumericVector death_time = NA_REAL)

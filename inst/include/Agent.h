@@ -7,6 +7,7 @@
 class Simulation;
 class Population;
 class ContactTransition;
+class AgentInfo;
 
 /**
  * The class is an abstraction of an agent. The key task of an agent is to
@@ -113,6 +114,17 @@ public:
   virtual Simulation *simulation();
   /** the simulation that it is in */
   virtual const Simulation *simulation() const;
+
+  /** 
+   * request a storage in the info vector 
+   * @param name a unique name for the storage
+   * return the handle of the storage
+   * @details 
+   * If the name was not allocated, then it is allocated and a new handle associated
+   * with it is returned. Otherwise, the existing handle associated with the name
+   * is returned.
+   */
+  static unsigned int requestStorage(const std::string &name);
   
   static Rcpp::CharacterVector classes;
 
@@ -141,6 +153,27 @@ private:
   friend class Simulation; // so that Simulation can call attached
   friend class Population;
   friend class ContactTransition;
+  friend class AgentInfo;
+  
+  /** 
+   * get the storage associated with the handle
+   * @param handle the handle of the storage
+   * @return the storage
+   */
+  void *info(unsigned int handle) {
+    return (_info.size() > handle) ? _info[handle] : nullptr; }
+  
+  /**
+   * set the storage associated with the handle
+   * @param handle the handle of the storage
+   * @param value the value of the storage
+   * @details the storage is a void pointer. The user is responsible for
+   * allocating and deallocating the storage. If the storage is not NULL, 
+   * it is replaced without being erased. So the user must delete the old data
+   * before it is overwritten.
+   */
+  void store(unsigned int handle, void *value);
+
   /**
    * The agent id, which is unique in the simulation. 
    * 
@@ -161,4 +194,100 @@ private:
    * A calendar holding all the transition events 
    */
   PCalendar _contactEvents;
+  /**
+   * A vector of private information associated with other components
+   */
+  std::vector<void *> _info;
+  /**
+   * A map from a name to a handle of the private information
+   */
+  static std::map<std::string, unsigned int> _infoMap;
+};
+
+class AgentInfo {
+public:
+  /**
+   * Constructor
+   * 
+   * @param name the name of the private information
+   * 
+   * @details the private information is associated with the agent
+   * and is stored in the agent's private storage. The private storage
+   * is a void pointer. The user is responsible for allocating and 
+   * deallocating the storage.
+   */
+  AgentInfo(const std::string &name) 
+    : _handle(Agent::requestStorage(name)) {}
+  
+  /**
+   * erase the private information associated with the agent
+   */
+  void erase(Agent &agent);
+
+protected:
+  /**
+   * get the storage associated with the agent
+   * @param agent the agent
+   * @return the storage
+   */
+  void *info(Agent &agent) { return agent.info(_handle); }
+  void set(Agent &agent, void *value) { agent.store(_handle, value); }
+  /**
+   * erase the data stored at the pointer
+   */
+  virtual void free(void *value) = 0;
+private:
+  unsigned int _handle;
+};
+
+template<class T>
+class Storage : public AgentInfo {
+public:
+  /**
+   * Constructor
+   * 
+   * @param name the name of the private information
+   * 
+   * @details the private information is associated with the agent
+   * and is stored in the agent's private storage. The private storage
+   * is a void pointer. The user is responsible for allocating and 
+   * deallocating the storage.
+   */
+  Storage(const std::string &name) : AgentInfo(name) {}
+  /**
+   * get the storage associated with the agent
+   * @param agent the agent
+   * @return the storage
+   */
+  T *storage(Agent &agent) { 
+    return static_cast<T *>(AgentInfo::info(agent)); 
+  }
+  /**
+   * get the storage associated with the agent
+   * @param agent the agent
+   * @return the storage
+   */
+  const T *storage(const Agent &agent) const { 
+    return static_cast<const T *>(AgentInfo::info(const_cast<Agent &>(agent))); 
+  }
+  /**
+   * store the value in the agent
+   * @param agent the agent
+   * @param value the value to store
+   * @details the value is stored in the agent's private storage. If there was 
+   * a value stored before, then it is erased.
+   */
+  void store(Agent &agent, T *value) {
+    T *old = storage(agent);
+    if (old) erase(agent);
+    AgentInfo::set(agent, value);
+  }
+  
+protected:
+  /**
+   * erase the data stored at the pointer
+   */
+  virtual void free(void *value) {
+    delete static_cast<T *>(value);
+  }
 };
