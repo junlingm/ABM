@@ -104,7 +104,13 @@ public:
   /** the simulation that it is in */
   virtual const Simulation *simulation() const;
   
-
+  /**
+   * Get the current time of the simulation
+   * 
+   * @return the current time
+   */
+  double currentTime() const { return _current_time; }
+  
   static Rcpp::CharacterVector classes;
   
 protected:
