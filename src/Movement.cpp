@@ -28,7 +28,7 @@ void Area::add(Agent &agent)
   if (_population) {
     Simulation *sim = _population->simulation();
     if (sim) {
-      double time =sim->time();
+      double time =sim->currentTime();
       _movement->init(time, agent);
     }
   }
@@ -37,7 +37,7 @@ void Area::add(Agent &agent)
 void Area::build()
 {
   Simulation *sim = _population->simulation();
-  double time = sim->time();
+  double time = sim->currentTime();
   for (size_t i = 0; i < _population->size(); ++i) {
     auto a = _population->agentAtIndex(i);
     _movement->init(time, *a);
@@ -242,6 +242,8 @@ bool MigrationEvent::handle(Simulation &sim, Agent &agent)
 
 Collision::~Collision()
 {
+}
+
 }
 
 Rcpp::CharacterVector Collision::classes = Rcpp::CharacterVector::create("Collision");
