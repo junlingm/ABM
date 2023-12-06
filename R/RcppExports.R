@@ -77,8 +77,8 @@ newRCollision <- function(calculator, handler) {
     .Call(`_ABM_newRCollision`, calculator, handler)
 }
 
-newRadiusCollision <- function(radius, handler, state) {
-    .Call(`_ABM_newRadiusCollision`, radius, handler, state)
+newRadiusCollision <- function(radius, handler) {
+    .Call(`_ABM_newRadiusCollision`, radius, handler)
 }
 
 collision <- function(time, c, agent, with) {

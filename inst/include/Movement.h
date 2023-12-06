@@ -29,12 +29,22 @@ protected:
  */
 class MigrationEvent : public Event {
 public:
-  MigrationEvent(double time, Region &region)
-    : Event(time), _region(region) { }
+  /**
+   * Constructor
+   * @param time the time of the event
+   * @param region the region that the agent migrates from
+   * @param normal the normal vector of the boundary that the agent hits
+   */
+  MigrationEvent(double time, Region &region, Rcpp::NumericVector normal)
+    : Event(time), _region(region), _normal(normal) { }
+  
+  Region &region() { return _region; }
+  Rcpp::NumericVector normal() { return _normal; }
   
 protected:
   virtual bool handle(Simulation &sim, Agent &agent);
   Region &_region;
+  Rcpp::NumericVector _normal;
 };
 
 /**
@@ -245,13 +255,16 @@ public:
    * @param agent the agent to update
    * @param from the region that the agent is migrating from
    * @param to the region that the agent is migrating to. 
+   * @param normal the normal vector of the boundary where the agent hits in 
+   * the from region.
    * @return the time that the agent will change its movement. 
    * @details If to == NULL, then the agent hits a boundary of a region, and 
    * there is no region beyond the boundary.
    * 
    * If the value is R_PosInf, then the agent does not change its movement.
    */
-  virtual void migrate(double time, Agent &agent, Region &from, Region *to) = 0;
+  virtual void migrate(double time, Agent &agent, Region &from, Region *to,
+                       Rcpp::NumericVector normal) = 0;
   
   /**
    * update the movement of an agent after a collision
@@ -310,7 +323,8 @@ public:
   RandomWalk(double speed, double rate);
   
   virtual void init(double time, Agent &agent);
-  virtual void migrate(double time, Agent &agent, Region &from, Region *to);
+  virtual void migrate(double time, Agent &agent, Region &from, Region *to,
+                       Rcpp::NumericVector normal);
   virtual CollisionType collide(double time, Agent &agent, Agent &collided);
   virtual void update(double time, Agent &agent);
   virtual double nextUpdateEvent(double time, Agent &agent);
@@ -364,8 +378,10 @@ public:
    * @param time the current time
    * @param agent the agent whose movement has changed
    * @param from the region that the agent is migrating from
+   * @param normal the normal vector of the boundary where the agent hits in
+   * the from region
    */
-  virtual void migrate(double time, Agent& agent, Region &from);
+  virtual void migrate(double time, Agent& agent, Region &from, Rcpp::NumericVector normal);
   
   const std::string &state() const { return _state; }
   

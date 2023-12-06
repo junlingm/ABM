@@ -47,16 +47,16 @@ void Area::remove(Agent &agent)
   throw std::runtime_error("Area::remove not implemented");
 }
 
-void Area::migrate(double time, Agent &agent, Region &from)
+void Area::migrate(double time, Agent &agent, Region &from, Rcpp::NumericVector normal)
 {
   from.updatePosition(time, agent);
   Rcpp::GenericVector s = agent.state()[_state];
-  Rcpp::NumericVector old = Rcpp::as<Rcpp::NumericVector>(s["position"]);
   from.remove(time, agent);
-  int i = _map->migrate(from.index(), s["position"], s["velocity"]);
-  Region *to = (i < 0) ? nullptr : _regions[i];
+  Rcpp::NumericVector p = s["position"];
+  int i = _map->migrate(from.index(), p, normal);
   assert(i != from.index());
-  _movement->migrate(time, agent, from, to);
+  Region *to = (i < 0) ? nullptr : _regions[i];
+  _movement->migrate(time, agent, from, to, normal);
   if (!to) to = &from;
   to->add(time, agent);
 }
@@ -184,7 +184,6 @@ void Region::schedule(double time, Agent &agent, bool update)
   // detect new collisions
   for (auto &with : _agents) {
     if (with != &agent) {
-      MovementInfo *iw = storage(*with);
       double t = collision.time(time, agent, *with);
       if (0 < t && t < R_PosInf) {
         info->collisions[t] = with;
@@ -201,9 +200,10 @@ void Region::schedule(double time, Agent &agent, bool update)
   // update collision with the boundaries
   if (info->migrate) agent.unschedule(info->migrate);
   Rcpp::GenericVector s = agent.state()[_area.state()];
-  double t = _geometry.hitBoundary(time, s["position"], s["velocity"]);
+  auto hit = _geometry.hitBoundary(time, s["position"], s["velocity"]);
+  double t = hit.first;
   if (time < t && t < R_PosInf) {
-    info->migrate = PEvent(new MigrationEvent(t, *this));
+    info->migrate = PEvent(new MigrationEvent(t, *this, hit.second));
     agent.schedule(info->migrate);
   } else info->migrate = nullptr;
 }
@@ -218,7 +218,7 @@ bool CollisionEvent::handle(Simulation &sim, Agent &agent)
 
 bool MigrationEvent::handle(Simulation &sim, Agent &agent)
 {
-  _region.area().migrate(time(), agent, _region);
+  _region.area().migrate(time(), agent, _region, _normal);
   // discard the event
   return false;
 }
@@ -335,13 +335,15 @@ Movement::CollisionType RandomWalk::collide(double time, Agent &agent, Agent &wi
   return BOTH;
 }
 
-void RandomWalk::migrate(double time, Agent &agent, Region &from, Region *to)
+void RandomWalk::migrate(double time, Agent &agent, Region &from, Region *to,
+                         Rcpp::NumericVector normal)
 {
   if (!to) {
     Rcpp::GenericVector s = agent.state()[state];
     Rcpp::NumericVector v = s["velocity"];
+    Rcpp::NumericVector nv = normal * sum(v * normal) / sum(normal * normal);
     s["time"] = time;
-    s["velocity"] = -v;
+    s["velocity"] = v - 2 * nv;
   }
 }
 
@@ -387,10 +389,9 @@ XP<Collision> newRCollision(Rcpp::Function calculator, Rcpp::Function handler)
  * @param radius radius of the collision
  * @param handler function to call when collision occurs
  */
-XP<Collision> newRadiusCollision(double radius, Rcpp::Function handler, std::string state)
+XP<Collision> newRadiusCollision(double radius, Rcpp::Function handler)
 {
   PCollision p(new RadiusCollision(radius, handler));
-  p->state = state;
   return XP<Collision>(p);
 }
 

@@ -11,10 +11,29 @@
  */
 class Geometry {
 public:
+  /**
+   * destroy the geometry
+   */
   virtual ~Geometry() {}
+  /**
+   * check if the geometry contains a point
+   * @param point the point to check
+   * @return true if the geometry contains the point, false otherwise
+   */
   virtual bool contains(const Rcpp::NumericVector& point) const = 0;
-  virtual double hitBoundary(double time, const Rcpp::NumericVector &position,
-                             const Rcpp::NumericVector &velocity) const = 0;
+  /**
+   * calculate the time that a movement hits a boundary, and the normal vector
+   * of the boundary where the movement hits.
+   * @param time the time of the movement
+   * @param position the position of the movement
+   * @param velocity the velocity of the movement
+   * @return a pair of the time that the movement hits a boundary, and the normal
+   * vector of the boundary where the movement hits. If the movement does not hit
+   * a boundary, the time is infinity, and the normal vector is a zero vector.
+   */
+  virtual std::pair<double, Rcpp::NumericVector> hitBoundary(
+      double time, const Rcpp::NumericVector &position,
+      const Rcpp::NumericVector &velocity) const = 0;
 };
 
 /**
@@ -57,13 +76,13 @@ public:
    * returns the region that a movement will migrate to after hitting a boundary
    * @param from the region that the movement is migrating from
    * @param position the position of the movement
-   * @param velocity the velocity of the movement
+   * @param normal the normal vector at the boundary where the movement hits
    * @return the region that the movement will migrate to, or -1 if the movement
    * will not migrate
    */
   virtual int migrate(unsigned int from,
-                      const Rcpp::NumericVector &position,
-                      const Rcpp::NumericVector &velocity) const = 0;
+                      Rcpp::NumericVector &position,
+                      const Rcpp::NumericVector &normal) const = 0;
   
   /** 
    * return a random position, and the region that this position is in 
@@ -89,8 +108,9 @@ public:
     : _lower(lower), _upper(upper) {}
   
   virtual bool contains(const Rcpp::NumericVector& point) const;
-  virtual double hitBoundary(double time, const Rcpp::NumericVector &position,
-                             const Rcpp::NumericVector &velocity) const;
+  virtual std::pair<double, Rcpp::NumericVector>  hitBoundary(
+      double time, const Rcpp::NumericVector &position,
+      const Rcpp::NumericVector &velocity) const;
   const Rcpp::NumericVector& lower() const { return _lower; }
   const Rcpp::NumericVector& upper() const { return _upper; }
   
@@ -116,8 +136,8 @@ public:
 
   virtual int region(const Rcpp::NumericVector& point) const;
   virtual int migrate(unsigned int from,
-                      const Rcpp::NumericVector &position,
-                      const Rcpp::NumericVector &velocity) const;
+                      Rcpp::NumericVector &position,
+                      const Rcpp::NumericVector &normal) const;
   virtual Rcpp::NumericVector randomPosition() const;
   
 protected:

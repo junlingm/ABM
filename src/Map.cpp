@@ -15,17 +15,33 @@ bool Box::contains(const Rcpp::NumericVector& point) const
   return true;
 }
 
-double Box::hitBoundary(double time, const Rcpp::NumericVector &position,
-                        const Rcpp::NumericVector &velocity) const
+std::pair<double, Rcpp::NumericVector> Box::hitBoundary(
+    double time, const Rcpp::NumericVector &position,
+    const Rcpp::NumericVector &velocity) const
 {
-  double hitTime = R_PosInf;
+  double hitTime = R_PosInf, t;
+  int border;
+  double dir;
+  Rcpp::NumericVector normal(position.size(), 0);
   for (int i = 0; i < position.size(); ++i) {
-    if (velocity[i] > epsilon)
-      hitTime = std::min(hitTime, (_upper[i] - position[i]) / velocity[i]);
-    else if (velocity[i] < epsilon)
-      hitTime = std::min(hitTime, (_lower[i] - position[i]) / velocity[i]);
+    if (velocity[i] > epsilon) {
+      t = (_upper[i] - position[i]) / velocity[i];
+      if (t > epsilon && hitTime > t) {
+        border = i;
+        dir = 1;
+        hitTime = t;
+      }
+    } else if (velocity[i] < epsilon) {
+      t = (_lower[i] - position[i]) / velocity[i];
+      if (t > epsilon && hitTime > t) {
+        border = i;
+        dir = -1;
+        hitTime = t;
+      }
+    }
   }
-  return (hitTime <= epsilon) ? R_PosInf : hitTime + time;
+  normal[border] = dir;
+  return std::make_pair(hitTime + time, normal);
 }
 
 Map::~Map()
@@ -87,8 +103,8 @@ Rcpp::NumericVector Lattice::randomPosition() const
   return _lower + (_upper - _lower) * u;
 }
 
-int Lattice::migrate(unsigned int from, const Rcpp::NumericVector &position, 
-                     const Rcpp::NumericVector &velocity) const
+int Lattice::migrate(unsigned int from, Rcpp::NumericVector &position, 
+                     const Rcpp::NumericVector &normal) const
 {
   // calculate the normal vector of the boundary at position
   std::vector<int> dir(_dimension);
@@ -96,19 +112,22 @@ int Lattice::migrate(unsigned int from, const Rcpp::NumericVector &position,
   const Rcpp::NumericVector &lower = b->lower();
   const Rcpp::NumericVector &upper = b->upper();
   for (unsigned int i = 0; i < _dimension; ++i) {
-    dir[i] = (from / _dim[i]) % _divisions[i];
-    if (fabs(position[i] - lower[i]) <= _unit[i] * epsilon) {
-      dir[i] -= 1;
-      if (dir[i] < 0) {
-        if (!_toroidal) return -1;
-        dir[i] = _divisions[i] - 1;
-      }
-    } else if (fabs(position[i] - upper[i]) <= _unit[i] * epsilon) {
-      dir[i] += 1;
-      if (dir[i] >= _divisions[i]) {
-        if (!_toroidal) return -1;
-        dir[i] = 0;
-      }
+    int d;
+    if (normal[i] > epsilon) 
+      d = 1;
+    else if (normal[i] < -epsilon)
+      d = -1;
+    else
+      d = 0;
+    dir[i] = (from / _dim[i]) % _divisions[i] + d;
+    if (dir[i] < 0) {
+      if (!_toroidal) return -1;
+      dir[i] = _divisions[i] - 1;
+      position[i] = upper[i];
+    } else if (dir[i] >= _divisions[i]) {
+      if (!_toroidal) return -1;
+      position[i] = lower[i];
+      dir[i] = 0;
     }
   }
   unsigned int to = 0;

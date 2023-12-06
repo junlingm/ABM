@@ -230,15 +230,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // newRadiusCollision
-/**  * Create a RadiusCollision object  * @param radius radius of the collision  * @param handler function to call when collision occurs  */ XP<Collision> newRadiusCollision(double radius, Rcpp::Function handler, std::string state);
-RcppExport SEXP _ABM_newRadiusCollision(SEXP radiusSEXP, SEXP handlerSEXP, SEXP stateSEXP) {
+/**  * Create a RadiusCollision object  * @param radius radius of the collision  * @param handler function to call when collision occurs  */ XP<Collision> newRadiusCollision(double radius, Rcpp::Function handler);
+RcppExport SEXP _ABM_newRadiusCollision(SEXP radiusSEXP, SEXP handlerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type radius(radiusSEXP);
     Rcpp::traits::input_parameter< Rcpp::Function >::type handler(handlerSEXP);
-    Rcpp::traits::input_parameter< std::string >::type state(stateSEXP);
-    rcpp_result_gen = Rcpp::wrap(newRadiusCollision(radius, handler, state));
+    rcpp_result_gen = Rcpp::wrap(newRadiusCollision(radius, handler));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -505,7 +504,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_regionAtPoint", (DL_FUNC) &_ABM_regionAtPoint, 2},
     {"_ABM_randomPosition", (DL_FUNC) &_ABM_randomPosition, 1},
     {"_ABM_newRCollision", (DL_FUNC) &_ABM_newRCollision, 2},
-    {"_ABM_newRadiusCollision", (DL_FUNC) &_ABM_newRadiusCollision, 3},
+    {"_ABM_newRadiusCollision", (DL_FUNC) &_ABM_newRadiusCollision, 2},
     {"_ABM_collision", (DL_FUNC) &_ABM_collision, 4},
     {"_ABM_newRandomWalk", (DL_FUNC) &_ABM_newRandomWalk, 2},
     {"_ABM_newArea", (DL_FUNC) &_ABM_newArea, 4},
