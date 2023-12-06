@@ -1,6 +1,8 @@
 #include "../inst/include/Movement.h"
 #include "../inst/include/Simulation.h"
 
+extern double epsilon;
+
 Rcpp::CharacterVector Area::classes = Rcpp::CharacterVector::create("Area", "Contact");
 
 Area::Area(const std::string& state, PMap map, PCollision collision, PMovement movement)
@@ -116,14 +118,14 @@ void Region::collide(double time, Agent &agent, Agent &with)
   Rcpp::NumericVector p1 = sa["position"];
   Rcpp::GenericVector sw = with.state()[_area.state()];
   Rcpp::NumericVector p2 = sw["position"];
-  unschedule(time, agent, TRUE);
-  unschedule(time, with, TRUE);
   auto &movement = _area.movement();
   auto who = movement.collide(time, agent, with);
-  bool update = who == Movement::FIRST_ONLY || who == Movement::BOTH;
-  schedule(time, agent, update);
-  update = who == Movement::SECOND_ONLY || who == Movement::BOTH;
-  schedule(time, with, update);
+  bool aupdate = who == Movement::FIRST_ONLY || who == Movement::BOTH;
+  bool wupdate = who == Movement::SECOND_ONLY || who == Movement::BOTH;
+  unschedule(time, agent, aupdate);
+  unschedule(time, with, wupdate);
+  schedule(time, agent, aupdate);
+  schedule(time, with, wupdate);
 }
 
 void Region::unschedule(double time, Agent &agent, bool update)
@@ -132,6 +134,7 @@ void Region::unschedule(double time, Agent &agent, bool update)
   if (update && info->update) agent.unschedule(info->update);
   if (info->collision) agent.unschedule(info->collision);
   if (info->migrate) agent.unschedule(info->migrate);
+  info->collisions.clear();
   // remove the collision records from the other agents
   for (auto &a : _agents) {
     if (a == &agent) continue;
@@ -184,11 +187,21 @@ void Region::schedule(double time, Agent &agent, bool update)
   // detect new collisions
   for (auto &with : _agents) {
     if (with != &agent) {
-      double t = collision.time(time, agent, *with);
-      if (0 < t && t < R_PosInf) {
-        info->collisions[t] = with;
+      // has this collision been scheduled by with?
+      MovementInfo *iw = storage(*with);
+      bool found = FALSE;
+      for (auto &c : iw->collisions) {
+        if (c.second == &agent) {
+          found = TRUE;
+          break;
+        }
+      }
+      // if found, then it has been managed by with. Otherwise, agent manages it
+      if (!found) {
+        double t = collision.time(time, agent, *with);
         // here we maintain the collision at agent, not at with because
         // we only schedule one collision event per collision
+        if (0 < t && t < R_PosInf) info->collisions[t] = with;
       }
     }
   }
@@ -263,8 +276,8 @@ double RadiusCollision::time(double time, Agent &agent, Agent &with) const
   // negative (or zero) and the other is positive, they are colliding.
   // If both are positive, the smaller time is the time entering collision.
   double dt = (-vp - Delta) / v2;
-  if (dt <= 0) dt = (-vp + Delta) / v2;
-  return (dt <= 0) ? R_PosInf : dt + time;
+  if (dt <= epsilon) dt = (-vp + Delta) / v2;
+  return (dt <= epsilon) ? R_PosInf : dt + time;
 }
 
 Movement::~Movement()
@@ -377,7 +390,7 @@ bool UpdateMovement::handle(Simulation &sim, Agent &agent)
  * @param calculator function to calculate the time of collision
  * @param handler function to call when collision occurs
  */
-XP<Collision> newRCollision(Rcpp::Function calculator, Rcpp::Function handler)
+XP<Collision> newRCollision(Rcpp::Function calculator, Rcpp::Nullable<Rcpp::Function> handler)
 {
   PCollision p(new RCollision(calculator, handler));
   return XP<Collision>(p);
@@ -389,7 +402,7 @@ XP<Collision> newRCollision(Rcpp::Function calculator, Rcpp::Function handler)
  * @param radius radius of the collision
  * @param handler function to call when collision occurs
  */
-XP<Collision> newRadiusCollision(double radius, Rcpp::Function handler)
+XP<Collision> newRadiusCollision(double radius, Rcpp::Nullable<Rcpp::Function> handler)
 {
   PCollision p(new RadiusCollision(radius, handler));
   return XP<Collision>(p);

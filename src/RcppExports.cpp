@@ -182,15 +182,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // newLattice
-XP<Map> newLattice(const Rcpp::NumericVector& lower, const Rcpp::NumericVector& upper, const Rcpp::IntegerVector& divisions);
-RcppExport SEXP _ABM_newLattice(SEXP lowerSEXP, SEXP upperSEXP, SEXP divisionsSEXP) {
+XP<Map> newLattice(const Rcpp::NumericVector& lower, const Rcpp::NumericVector& upper, const Rcpp::IntegerVector& divisions, bool toroidal);
+RcppExport SEXP _ABM_newLattice(SEXP lowerSEXP, SEXP upperSEXP, SEXP divisionsSEXP, SEXP toroidalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type lower(lowerSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type upper(upperSEXP);
     Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type divisions(divisionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(newLattice(lower, upper, divisions));
+    Rcpp::traits::input_parameter< bool >::type toroidal(toroidalSEXP);
+    rcpp_result_gen = Rcpp::wrap(newLattice(lower, upper, divisions, toroidal));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -218,25 +219,25 @@ BEGIN_RCPP
 END_RCPP
 }
 // newRCollision
-/**  * Create an RCollision object  * @param calculator function to calculate the time of collision  * @param handler function to call when collision occurs  */ XP<Collision> newRCollision(Rcpp::Function calculator, Rcpp::Function handler);
+/**  * Create an RCollision object  * @param calculator function to calculate the time of collision  * @param handler function to call when collision occurs  */ XP<Collision> newRCollision(Rcpp::Function calculator, Rcpp::Nullable<Rcpp::Function> handler);
 RcppExport SEXP _ABM_newRCollision(SEXP calculatorSEXP, SEXP handlerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::Function >::type calculator(calculatorSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Function >::type handler(handlerSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::Function> >::type handler(handlerSEXP);
     rcpp_result_gen = Rcpp::wrap(newRCollision(calculator, handler));
     return rcpp_result_gen;
 END_RCPP
 }
 // newRadiusCollision
-/**  * Create a RadiusCollision object  * @param radius radius of the collision  * @param handler function to call when collision occurs  */ XP<Collision> newRadiusCollision(double radius, Rcpp::Function handler);
+/**  * Create a RadiusCollision object  * @param radius radius of the collision  * @param handler function to call when collision occurs  */ XP<Collision> newRadiusCollision(double radius, Rcpp::Nullable<Rcpp::Function> handler);
 RcppExport SEXP _ABM_newRadiusCollision(SEXP radiusSEXP, SEXP handlerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type radius(radiusSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Function >::type handler(handlerSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::Function> >::type handler(handlerSEXP);
     rcpp_result_gen = Rcpp::wrap(newRadiusCollision(radius, handler));
     return rcpp_result_gen;
 END_RCPP
@@ -500,7 +501,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_newStateLogger", (DL_FUNC) &_ABM_newStateLogger, 3},
     {"_ABM_newEvent", (DL_FUNC) &_ABM_newEvent, 2},
     {"_ABM_getTime", (DL_FUNC) &_ABM_getTime, 1},
-    {"_ABM_newLattice", (DL_FUNC) &_ABM_newLattice, 3},
+    {"_ABM_newLattice", (DL_FUNC) &_ABM_newLattice, 4},
     {"_ABM_regionAtPoint", (DL_FUNC) &_ABM_regionAtPoint, 2},
     {"_ABM_randomPosition", (DL_FUNC) &_ABM_randomPosition, 1},
     {"_ABM_newRCollision", (DL_FUNC) &_ABM_newRCollision, 2},

@@ -201,7 +201,7 @@ typedef std::shared_ptr<Collision> PCollision;
 
 class RCollision : public Collision {
 public:
-  RCollision(Rcpp::Function calculator, Rcpp::Function handler) 
+  RCollision(Rcpp::Function calculator, Rcpp::Nullable<Rcpp::Function> handler) 
     : Collision(handler), _calculator(calculator) { }
   virtual double time(double time, Agent &agent, Agent &with) const;
   
@@ -211,7 +211,7 @@ private:
 
 class RadiusCollision : public Collision {
 public:
-  RadiusCollision(double radius, Rcpp::Function handler) 
+  RadiusCollision(double radius, Rcpp::Nullable<Rcpp::Function> handler) 
     : Collision(handler), _r2(radius * radius) { }
   virtual double time(double time, Agent &agent, Agent &with) const;
   

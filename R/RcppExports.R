@@ -61,8 +61,8 @@ getTime <- function(event) {
     .Call(`_ABM_getTime`, event)
 }
 
-newLattice <- function(lower, upper, divisions) {
-    .Call(`_ABM_newLattice`, lower, upper, divisions)
+newLattice <- function(lower, upper, divisions, toroidal) {
+    .Call(`_ABM_newLattice`, lower, upper, divisions, toroidal)
 }
 
 regionAtPoint <- function(map, point) {

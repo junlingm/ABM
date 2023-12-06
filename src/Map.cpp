@@ -1,7 +1,7 @@
 #include "../inst/include/Map.h"
 #include <cmath>
 
-static double epsilon = 1e-8;
+double epsilon = 1e-8;
 
 Rcpp::CharacterVector Map::classes = Rcpp::CharacterVector::create("Map");
 
@@ -23,17 +23,30 @@ std::pair<double, Rcpp::NumericVector> Box::hitBoundary(
   int border;
   double dir;
   Rcpp::NumericVector normal(position.size(), 0);
+  bool hit;
   for (int i = 0; i < position.size(); ++i) {
-    if (velocity[i] > epsilon) {
-      t = (_upper[i] - position[i]) / velocity[i];
-      if (t > epsilon && hitTime > t) {
+    if (velocity[i] > 0) {
+      if (_upper[i] < position[i]) {
+        hit = true;
+        t = 0;
+      } else {
+        t = (_upper[i] - position[i]) / velocity[i];
+        hit = t > -epsilon && hitTime > t;
+      }
+      if (hit) {
         border = i;
         dir = 1;
         hitTime = t;
       }
-    } else if (velocity[i] < epsilon) {
-      t = (_lower[i] - position[i]) / velocity[i];
-      if (t > epsilon && hitTime > t) {
+    } else if (velocity[i] < 0) {
+      if (_lower[i] > position[i]) {
+        hit = true;
+        t = 0;
+      } else {
+        t = (_lower[i] - position[i]) / velocity[i];
+        hit = t > -epsilon && hitTime > t;
+      }
+      if (hit) {
         border = i;
         dir = -1;
         hitTime = t;
@@ -108,9 +121,6 @@ int Lattice::migrate(unsigned int from, Rcpp::NumericVector &position,
 {
   // calculate the normal vector of the boundary at position
   std::vector<int> dir(_dimension);
-  Box *b = (Box*)_geometries[from];
-  const Rcpp::NumericVector &lower = b->lower();
-  const Rcpp::NumericVector &upper = b->upper();
   for (unsigned int i = 0; i < _dimension; ++i) {
     int d;
     if (normal[i] > epsilon) 
@@ -123,10 +133,10 @@ int Lattice::migrate(unsigned int from, Rcpp::NumericVector &position,
     if (dir[i] < 0) {
       if (!_toroidal) return -1;
       dir[i] = _divisions[i] - 1;
-      position[i] = upper[i];
+      position[i] = _upper[i];
     } else if (dir[i] >= _divisions[i]) {
       if (!_toroidal) return -1;
-      position[i] = lower[i];
+      position[i] = _lower[i];
       dir[i] = 0;
     }
   }
@@ -143,9 +153,9 @@ int Lattice::migrate(unsigned int from, Rcpp::NumericVector &position,
 
 // [[Rcpp::export]]
 XP<Map> newLattice(const Rcpp::NumericVector& lower, const Rcpp::NumericVector& upper, 
-                            const Rcpp::IntegerVector& divisions)
+                            const Rcpp::IntegerVector& divisions, bool toroidal)
 {
-  PMap map(new Lattice(lower, upper, divisions));
+  PMap map(new Lattice(lower, upper, divisions, toroidal));
   return XP<Map>(map);
 }
 
