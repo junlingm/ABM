@@ -32,7 +32,7 @@ public:
    * a boundary, the time is infinity, and the normal vector is a zero vector.
    */
   virtual std::pair<double, Rcpp::NumericVector> hitBoundary(
-      double time, const Rcpp::NumericVector &position,
+      double time, Rcpp::NumericVector &position,
       const Rcpp::NumericVector &velocity) const = 0;
 };
 
@@ -109,7 +109,7 @@ public:
   
   virtual bool contains(const Rcpp::NumericVector& point) const;
   virtual std::pair<double, Rcpp::NumericVector>  hitBoundary(
-      double time, const Rcpp::NumericVector &position,
+      double time, Rcpp::NumericVector &position,
       const Rcpp::NumericVector &velocity) const;
   const Rcpp::NumericVector& lower() const { return _lower; }
   const Rcpp::NumericVector& upper() const { return _upper; }

@@ -213,9 +213,13 @@ void Region::schedule(double time, Agent &agent, bool update)
   // update collision with the boundaries
   if (info->migrate) agent.unschedule(info->migrate);
   Rcpp::GenericVector s = agent.state()[_area.state()];
-  auto hit = _geometry.hitBoundary(time, s["position"], s["velocity"]);
+  Rcpp::NumericVector v = s["velocity"];
+  Rcpp::NumericVector p = s["position"];
+  auto hit = _geometry.hitBoundary(time, p, v);
   double t = hit.first;
-  if (time < t && t < R_PosInf) {
+  if (t < R_PosInf) {
+    if (t < time) t = time;
+    // printf("time %lf migrate %lf\n", time, t);
     info->migrate = PEvent(new MigrationEvent(t, *this, hit.second));
     agent.schedule(info->migrate);
   } else info->migrate = nullptr;

@@ -16,40 +16,35 @@ bool Box::contains(const Rcpp::NumericVector& point) const
 }
 
 std::pair<double, Rcpp::NumericVector> Box::hitBoundary(
-    double time, const Rcpp::NumericVector &position,
+    double time, Rcpp::NumericVector &position,
     const Rcpp::NumericVector &velocity) const
 {
   double hitTime = R_PosInf, t;
   int border;
-  double dir;
+  int dir;
   Rcpp::NumericVector normal(position.size(), 0);
-  bool hit;
   for (int i = 0; i < position.size(); ++i) {
-    if (velocity[i] > 0) {
-      if (_upper[i] < position[i]) {
-        hit = true;
-        t = 0;
-      } else {
-        t = (_upper[i] - position[i]) / velocity[i];
-        hit = t > -epsilon && hitTime > t;
-      }
-      if (hit) {
-        border = i;
-        dir = 1;
+    if (_lower[i] > position[i]) {
+      position[i] = _lower[i] + epsilon;
+    } else if (_upper[i] < position[i]) {
+      position[i] = _upper[i] - epsilon;
+    }
+  }
+  if (hitTime == 0) return std::make_pair(time, normal);
+  for (int i = 0; i < position.size(); ++i) {
+    if (velocity[i] < 0) {
+      t = (_lower[i] - position[i]) / velocity[i];
+      if (-epsilon < t && t < hitTime) {
         hitTime = t;
-      }
-    } else if (velocity[i] < 0) {
-      if (_lower[i] > position[i]) {
-        hit = true;
-        t = 0;
-      } else {
-        t = (_lower[i] - position[i]) / velocity[i];
-        hit = t > -epsilon && hitTime > t;
-      }
-      if (hit) {
         border = i;
         dir = -1;
+      }
+    } else if (velocity[i] > 0) {
+      t = (_upper[i] - position[i]) / velocity[i];
+      if (-epsilon < t && t < hitTime) {
         hitTime = t;
+        border = i;
+        dir = 1;
       }
     }
   }
