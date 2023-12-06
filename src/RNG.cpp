@@ -10,6 +10,8 @@ RealRN::RealRN(size_t cache_size)
 double RealRN::get()
 {
   if (_pos >= _cache_size) {
+    // we need this to ensure that the RNGState is properly handled
+    RNGScope scope;
     _cache = refill(_cache_size);
     _pos = 0;
   }
