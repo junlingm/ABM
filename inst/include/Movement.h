@@ -183,10 +183,8 @@ public:
   virtual double time(double time, Agent &agent, Agent &with) const = 0;
   
   /** the handler of a collision event */
-  void handle(double time, Simulation &sim, Agent &agent, Agent &with) { 
-    if (!_handler.isNull()) 
-      _handler.as()(time, XP<Simulation>(sim), XP<Agent>(agent), XP<Agent>(with)); }
-  
+  void handle(double time, Simulation &sim, Agent &agent, Agent &with);
+
   /** required by the XP class. */
   static Rcpp::CharacterVector classes;
   /** the state of agents that holds the movement information */

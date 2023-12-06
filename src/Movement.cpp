@@ -244,6 +244,11 @@ Collision::~Collision()
 {
 }
 
+void Collision::handle(double time, Simulation &sim, Agent &agent, Agent &with)
+{ 
+  if (!_handler.isNull()) {
+    _handler.as()(time, XP<Simulation>(sim), XP<Agent>(agent), XP<Agent>(with)); 
+  }
 }
 
 Rcpp::CharacterVector Collision::classes = Rcpp::CharacterVector::create("Collision");
