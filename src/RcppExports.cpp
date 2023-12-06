@@ -181,6 +181,107 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// newLattice
+XP<Map> newLattice(const Rcpp::NumericVector& lower, const Rcpp::NumericVector& upper, const Rcpp::IntegerVector& divisions);
+RcppExport SEXP _ABM_newLattice(SEXP lowerSEXP, SEXP upperSEXP, SEXP divisionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type lower(lowerSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type upper(upperSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type divisions(divisionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(newLattice(lower, upper, divisions));
+    return rcpp_result_gen;
+END_RCPP
+}
+// regionAtPoint
+unsigned int regionAtPoint(const XP<Map>& map, const Rcpp::NumericVector& point);
+RcppExport SEXP _ABM_regionAtPoint(SEXP mapSEXP, SEXP pointSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const XP<Map>& >::type map(mapSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type point(pointSEXP);
+    rcpp_result_gen = Rcpp::wrap(regionAtPoint(map, point));
+    return rcpp_result_gen;
+END_RCPP
+}
+// randomPosition
+Rcpp::NumericVector randomPosition(const XP<Map>& map);
+RcppExport SEXP _ABM_randomPosition(SEXP mapSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const XP<Map>& >::type map(mapSEXP);
+    rcpp_result_gen = Rcpp::wrap(randomPosition(map));
+    return rcpp_result_gen;
+END_RCPP
+}
+// newRCollision
+/**  * Create an RCollision object  * @param calculator function to calculate the time of collision  * @param handler function to call when collision occurs  */ XP<Collision> newRCollision(Rcpp::Function calculator, Rcpp::Function handler);
+RcppExport SEXP _ABM_newRCollision(SEXP calculatorSEXP, SEXP handlerSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::Function >::type calculator(calculatorSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Function >::type handler(handlerSEXP);
+    rcpp_result_gen = Rcpp::wrap(newRCollision(calculator, handler));
+    return rcpp_result_gen;
+END_RCPP
+}
+// newRadiusCollision
+/**  * Create a RadiusCollision object  * @param radius radius of the collision  * @param handler function to call when collision occurs  */ XP<Collision> newRadiusCollision(double radius, Rcpp::Function handler, std::string state);
+RcppExport SEXP _ABM_newRadiusCollision(SEXP radiusSEXP, SEXP handlerSEXP, SEXP stateSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type radius(radiusSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Function >::type handler(handlerSEXP);
+    Rcpp::traits::input_parameter< std::string >::type state(stateSEXP);
+    rcpp_result_gen = Rcpp::wrap(newRadiusCollision(radius, handler, state));
+    return rcpp_result_gen;
+END_RCPP
+}
+// collision
+/**  * check collision between two agents  * @param c collision object  * @param agent first agent  * @param with second agent  */ double collision(double time, XP<Collision> c, XP<Agent> agent, XP<Agent> with);
+RcppExport SEXP _ABM_collision(SEXP timeSEXP, SEXP cSEXP, SEXP agentSEXP, SEXP withSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< XP<Collision> >::type c(cSEXP);
+    Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
+    Rcpp::traits::input_parameter< XP<Agent> >::type with(withSEXP);
+    rcpp_result_gen = Rcpp::wrap(collision(time, c, agent, with));
+    return rcpp_result_gen;
+END_RCPP
+}
+// newRandomWalk
+/**  * Create a new random walk movement  * @param dimension dimension of the movement  * @param speed speed of the movement  * @param rate rate of the exponential distribution of the time between updates  */ XP<Movement> newRandomWalk(double speed, double rate);
+RcppExport SEXP _ABM_newRandomWalk(SEXP speedSEXP, SEXP rateSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type speed(speedSEXP);
+    Rcpp::traits::input_parameter< double >::type rate(rateSEXP);
+    rcpp_result_gen = Rcpp::wrap(newRandomWalk(speed, rate));
+    return rcpp_result_gen;
+END_RCPP
+}
+// newArea
+/**  * Create a new area  * @param state name of the state  * @param map map of the area  * @param collision collision object  */ XP<Area> newArea(const std::string& state, XP<Map> map, XP<Collision> collision, XP<Movement> movement);
+RcppExport SEXP _ABM_newArea(SEXP stateSEXP, SEXP mapSEXP, SEXP collisionSEXP, SEXP movementSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type state(stateSEXP);
+    Rcpp::traits::input_parameter< XP<Map> >::type map(mapSEXP);
+    Rcpp::traits::input_parameter< XP<Collision> >::type collision(collisionSEXP);
+    Rcpp::traits::input_parameter< XP<Movement> >::type movement(movementSEXP);
+    rcpp_result_gen = Rcpp::wrap(newArea(state, map, collision, movement));
+    return rcpp_result_gen;
+END_RCPP
+}
 // newConfigurationModel
 XP<ConfigurationModel> newConfigurationModel(Function rng);
 RcppExport SEXP _ABM_newConfigurationModel(SEXP rngSEXP) {
@@ -400,6 +501,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_newStateLogger", (DL_FUNC) &_ABM_newStateLogger, 3},
     {"_ABM_newEvent", (DL_FUNC) &_ABM_newEvent, 2},
     {"_ABM_getTime", (DL_FUNC) &_ABM_getTime, 1},
+    {"_ABM_newLattice", (DL_FUNC) &_ABM_newLattice, 3},
+    {"_ABM_regionAtPoint", (DL_FUNC) &_ABM_regionAtPoint, 2},
+    {"_ABM_randomPosition", (DL_FUNC) &_ABM_randomPosition, 1},
+    {"_ABM_newRCollision", (DL_FUNC) &_ABM_newRCollision, 2},
+    {"_ABM_newRadiusCollision", (DL_FUNC) &_ABM_newRadiusCollision, 3},
+    {"_ABM_collision", (DL_FUNC) &_ABM_collision, 4},
+    {"_ABM_newRandomWalk", (DL_FUNC) &_ABM_newRandomWalk, 2},
+    {"_ABM_newArea", (DL_FUNC) &_ABM_newArea, 4},
     {"_ABM_newConfigurationModel", (DL_FUNC) &_ABM_newConfigurationModel, 1},
     {"_ABM_newPopulation", (DL_FUNC) &_ABM_newPopulation, 2},
     {"_ABM_addAgent", (DL_FUNC) &_ABM_addAgent, 2},

@@ -61,6 +61,38 @@ getTime <- function(event) {
     .Call(`_ABM_getTime`, event)
 }
 
+newLattice <- function(lower, upper, divisions) {
+    .Call(`_ABM_newLattice`, lower, upper, divisions)
+}
+
+regionAtPoint <- function(map, point) {
+    .Call(`_ABM_regionAtPoint`, map, point)
+}
+
+randomPosition <- function(map) {
+    .Call(`_ABM_randomPosition`, map)
+}
+
+newRCollision <- function(calculator, handler) {
+    .Call(`_ABM_newRCollision`, calculator, handler)
+}
+
+newRadiusCollision <- function(radius, handler, state) {
+    .Call(`_ABM_newRadiusCollision`, radius, handler, state)
+}
+
+collision <- function(time, c, agent, with) {
+    .Call(`_ABM_collision`, time, c, agent, with)
+}
+
+newRandomWalk <- function(speed, rate) {
+    .Call(`_ABM_newRandomWalk`, speed, rate)
+}
+
+newArea <- function(state, map, collision, movement) {
+    .Call(`_ABM_newArea`, state, map, collision, movement)
+}
+
 newConfigurationModel <- function(rng) {
     .Call(`_ABM_newConfigurationModel`, rng)
 }
