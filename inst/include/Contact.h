@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Agent.h"
+#include "RNG.h"
 #include <string>
 #include <vector>
 
@@ -150,6 +151,7 @@ private:
    * creating the vector and copying the contact
    */
   std::vector<Agent*> _neighbors;
+  RUnif _unif;
 };
 
 /**

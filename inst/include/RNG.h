@@ -70,7 +70,6 @@ public:
    */
   RUnif(double from = 0, double to = 1, size_t cache_size = 10000);
 
-  static RUnif stdUnif;
 protected:
   /**
    * a method to refill the cache.

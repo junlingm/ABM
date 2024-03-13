@@ -5,8 +5,6 @@
 
 using namespace Rcpp;
 
-RUnif unif;
-
 Contact::Contact()
   : _population(nullptr)
 {
@@ -34,7 +32,7 @@ const std::vector<Agent*> &RandomMixing::contact(double time, Agent &agent)
     _neighbors.resize(0);
   else {
     while (true) {
-      size_t i = unif.get() * n;
+      size_t i = _unif.get() * n;
       auto c = _population->agentAtIndex(i).get();
       if (c != &agent) {
         _neighbors[0] = c;

@@ -33,5 +33,3 @@ RExp::RExp(double rate, size_t cache_size)
 NumericVector RExp::refill(size_t size){
   return _rate == 0 ? NumericVector(size, R_PosInf) : rexp(size, _rate);
 }
-
-RUnif RUnif::stdUnif;

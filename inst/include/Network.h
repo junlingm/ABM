@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Contact.h"
+#include "RNG.h"
 
 class Network : public Contact {
 public:
@@ -116,4 +117,5 @@ protected:
   virtual void grow(Agent &agent);
   
   Rcpp::Function _rng;
+  RUnif _unif;
 }; 

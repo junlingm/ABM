@@ -61,8 +61,8 @@ void ConfigurationModel::buildNetwork()
       stubs[k++] = i;
   size_t from, to, n = stubs.size();
   while (n > 2) {
-    from = RUnif::stdUnif.get() * n;
-    to = RUnif::stdUnif.get() * n;
+    from = _unif.get() * n;
+    to = _unif.get() * n;
     connect(stubs[from], stubs[to]);
     stubs[from] = stubs[n-1];
     stubs[to] = stubs[n-2];
@@ -90,7 +90,7 @@ void ConfigurationModel::grow(Agent &agent)
   for (auto c : _neighbors)
     L += c.size();
   for (int j = 0; j < degree; ++j)
-    neighborhood[j] = L * RUnif::stdUnif.get();
+    neighborhood[j] = L * _unif.get();
   std::sort(neighborhood.begin(), neighborhood.end());
   size_t k = 0, total = 0;
   for (auto c : _neighbors) {
