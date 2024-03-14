@@ -2,6 +2,8 @@ src/*.o
 src/*.so
 src/*.o.tmp
 .Rproj.user/*
+cran-comments.md
+CRAN-SUBMISSION
 *.Rproj
 .Rproj.user
 .Rhistory
