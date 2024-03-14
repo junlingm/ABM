@@ -32,6 +32,11 @@ to ignore adding agents before build is called, and handle all agents
 within the finalize method. However, the contact object must handle
 adding an agent after build is called.
 
+When an agent leaves a population, it is removed from each of the
+contact patterns.
+
+This method may also be called in event handlers to remove an agent
+
 This method is called immediately before the simulation is run,
 when the attached population reports the states to the simulation object.
 
@@ -62,6 +67,7 @@ to a population}
 \item \href{#method-R6Contact-attach}{\code{Contact$attach()}}
 \item \href{#method-R6Contact-contact}{\code{Contact$contact()}}
 \item \href{#method-R6Contact-addAgent}{\code{Contact$addAgent()}}
+\item \href{#method-R6Contact-remove}{\code{Contact$remove()}}
 \item \href{#method-R6Contact-build}{\code{Contact$build()}}
 \item \href{#method-R6Contact-clone}{\code{Contact$clone()}}
 }
@@ -127,7 +133,24 @@ Add an agent to the contact pattern
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{agent}}{the agent whose contacts are requested. An external pointer}
+\item{\code{agent}}{the agent to be added. An external pointer}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-R6Contact-remove"></a>}}
+\if{latex}{\out{\hypertarget{method-R6Contact-remove}{}}}
+\subsection{Method \code{remove()}}{
+Remove an agent from the contact pattern
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Contact$remove(agent)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{agent}}{the agent to be removed. An external pointer}
 }
 \if{html}{\out{</div>}}
 }
