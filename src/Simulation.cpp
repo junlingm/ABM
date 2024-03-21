@@ -1,5 +1,5 @@
 #include "../inst/include/Simulation.h"
-#include <math.h>
+#include <cmath>
 
 using namespace Rcpp;
 
@@ -60,7 +60,7 @@ List Simulation::resume(const NumericVector &time)
 
 void Simulation::stateChanged(Agent &agent, const State &from)
 {
-  if (!isnan(_current_time)) {
+  if (!std::isnan(_current_time)) {
     for (auto c : _loggers)
       c->log(agent, from);
     for (auto r : _rules) {

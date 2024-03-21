@@ -1,6 +1,6 @@
 #include "../inst/include/Agent.h"
 #include "../inst/include/Simulation.h"
-#include <math.h>
+#include <cmath>
 
 using namespace Rcpp;
 
@@ -91,7 +91,7 @@ XP<Agent> newAgent(Nullable<List> state, NumericVector death_time = NA_REAL)
 {
   XP<Agent> a = (std::make_shared<Agent>(state));
   double d = as<double>(death_time);
-  if (!isnan(d)) a->setDeathTime(d);
+  if (!std::isnan(d)) a->setDeathTime(d);
   return a;
 }
   
