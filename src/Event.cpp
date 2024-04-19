@@ -1,5 +1,5 @@
 #include "../inst/include/Simulation.h"
-#include "math.h"
+#include <cmath>
 
 using namespace Rcpp;
 
@@ -91,7 +91,7 @@ void Calendar::unschedule(PEvent event)
 
 void Calendar::clearEvents()
 {
-  Calendar *owner = !isinf(_time) ? _owner : nullptr;
+  Calendar *owner = !std::isinf(_time) ? _owner : nullptr;
   PEvent me;
   if (owner != nullptr) {
     me = _pos->second;
