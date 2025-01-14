@@ -69,7 +69,7 @@ public:
    * returns whether this object points to a managed C++ object (true)
    * or a reference to asn object (false) 
    */
-  bool managed() const { return _p; }
+  bool managed() const { return bool(_p); }
 
 private:
   /**
