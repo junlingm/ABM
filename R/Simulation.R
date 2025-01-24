@@ -188,15 +188,9 @@ Simulation <- R6::R6Class(
           contact = contact$get
         side = side[[2]]
       } else contact = NULL
-      if (is.call(side)) {
-        op = as.character(side[[1]])
-        if (op == "+") {
+      if (is.call(side) && as.character(side[[1]]) == "+") {
           first = private$parse.state(side[[2]], envir=envir)
           second = private$parse.state(side[[3]], envir=envir)
-        } else {
-          first = private$parse.state(side[[1]], envir=envir, envir=envir)
-          second = NULL
-        }
       } else {
         first = private$parse.state(side, envir=envir)
         second = NULL
