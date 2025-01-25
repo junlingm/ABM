@@ -6,13 +6,13 @@ Population::Population(size_t n, Nullable<Function> initializer)
   : Agent()
 {
   if (n) _agents.reserve(n);
-  if (initializer == R_NilValue) {
+  if (initializer.isNull()) {
     for (size_t i = 0; i < n; ++i) {
       auto agent = std::make_shared<Agent>();
       add(agent);
     }
   } else {
-    Function f(initializer.as());
+    Function f(initializer);
     for (size_t i = 0; i < n; ++i) {
       SEXP s = f(i);
       if (!Rf_isList(s) && s != R_NilValue)
