@@ -16,7 +16,7 @@ public:
 Agent::Agent(Nullable<List> state)
   : Calendar(), _population(nullptr), _id(0), _index(0), _contactEvents(new Calendar)
 {
-  if (state != R_NilValue) _state &= state.as();
+  if (state.isNotNull()) _state &= List(state);
   schedule(_contactEvents);
 }
 
@@ -129,8 +129,7 @@ void clearEvents(XP<Agent> agent)
 void setState(XP<Agent> agent, SEXP value)
 {
   Nullable<List> s(value);
-  if (!s.isNull())
-    agent->set(s.as());
+  if (s.isNotNull()) agent->set(List(s));
 }
 
 // [[Rcpp::export]]

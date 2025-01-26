@@ -26,7 +26,7 @@ void Counter::log(const Agent &agent, const State &from_state)
     if (agent.match(_state)) {
       ++_count;
     }
-  } else if (agent.match(_to.as()) && from_state.match(_state))
+  } else if (agent.match(List(_to)) && from_state.match(_state))
     ++_count;
 }
 
@@ -64,7 +64,7 @@ XP<Counter> newCounter(std::string name, List from, Nullable<List> to=R_NilValue
 XP<StateLogger> newStateLogger(std::string name, Nullable<XP<Agent> > agent, std::string state)
 {
   PAgent pa;
-  if (agent.isNotNull()) pa = agent.as();
+  if (agent.isNotNull()) pa = XP<Agent>(agent);
   return std::make_shared<StateLogger>(name, pa, state);
 }
 
