@@ -120,3 +120,43 @@ private:
    */
   double _rate;
 };
+
+/**
+ * A cached gamma random number generated
+ */
+class RGamma : public RealRN {
+public:
+  /**
+   * Constructor
+   * 
+   * @param shape the shape of the gamma random numbers
+   * 
+   * @param rate the rate of the gamma random numbers
+   * 
+   * @param cache_size the case size to generate random numebr in 
+   * a batch
+   */
+  RGamma(double shape, double rate, size_t cache_size = 10000);
+  
+protected:
+  /**
+   * a method to refill the cache.
+   * 
+   * @param size the number of random numbers to be generated in 
+   * a batch
+   * 
+   * @return a NumericVector that holds the batch of generated random 
+   * numbers 
+   */
+  virtual Rcpp::NumericVector refill(size_t size);
+  
+private:
+  /**
+   * the shape of the gamma random numbers
+   */
+  double _shape;
+  /**
+   * the rate of the gamma random numbers
+   */
+  double _rate;
+};

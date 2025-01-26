@@ -172,14 +172,13 @@ double ExpWaitingTime::waitingTime(double time)
 }
 
 GammaWaitingTime::GammaWaitingTime(double shape, double scale)
-  : _shape(shape), _scale(scale)
+  : _gamma(shape, scale)
 {
 }
 
 double GammaWaitingTime::waitingTime(double time)
 {
-  RNGScope rngScope;
-  return R::rgamma(_shape, _scale);
+  return _gamma.get();
 }
 
 RWaitingTime::RWaitingTime(Function f)

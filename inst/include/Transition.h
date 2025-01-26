@@ -339,14 +339,10 @@ public:
   virtual double waitingTime(double time);
   
 protected:
-  /**
-   * the shape parameter of the gamma distribution
+  /** 
+   * the batched gamma random number generator
    */
-  double _shape;
-  /**
-   * the scale parameter of the gamma distribution, i.e., 1/rate
-   */
-  double _scale;
+  RGamma _gamma;
 };
 
 /**

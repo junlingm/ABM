@@ -165,8 +165,9 @@ void addTransition(
       std::range_error("contact from state is NULL");
     if (contact_to.isNull())
       std::range_error("contact to state is NULL");
-    sim->add(new ContactTransition(
-        from, contact_from.as(), to, contact_to.as(),
-        **contact.as(), w, to_change_callback, changed_callback));
+    List cf(contact_from), ct(contact_to);
+    XP<Contact> c(contact);
+    sim->add(new ContactTransition(from, cf, to, ct,
+        **c, w, to_change_callback, changed_callback));
   }
 }

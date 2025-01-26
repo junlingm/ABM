@@ -34,3 +34,12 @@ RExp::RExp(double rate, size_t cache_size)
 NumericVector RExp::refill(size_t size){
   return _rate == 0 ? NumericVector(size, R_PosInf) : rexp(size, _rate);
 }
+
+RGamma::RGamma(double shape, double rate, size_t cache_size)
+  : RealRN(cache_size), _shape(shape), _rate(rate)
+{
+}
+
+NumericVector RGamma::refill(size_t size) {
+  return _rate == 0 ? NumericVector(size, R_PosInf) : rgamma(size, _shape, 1/_rate);
+}
