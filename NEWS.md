@@ -1,3 +1,8 @@
+# Version 0.4.3
+* Fixed a bug that prevented the parsingstate transitions such as list(x="a", y="b")->list("x="A", y="b").
+* Fixed a possible memory leak suggested by valgrind.
+* Use cached gamma random number generators to reimplement newGammaWaitingTime.
+
 # Version 0.4.2
 * Fixed a bug that caused the simulation to be incorrect after exhausting random 
 numbers in a cache. This is because refilling the cached random numbers did not
