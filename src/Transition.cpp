@@ -172,7 +172,7 @@ double ExpWaitingTime::waitingTime(double time)
 }
 
 GammaWaitingTime::GammaWaitingTime(double shape, double scale)
-  : _gamma(shape, scale)
+  : _gamma(shape, 1 / scale)
 {
 }
 
