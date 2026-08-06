@@ -23,20 +23,25 @@ void Network::add(Agent &agent)
 
 void Network::remove(Agent &agent)
 {
-  size_t i = agent.id() - 1;
+  if (_population == nullptr) return;
+  size_t i = agent.index();
+  if (i >= _neighbors.size())
+    stop("agent index is outside the network");
   for (auto c : _neighbors[i]) {
-    size_t j = c->id() - 1;
+    size_t j = c->index();
+    if (j >= _neighbors.size())
+      stop("neighbor index is outside the network");
     std::vector<Agent*> &nj = _neighbors[j];
-    size_t m = nj.size();
-    for (size_t k = 0; k < m - 1; ++k) {
-      if (nj[k] == &agent) {
-        nj[k] = nj[m-1];
-        break;
-      }
+    auto pos = std::find(nj.begin(), nj.end(), &agent);
+    if (pos != nj.end()) {
+      *pos = nj.back();
+      nj.pop_back();
     }
-    nj.resize(m-1);
   }
-  _neighbors[i].clear();
+  size_t last = _neighbors.size() - 1;
+  if (i != last)
+    _neighbors[i].swap(_neighbors[last]);
+  _neighbors.pop_back();
 }
 
 void Network::build()
