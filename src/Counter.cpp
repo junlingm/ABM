@@ -30,7 +30,7 @@ void Counter::log(const Agent &agent, const State &from_state)
     ++_count;
 }
 
-long Counter::report()
+double Counter::report()
 {
   long x = _count;
   if (!_to.isNull()) _count = 0;
@@ -49,7 +49,7 @@ void StateLogger::log(const Agent &agent, const State &from_state)
   _value = as<double>(a.state()[_state]);
 }
 
-long StateLogger::report()
+double StateLogger::report()
 {
   return _value;
 }

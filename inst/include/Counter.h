@@ -37,7 +37,7 @@ public:
   /**
    * returns the current value of the logger
    */
-  virtual long report() = 0;
+  virtual double report() = 0;
   /**
    * the name of the logger
    */
@@ -94,7 +94,7 @@ public:
    * counts the number of agents in a specific state at the time of 
    * report.
    */
-  virtual long report();
+  virtual double report();
   
   /**
    * AThe classes of a Counter object.
@@ -145,7 +145,7 @@ public:
   /**
    * report the current state of the logger. 
    */
-  virtual long report();
+  virtual double report();
 
   /**
    * the classes of StateLogger
