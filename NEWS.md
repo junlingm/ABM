@@ -1,3 +1,20 @@
+# Version 0.4.4
+* Fixed configuration-model networks when agents are added or removed after
+  network construction. New edges now use the sampled degree-weighted node,
+  and removals consistently use population-local indexes.
+* Configuration-model stubs are now paired without replacement. Self-loops,
+  duplicate edges, and the final dangling stub from an odd total are dropped.
+* Moving an agent now removes it from its former population and transfers its
+  calendar membership correctly.
+* Simulation and population constructor initializers now receive one-based
+  indexes, and simulation agent ID counters are initialized deterministically.
+* Resuming through an interval without events now advances the simulation
+  clock to the requested report time.
+* Gamma waiting times now interpret their second parameter as a scale.
+* State loggers now return doubles, and counters support numeric states.
+* Removed the stale `Population$removeAgent()` R6 method. Agents are removed
+  from their current population with `Agent$leave()` or `leave()`.
+
 # Version 0.4.3
 * Fixed a bug that prevented the parsingstate transitions such as list(x="a", y="b")->list("x="A", y="b").
 * Fixed a possible memory leak suggested by valgrind.
