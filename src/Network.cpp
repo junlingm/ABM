@@ -84,7 +84,10 @@ void Network::connect(int from, int to)
 void ConfigurationModel::grow(Agent &agent)
 {
   Agent::IndexType i = agent.index();
+  if (_neighbors.size() <= i)
+    _neighbors.resize(i + 1);
   int degree = as<int>(_rng(1));
+  if (degree <= 0) return;
   std::vector<size_t> neighborhood(degree);
   size_t L = 0;
   for (auto c : _neighbors)
@@ -107,4 +110,3 @@ XP<ConfigurationModel> newConfigurationModel(Function rng)
 {
   return XP<ConfigurationModel>(std::make_shared<ConfigurationModel>(rng));
 }
-
