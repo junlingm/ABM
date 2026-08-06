@@ -59,25 +59,6 @@ Population <- R6::R6Class(
       invisible(self)
     },
     
-    #' remove an agent
-    #' 
-    #' @param agent either an object of the R6 class Agent, or an external
-    #' pointer returned from newAgent.
-    #' 
-    #' @return the population object itself (invisible) for chaining actions
-    #' 
-    #' @details The agent is scheduled in the population. If the population 
-    #' is already added to a simulation, the agent will report its state
-    #' to the simulation.
-    removeAgent = function(agent) {
-      if (inherits(agent, "R6Agent"))
-        agent = agent$get
-      if (!inherits(agent, "Agent"))
-        stop("invalid agent argument")
-      removeAgent(private$agent, agent)
-      invisible(self)
-    },
-    
 #' Add a contact pattern
 #' 
 #' @param contact an external pointer pointing to a Contact object,
