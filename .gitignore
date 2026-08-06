@@ -7,3 +7,4 @@ CRAN-SUBMISSION
 *.Rproj
 .Rproj.user
 .Rhistory
+.DS_Store
