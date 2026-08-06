@@ -14,7 +14,7 @@ Population::Population(size_t n, Nullable<Function> initializer)
   } else {
     Function f(initializer);
     for (size_t i = 0; i < n; ++i) {
-      SEXP s = f(i);
+      SEXP s = f(i + 1);
       if (!Rf_isList(s) && s != R_NilValue)
         s = List(s);
       auto agent = std::make_shared<Agent>(Nullable<List>(s));
@@ -156,4 +156,3 @@ void setStates(XP<Population> population, SEXP states)
     }
   } else stop("invalid states. Must be a function or a list");
 }
-
