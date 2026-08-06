@@ -19,7 +19,6 @@ Counter::Counter(const std::string &name, const List &state, Nullable<List> to, 
 void Counter::log(const Agent &agent, const State &from_state)
 {
   if (_to.isNull()) {
-    std::string s = as<std::string>(_state[0]);
     if (from_state.match(_state)) {
       --_count;
     }
