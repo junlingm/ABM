@@ -108,11 +108,11 @@ void ConfigurationModel::grow(Agent &agent)
     neighborhood[j] = L * _unif.get();
   std::sort(neighborhood.begin(), neighborhood.end());
   size_t k = 0, total = 0;
-  for (auto c : _neighbors) {
-    total += c.size();
-    if (neighborhood[k] < total) {
-      connect(i, k++);
-      if (k == degree) return;
+  for (size_t j = 0; j < _neighbors.size() && k < neighborhood.size(); ++j) {
+    total += _neighbors[j].size();
+    while (k < neighborhood.size() && neighborhood[k] < total) {
+      connect(i, j);
+      ++k;
     }
   }
 }
