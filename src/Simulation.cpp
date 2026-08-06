@@ -4,14 +4,14 @@
 using namespace Rcpp;
 
 Simulation::Simulation(size_t n, Rcpp::Nullable<Rcpp::Function> initializer)
-  : Population(n, initializer), _current_time(R_NaN)
+  : Population(n, initializer), _current_time(R_NaN), _next_id(0)
 {
   for (auto a : _agents)
     a->attached(*this);
 }
 
 Simulation::Simulation(List states)
-  : Population(states), _current_time(R_NaN)
+  : Population(states), _current_time(R_NaN), _next_id(0)
 {
   for (auto a : _agents)
     a->attached(*this);
