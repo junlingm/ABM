@@ -39,6 +39,8 @@ Population::Population(List states)
 void Population::add(PAgent agent)
 {
   if (agent->_population == this) return;
+  if (agent->_population != nullptr)
+    agent->leave();
   agent->_index = _agents.size();
   _agents.push_back(agent);
   schedule(agent);
@@ -114,7 +116,13 @@ XP<Population> newPopulation(SEXP n, Nullable<Function> initializer = R_NilValue
 // [[Rcpp::export]]
 void addAgent(XP<Population> population, XP<Agent> agent)
 {
-  population->add(agent);
+  Agent *raw = agent;
+  PAgent managed = agent;
+  if (!managed && raw->population() != nullptr)
+    managed = raw->population()->agent(*raw);
+  if (!managed)
+    stop("agent is not managed by R or a population");
+  population->add(managed);
 }
 
 // [[Rcpp::export]]

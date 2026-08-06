@@ -52,8 +52,8 @@ public:
    * 
    * @agent the agent that this event is attached to (scheduled)
    * 
-   * @return a boolean value. For an agent, this method always 
-   * returns true
+   * @return true if the agent remains in the same population after handling;
+   * false if it leaves or moves to another population
    * 
    * @details It first unschedules this agent from the population that 
    * it is in, then unschedules the first (earliest) event, then call 

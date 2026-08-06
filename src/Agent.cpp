@@ -22,8 +22,9 @@ Agent::Agent(Nullable<List> state)
 
 bool Agent::handle(Simulation &sim, Agent &agent)
 {
+  Population *owner = _population;
   Calendar::handle(sim, *this);
-  return _population != nullptr;
+  return owner != nullptr && _population == owner;
 }
 
 void Agent::set(const Rcpp::List &state)
@@ -143,4 +144,3 @@ void setDeathTime(XP<Agent> agent, double time)
 {
   agent->setDeathTime(time);
 }
-
