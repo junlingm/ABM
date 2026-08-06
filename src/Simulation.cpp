@@ -47,6 +47,7 @@ List Simulation::resume(const NumericVector &time)
       _current_time = _time;
       this->handle(*this, *this);
     }
+    _current_time = report;
     for (auto c : _loggers)
       result[c->name()][i] = c->report();
     ++i;
