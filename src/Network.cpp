@@ -59,26 +59,33 @@ ConfigurationModel::ConfigurationModel(Function degree_rng)
 void ConfigurationModel::buildNetwork()
 {
   IntegerVector d = _rng(_neighbors.size());
-  size_t L = sum(d) + 0.5;
+  if (d.size() != static_cast<R_xlen_t>(_neighbors.size()))
+    stop("degree generator returned the wrong number of degrees");
+  size_t L = 0;
+  for (auto degree : d) {
+    if (IntegerVector::is_na(degree) || degree < 0)
+      stop("degrees must be non-negative integers");
+    L += degree;
+  }
   std::vector<int> stubs(L);
   for (size_t i = 0, k = 0; i < d.size(); ++i)
     for (size_t j = 0; j < d[i]; ++j)
       stubs[k++] = i;
-  size_t from, to, n = stubs.size();
-  while (n > 2) {
-    from = _unif.get() * n;
-    to = _unif.get() * n;
-    connect(stubs[from], stubs[to]);
-    stubs[from] = stubs[n-1];
-    stubs[to] = stubs[n-2];
-    n -= 2;
+  for (size_t n = stubs.size(); n > 1; --n) {
+    size_t selected = _unif.get() * n;
+    if (selected >= n) selected = n - 1;
+    std::swap(stubs[n - 1], stubs[selected]);
   }
+  // connect() drops self-loops and duplicate edges. If the number of stubs is
+  // odd, the final unpaired stub is intentionally ignored.
+  for (size_t i = 0; i + 1 < stubs.size(); i += 2)
+    connect(stubs[i], stubs[i + 1]);
 }
 
 void Network::connect(int from, int to)
 {
   if (from == to) return;
-  // avoid multiple loops
+  // avoid multiple edges
   auto t = _population->agentAtIndex(to).get();
   for (auto c : _neighbors[from])
     if (c == t) return;

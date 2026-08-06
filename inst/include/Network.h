@@ -93,7 +93,8 @@ public:
    * 
    * @details degree_rng takes one argument n, giving the number of degrees to 
    * generate and returns a Rcpp::IntegerVector of length n holding the 
-   * generated degrees.
+   * generated degrees. Stubs are randomly paired. Self-loops and duplicate
+   * edges are dropped, as is the final dangling stub when their total is odd.
    */
   ConfigurationModel(Rcpp::Function degree_rng);
   

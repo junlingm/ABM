@@ -19,6 +19,9 @@ $get method.
 
 The function rng should take exactly one argument n for the number of degrees
 to generate, and should return an integer vector of length n.
+
+Stubs are randomly paired. Self-loops and duplicate edges are dropped. When
+the total number of stubs is odd, the final dangling stub is also dropped.
 }
 \examples{
 # creates a simulation with 100 agents
