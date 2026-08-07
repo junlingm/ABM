@@ -77,14 +77,37 @@ Simulation <- R6::R6Class(
 
 #' Add a logger to the simulation
 #' 
-#' @param logger an external pointer returned by functions like
-#' [newStateLogger()].
+#' @param log a state name, or a logger object returned by
+#' [newStateLogger()]. Legacy [newCounter()] logger objects are also accepted.
+#' When `log` is a state name, a state logger for the simulation is created
+#' automatically.
+#' @param name the output column name when `log` is a state name. It defaults
+#' to the state name. This must be `NULL` when `log` is a logger object.
 #' 
 #' @return the simulation object itself (invisible)
 #' 
-#' @details without adding a logger, there will be no useful simulation
-#' results returned.
-    addLogger = function(logger) {
+#' @details Without adding a logger, there will be no useful simulation
+#' results returned. For example, `sim$addLogger("I")` records the simulation
+#' state named `I` in an output column also named `I`.
+    addLogger = function(log, name = NULL) {
+      if (is.character(log)) {
+        if (length(log) != 1L || is.na(log))
+          stop("log must be a single, non-missing character string")
+        state <- log
+        output_name <- if (is.null(name)) state else name
+        if (!is.character(output_name) || length(output_name) != 1L ||
+            is.na(output_name))
+          stop("name must be a single, non-missing character string")
+        logger <- newStateLogger(output_name, self$get, state)
+      } else {
+        if (!is.null(name))
+          stop("name must be NULL when log is a logger object")
+        if (!inherits(log, "Logger"))
+          stop("log must be a state name or a Logger object")
+        if (inherits(log, "StateLogger"))
+          warning("Passing a StateLogger to Simulation$addLogger() is deprecated; use a state name instead", call. = FALSE)
+        logger <- log
+      }
       addLogger(self$get, logger)
       invisible(self)
     },

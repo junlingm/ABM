@@ -108,9 +108,9 @@
 #' # schedule an infection event and a recovery event
 #' reschedule(0, sim$get, sim$state)
 #' # add state loggers that saves the S, I, and R states
-#' sim$addLogger(newStateLogger("S", NULL, "S"))
-#' sim$addLogger(newStateLogger("I", NULL, "I"))
-#' sim$addLogger(newStateLogger("R", sim$get, "R"))
+#' sim$addLogger("S")
+#' sim$addLogger("I")
+#' sim$addLogger("R")
 #' # now the simulation is setup, and is ready to run
 #' result = sim$run(0:100)
 #' # the result is a data.frame object
@@ -141,9 +141,9 @@
 #'   gamma,
 #'   logging = list(dec("I"), inc("R"))
 #' )
-#' sim$addLogger(newStateLogger("S", sim$get, "S"))
-#' sim$addLogger(newStateLogger("I", sim$get, "I"))
-#' sim$addLogger(newStateLogger("R", sim$get, "R"))
+#' sim$addLogger("S")
+#' sim$addLogger("I")
+#' sim$addLogger("R")
 #' # run the simulation, and get a data.frame object
 #' result = sim$run(0:100)
 #' print(result)

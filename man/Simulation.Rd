@@ -138,21 +138,27 @@ by all logger.
 \if{latex}{\out{\hypertarget{method-R6Simulation-addLogger}{}}}
 \subsection{Method \code{addLogger()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Simulation$addLogger(logger)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Simulation$addLogger(log, name = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{logger}}{an external pointer returned by functions like
-\code{newStateLogger()}.}
+\item{\code{log}}{a state name, or a logger object returned by
+\code{newStateLogger()}. Legacy \code{newCounter()} logger objects are also
+accepted. When \code{log} is a state name, a state logger for the simulation
+is created automatically.}
+
+\item{\code{name}}{the output column name when \code{log} is a state name.
+It defaults to the state name. This must be \code{NULL} when \code{log} is a
+logger object.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-without adding a logger, there will be no useful simulation
-results returned.
-Add a transition to the simulation
+Without adding a logger, there will be no useful simulation
+results returned. For example, \code{sim$addLogger("I")} records the simulation
+state named \code{I} in an output column also named \code{I}.
 }
 
 \subsection{Returns}{

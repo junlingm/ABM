@@ -64,6 +64,11 @@ NULL
 #' to use its $get method to get the external pointer.
 #' 
 #' The state to be logged must have a numeric value.
+#'
+#' @section Lifecycle:
+#' Passing a `StateLogger` created by `newStateLogger()` to
+#' `Simulation$addLogger()` is deprecated. Use `Simulation$addLogger()` with a
+#' state name instead, for example `sim$addLogger("I")`.
 #' 
 #' @export
 NULL

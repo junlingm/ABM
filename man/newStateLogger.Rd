@@ -30,3 +30,9 @@ to use its $get method to get the external pointer.
 
 The state to be logged must have a numeric value.
 }
+\section{Lifecycle}{
+Passing a \code{StateLogger} created by \code{newStateLogger()} to
+\code{Simulation$addLogger()} is deprecated. Use
+\code{Simulation$addLogger()} with a state name instead, for example
+\code{sim$addLogger("I")}.
+}
