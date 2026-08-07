@@ -82,6 +82,15 @@ stopifnot(
   state_logger_warning
 )
 
+# Event logger updates mutate the simulation state directly.
+direct_sim <- Simulation$new(1, function(i) list(stage = "I"))
+direct_sim$state <- list(I = 0)
+held_state <- direct_sim$state
+direct_sim$addTransition(I -> R, function(time) 0, logging = list(inc("I")))
+direct_sim$addLogger("I")
+direct_sim$run(c(0, 1))
+stopifnot(identical(direct_sim$state$I, 1), identical(held_state$I, 1))
+
 invalid_name <- tryCatch({
   named_sim$addLogger(newStateLogger("I", named_sim$get, "I"), name = "other")
   FALSE
