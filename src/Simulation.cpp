@@ -72,6 +72,33 @@ void Simulation::stateChanged(Agent &agent, const State &from)
   }
 }
 
+void Simulation::stateChanging(Agent &agent, const Rcpp::List &state)
+{
+  _pending_loggers.clear();
+  _pending_rules.clear();
+  if (!std::isnan(_current_time)) {
+    for (auto logger : _loggers)
+      if (logger->stateChanging(agent, state))
+        _pending_loggers.push_back(logger.get());
+    for (auto rule : _rules)
+      if (!agent.match(rule->from()))
+        _pending_rules.push_back(rule);
+  }
+}
+
+void Simulation::stateChanged(Agent &agent)
+{
+  if (!std::isnan(_current_time)) {
+    for (auto logger : _pending_loggers)
+      logger->stateChanged(agent);
+    for (auto rule : _pending_rules)
+      if (agent.match(rule->from()))
+        rule->schedule(_current_time, agent);
+  }
+  _pending_loggers.clear();
+  _pending_rules.clear();
+}
+
 void Simulation::add(std::shared_ptr<Logger> logger)
 {
   if (logger) {

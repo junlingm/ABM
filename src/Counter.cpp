@@ -11,8 +11,17 @@ Logger::~Logger()
 {
 }
 
+bool Logger::stateChanging(const Agent &agent, const List &state)
+{
+  return false;
+}
+
+void Logger::stateChanged(const Agent &agent)
+{
+}
+
 Counter::Counter(const std::string &name, const List &state, Nullable<List> to, long initial)
-  : Logger(name), _count(initial), _state(state), _to(to)
+  : Logger(name), _count(initial), _from_match(false), _state(state), _to(to)
 {
 }
 
@@ -27,6 +36,26 @@ void Counter::log(const Agent &agent, const State &from_state)
     }
   } else if (agent.match(List(_to)) && from_state.match(_state))
     ++_count;
+}
+
+bool Counter::stateChanging(const Agent &agent, const List &state)
+{
+  _from_match = agent.match(_state);
+  // An occupancy counter can enter or leave its state, so it must always
+  // be considered. A transition counter can only count when its source
+  // state matched before the change.
+  return _to.isNull() || _from_match;
+}
+
+void Counter::stateChanged(const Agent &agent)
+{
+  if (_to.isNull()) {
+    if (_from_match) --_count;
+    if (agent.match(_state)) ++_count;
+  } else if (_from_match && agent.match(List(_to))) {
+    ++_count;
+  }
+  _from_match = false;
 }
 
 double Counter::report()
@@ -46,6 +75,17 @@ void StateLogger::log(const Agent &agent, const State &from_state)
   PAgent pa = _agent.lock();
   const Agent &a = pa ? *pa : agent;
   _value = as<double>(a.state()[_state]);
+}
+
+bool StateLogger::stateChanging(const Agent &agent, const List &state)
+{
+  return _agent.expired();
+}
+
+void StateLogger::stateChanged(const Agent &agent)
+{
+  if (_agent.expired())
+    _value = as<double>(agent.state()[_state]);
 }
 
 double StateLogger::report()

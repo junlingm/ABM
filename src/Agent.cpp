@@ -29,14 +29,26 @@ bool Agent::handle(Simulation &sim, Agent &agent)
 
 void Agent::set(const Rcpp::List &state)
 {
-  State from(clone(_state));
+  stateChanging(*this, state);
   _state &= state;
-  stateChanged(*this, from);
+  stateChanged(*this);
 }
 
 bool Agent::match(const Rcpp::List &state) const
 {
   return _state.match(state);
+}
+
+void Agent::stateChanging(Agent &agent, const Rcpp::List &state)
+{
+  if (_population != nullptr)
+    _population->stateChanging(agent, state);
+}
+
+void Agent::stateChanged(Agent &agent)
+{
+  if (_population != nullptr)
+    _population->stateChanged(agent);
 }
 
 void Agent::stateChanged(Agent &agent, const State &from)
@@ -50,8 +62,9 @@ PAgent Agent::leave()
   if (_population == nullptr) 
     return nullptr;
   State save = _state;
+  stateChanging(*this, State());
   _state = State();
-  stateChanged(*this, save);
+  stateChanged(*this);
   PAgent agent = _population->remove(*this);
   _state = save;
   return agent;

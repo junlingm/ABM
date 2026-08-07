@@ -5,6 +5,7 @@
 #include "Transition.h"
 #include <list>
 #include <map>
+#include <vector>
 
 class Simulation : public Population {
 public:
@@ -120,6 +121,16 @@ public:
   
 protected:
   /**
+   * Select legacy loggers that may be affected by an impending state change.
+   */
+  virtual void stateChanging(Agent &agent, const Rcpp::List &state);
+
+  /**
+   * Complete a state change for the loggers selected by stateChanging().
+   */
+  virtual void stateChanged(Agent &agent);
+
+  /**
    * The state of an agent has changed
    * 
    * @param agent the agent whose state has changed
@@ -129,6 +140,8 @@ protected:
   virtual void stateChanged(Agent &agent, const State &from);
   
   std::list<std::shared_ptr<Logger> > _loggers;
+  std::vector<Logger*> _pending_loggers;
+  std::vector<Transition*> _pending_rules;
   std::list<Transition*> _rules;
   double _current_time;
   

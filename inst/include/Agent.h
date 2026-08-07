@@ -119,6 +119,21 @@ public:
 
 protected:
   /**
+   * Notify the population that the agent is about to change state.
+   *
+   * @param agent the agent whose state is changing
+   * @param state the values that will be merged into the state
+   */
+  virtual void stateChanging(Agent &agent, const Rcpp::List &state);
+
+  /**
+   * Notify the population that the agent has changed state.
+   *
+   * This notification follows stateChanging() and observes the new state.
+   */
+  virtual void stateChanged(Agent &agent);
+
+  /**
    * report to the population that the agent's state has changed
    * 
    * @param agent the agent which state is changing

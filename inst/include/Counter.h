@@ -34,6 +34,18 @@ public:
    * @param from_state the original state of the agent bfore the change.
    */
   virtual void log(const Agent &agent, const State &from_state) = 0;
+
+  /**
+   * Select this logger before a state change. The default implementation
+   * selects no logger; legacy counters override it.
+   */
+  virtual bool stateChanging(const Agent &agent, const Rcpp::List &state);
+
+  /**
+   * Complete a state change after the agent's state has been updated.
+   */
+  virtual void stateChanged(const Agent &agent);
+
   /**
    * returns the current value of the logger
    */
@@ -84,6 +96,16 @@ public:
    * @param from the original state of the agent before transition
    */
   virtual void log(const Agent &agent, const State &from_state);
+
+  /**
+   * Select this counter before a state change when it may be affected.
+   */
+  virtual bool stateChanging(const Agent &agent, const Rcpp::List &state);
+
+  /**
+   * Update this counter after the state change has been applied.
+   */
+  virtual void stateChanged(const Agent &agent);
   
   /**
    * report the current state of the logger. 
@@ -106,6 +128,8 @@ protected:
    * the current count
    */
   long _count;
+  /** whether the old state matched the counter's source state */
+  bool _from_match;
   /**
    * The state to match. Please see the details in the class description
    */
@@ -142,6 +166,14 @@ public:
    * @param from the original state of the agent before transition
    */
   virtual void log(const Agent &agent, const State &from_state);
+  /**
+   * Select an unbound state logger before a state change.
+   */
+  virtual bool stateChanging(const Agent &agent, const Rcpp::List &state);
+  /**
+   * Refresh an unbound state logger after the state change.
+   */
+  virtual void stateChanged(const Agent &agent);
   /**
    * report the current state of the logger. 
    */
