@@ -69,8 +69,9 @@ public:
    * 
    * @param state an Rcpp List whose values replace matching named domains or
    * are added as new domains
+   * @param notify whether to notify state loggers and transition rules
    */
-  void set(const Rcpp::List &state);
+  void set(const Rcpp::List &state, bool notify = true);
 
   /**
    * Check if the state of the agent matches a given rule

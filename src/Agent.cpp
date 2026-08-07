@@ -27,11 +27,13 @@ bool Agent::handle(Simulation &sim, Agent &agent)
   return owner != nullptr && _population == owner;
 }
 
-void Agent::set(const Rcpp::List &state)
+void Agent::set(const Rcpp::List &state, bool notify)
 {
-  stateChanging(*this, state);
+  if (notify)
+    stateChanging(*this, state);
   _state &= state;
-  stateChanged(*this);
+  if (notify)
+    stateChanged(*this);
 }
 
 bool Agent::match(const Rcpp::List &state) const

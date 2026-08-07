@@ -90,13 +90,8 @@ public:
   void add(Transition *rule);
 
   /**
-   * Set a named numeric simulation state variable in place.
-   * This operation does not notify agent-state loggers or transition rules.
-   */
-  void changeState(const std::string &name, double value);
-
-  /**
    * Add a numeric change to a named simulation state variable.
+   * This operation does not notify agent-state loggers or transition rules.
    */
   void change(const std::string &name, double delta);
   

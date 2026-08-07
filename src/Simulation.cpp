@@ -119,7 +119,7 @@ void Simulation::add(Transition *rule)
   }
 }
 
-void Simulation::changeState(const std::string &name, double value)
+void Simulation::change(const std::string &name, double delta)
 {
   List current = state();
   R_xlen_t position = current.findName(name);
@@ -129,17 +129,11 @@ void Simulation::changeState(const std::string &name, double value)
   if ((TYPEOF(old) != INTSXP && TYPEOF(old) != REALSXP) ||
       Rf_length(old) != 1)
     stop("simulation state variable must be a numeric scalar: ", name);
-  current[position] = value;
-}
-
-void Simulation::change(const std::string &name, double delta)
-{
-  List current = state();
-  R_xlen_t position = current.findName(name);
-  if (position < 0)
-    stop("simulation state variable not found: ", name);
   double value = as<double>(current[position]);
-  changeState(name, value + delta);
+  List update(1);
+  update[0] = value + delta;
+  update.attr("names") = CharacterVector::create(name);
+  set(update, false);
 }
 
 Simulation *Simulation::simulation()
