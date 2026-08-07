@@ -61,6 +61,14 @@ getTime <- function(event) {
     .Call(`_ABM_getTime`, event)
 }
 
+newIncrementLogger <- function(variable, filter = NULL) {
+    .Call(`_ABM_newIncrementLogger`, variable, filter)
+}
+
+newDecrementLogger <- function(variable, filter = NULL) {
+    .Call(`_ABM_newDecrementLogger`, variable, filter)
+}
+
 newConfigurationModel <- function(rng) {
     .Call(`_ABM_newConfigurationModel`, rng)
 }
@@ -105,8 +113,8 @@ addLogger <- function(sim, logger) {
     invisible(.Call(`_ABM_addLogger`, sim, logger))
 }
 
-addTransition <- function(sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback = NULL, changed_callback = NULL) {
-    invisible(.Call(`_ABM_addTransition`, sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback, changed_callback))
+addTransition <- function(sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback = NULL, changed_callback = NULL, logging = NULL) {
+    invisible(.Call(`_ABM_addTransition`, sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback, changed_callback, logging))
 }
 
 stateMatch <- function(state, rule) {

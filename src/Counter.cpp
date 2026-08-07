@@ -50,12 +50,16 @@ void StateLogger::log(const Agent &agent, const State &from_state)
 
 double StateLogger::report()
 {
+  PAgent pa = _agent.lock();
+  if (pa)
+    return as<double>(pa->state()[_state]);
   return _value;
 }
 
 // [[Rcpp::export]]
 XP<Counter> newCounter(std::string name, List from, Nullable<List> to=R_NilValue, int initial=0)
 {
+  warning("newCounter() is deprecated; use newStateLogger() with inc() or dec() instead");
   return XP<Counter>(std::make_shared<Counter>(name, from, to, initial));
 }
 

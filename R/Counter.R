@@ -28,6 +28,11 @@
 #'   in a state that matches the "from" argument. Specifically, if the agent
 #'   jumps to "from", then the count increases by 1. If the agents jumps away
 #'   from "from", then the count decreases by 1.
+#'
+#' @section Lifecycle:
+#' `newCounter()` is deprecated. Use [newStateLogger()] for simulation state
+#' variables, and use [inc()] or [dec()] in a transition's `logging` argument
+#' for event-driven updates.
 #' 
 #' @export
 NULL

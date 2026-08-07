@@ -92,6 +92,17 @@ void Simulation::add(Transition *rule)
   }
 }
 
+void Simulation::change(const std::string &name, double delta)
+{
+  List current = state();
+  R_xlen_t position = current.findName(name);
+  if (position < 0)
+    stop("simulation state variable not found: ", name);
+  double value = as<double>(current[position]);
+  current[position] = value + delta;
+  set(current);
+}
+
 Simulation *Simulation::simulation()
 {
   return this;
@@ -144,7 +155,8 @@ void addTransition(
     List to, Nullable<List> contact_to, Nullable<XP<Contact> > contact,
     SEXP waiting_time, 
     Nullable<Function> to_change_callback = R_NilValue, 
-    Nullable<Function> changed_callback = R_NilValue)
+    Nullable<Function> changed_callback = R_NilValue,
+    Nullable<List> logging = R_NilValue)
 {
   PWaitingTime w;
   if (TYPEOF(waiting_time) == EXTPTRSXP)
@@ -159,8 +171,22 @@ void addTransition(
     std::range_error("to_change_callback must be a function or NULL");
   if (changed_callback != R_NilValue && !Rf_isFunction(changed_callback))
     std::range_error("changed_callback must be a function or NULL");
+
+  std::vector<PEventLogger> event_loggers;
+  if (!logging.isNull()) {
+    List l(logging);
+    event_loggers.reserve(l.size());
+    for (R_xlen_t i = 0; i < l.size(); ++i) {
+      if (!Rf_inherits(l[i], "EventLogger"))
+        stop("logging must contain EventLogger objects");
+      XP<EventLogger> logger(l[i]);
+      event_loggers.push_back(logger);
+    }
+  }
+
   if (contact.isNull())
-    sim->add(new Transition(from, to, w, to_change_callback, changed_callback));
+    sim->add(new Transition(
+      from, to, w, to_change_callback, changed_callback, event_loggers));
   else {
     if (contact_from.isNull())
       std::range_error("contact from state is NULL");
@@ -169,6 +195,6 @@ void addTransition(
     List cf(contact_from), ct(contact_to);
     XP<Contact> c(contact);
     sim->add(new ContactTransition(from, cf, to, ct,
-        **c, w, to_change_callback, changed_callback));
+        **c, w, to_change_callback, changed_callback, event_loggers));
   }
 }

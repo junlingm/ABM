@@ -1,5 +1,5 @@
 #' R6 class Create and represent a Simulation object
-#' 
+#'
 #' The [Simulation] class inherits the [Population] class. So a simulation
 #' manages agents and their contact. Thus, the class also inherits the 
 #' [Agent] class. So a simulation can have its own state, and events attached 
@@ -77,8 +77,8 @@ Simulation <- R6::R6Class(
 
 #' Add a logger to the simulation
 #' 
-#' @param logger, an external pointer returned by functions like 
-#' newCounter or newStateLogger.
+#' @param logger an external pointer returned by functions like
+#' [newStateLogger()].
 #' 
 #' @return the simulation object itself (invisible)
 #' 
@@ -103,6 +103,9 @@ Simulation <- R6::R6Class(
 #' @param changed_callback the R callback function after the change
 #' happened. See the details section.
 #' 
+#' @param logging NULL or a list of event loggers, such as [inc()] and
+#' [dec()], to apply after a successful transition.
+#'
 #' @return the simulation object itself (invisible)
 #' 
 #' @details If waiting.time is a function then it should take exactly one 
@@ -143,12 +146,13 @@ Simulation <- R6::R6Class(
 #'   3. contact: the contact agent, an external pointer
   addTransition = function(rule, waiting.time,
                              to_change_callback = NULL,
-                             changed_callback = NULL)
+                             changed_callback = NULL,
+                             logging = NULL)
     {
       l = private$parse(substitute(rule), parent.frame())
       addTransition(self$get,
             l$from$first, l$from$second, l$to$first, l$to$second, l$contact,
-            waiting.time, to_change_callback, changed_callback)
+            waiting.time, to_change_callback, changed_callback, logging)
       invisible(self)
   }
   ),

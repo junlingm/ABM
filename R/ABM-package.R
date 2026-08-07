@@ -29,9 +29,8 @@
 #' During a simulation the earliest event in the simulation is picked out,
 #' unscheduled (detached), and handled, which potentially causes the state
 #' change of the agent (or another agent in the simulation). The state change is
-#' then logged by loggers (see [newCounter()] and
-#' [newStateLogger()] for more details) that recognize the state
-#' change.
+#' then updated by event loggers (see [inc()] and [dec()]) and reported by
+#' state loggers (see [newStateLogger()]).
 #'
 #' ## Usage
 #' To use this framework, we start by creating a simulation
@@ -46,9 +45,10 @@
 #' transitions, using rules defined by the ```addTransition``` method of
 #' the [Simulation] class.
 #'
-#' At last, we add loggers to the simulation using
-#' the [Simulation] class' ```addLogger``` method` and either [newCounter()] or
-#' [newStateLogger()]. At last, run the simulation using
+#' At last, we add report loggers to the simulation using
+#' the [Simulation] class' ```addLogger``` method` and [newStateLogger()].
+#' Event loggers are attached to transitions through their `logging` argument.
+#' At last, run the simulation using
 #' its ```run``` method, which returns the observations of the loggers
 #' at the requested time points as a data.frame object.
 #' 
@@ -116,39 +116,34 @@
 #' # the result is a data.frame object
 #' print(result)
 #'
-#' # simulate an agent based SEIR model
-#' # specify an exponential waiting time for recovery
-#' gamma = newExpWaitingTime(0.2)
-#' # specify a tansmission rate
+#' # simulate a standard agent-based SIR model
+#' N = 100
+#' I0 = 1
 #' beta = 0.4
-#' # specify a exponentially distributed latent period
-#' sigma =newExpWaitingTime(0.5)
-#' # the population size
-#' N = 10000
-#' # create a simulation with N agents, initialize the first 5 with a state "I" 
-#' # and the remaining with "S".
-#' sim = Simulation$new(N, function(i) if (i <= 5) "I" else "S")
-#' # add event loggers that counts the individuals in each state.
-#' # the first variable is the name of the counter, the second is
-#' # the state for counting. States should be lists. However, for
-#' # simplicity, if the state has a single value, then we 
-#' # can specify the list as the value, e.g., "S", and the state
-#' # is equivalent to list("S")
-#' sim$addLogger(newCounter("S", "S"))
-#' sim$addLogger(newCounter("E", "E"))
-#' sim$addLogger(newCounter("I", "I"))
-#' sim$addLogger(newCounter("R", "R"))
-#' # create a random mixing contact pattern and attach it to sim
+#' gamma = 0.2
+#' sim = Simulation$new(
+#'   N,
+#'   function(i) list(stage = if (i <= I0) "I" else "S")
+#' )
+#' sim$state = list(S = N - I0, I = I0, R = 0)
+#' S = list(stage = "S")
+#' I = list(stage = "I")
+#' R = list(stage = "R")
 #' m = newRandomMixing()
 #' sim$addContact(m)
-#' # the transition for leaving latent state anbd becoming infectious
-#' sim$addTransition("E"->"I", sigma)
-#' # the transition for recovery
-#' sim$addTransition("I"->"R", gamma)
-#' # the transition for tranmission, which is caused by the contact m
-#' # also note that the waiting time can be a number, which is the same
-#' # as newExpWaitingTime(beta)
-#' sim$addTransition("I" + "S" -> "I" + "E" ~ m, beta)
+#' sim$addTransition(
+#'   S + I -> I + I ~ m,
+#'   beta,
+#'   logging = list(dec("S"), inc("I"))
+#' )
+#' sim$addTransition(
+#'   I -> R,
+#'   gamma,
+#'   logging = list(dec("I"), inc("R"))
+#' )
+#' sim$addLogger(newStateLogger("S", sim$get, "S"))
+#' sim$addLogger(newStateLogger("I", sim$get, "I"))
+#' sim$addLogger(newStateLogger("R", sim$get, "R"))
 #' # run the simulation, and get a data.frame object
 #' result = sim$run(0:100)
 #' print(result)
@@ -170,9 +165,9 @@
 #' list) in rule has the same value as in state. The domains in domains of the 
 #' state not listed in rule are not matched. In addition, to match to a rule,
 #' the domain values must be either a number or a character. This is useful
-#' for identifying state changes. See [newCounter()] and 
-#' the [Simulation] class' ```addTransition``` method for more details.
+#' for identifying state changes. See [inc()], [dec()], and the
+#' [Simulation] class' ```addTransition``` method for more details.
 #' 
 #' @name State
 NULL
-#' NULL 
+#' NULL

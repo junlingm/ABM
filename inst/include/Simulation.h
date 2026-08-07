@@ -87,6 +87,11 @@ public:
    * @param rule the Transition rule to add
    */
   void add(Transition *rule);
+
+  /**
+   * Add a numeric change to a named simulation state variable.
+   */
+  void change(const std::string &name, double delta);
   
   using Population::add;
 

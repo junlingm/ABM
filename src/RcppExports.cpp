@@ -181,6 +181,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// newIncrementLogger
+XP<EventLogger> newIncrementLogger(std::string variable, Nullable<Function> filter);
+RcppExport SEXP _ABM_newIncrementLogger(SEXP variableSEXP, SEXP filterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type variable(variableSEXP);
+    Rcpp::traits::input_parameter< Nullable<Function> >::type filter(filterSEXP);
+    rcpp_result_gen = Rcpp::wrap(newIncrementLogger(variable, filter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// newDecrementLogger
+XP<EventLogger> newDecrementLogger(std::string variable, Nullable<Function> filter);
+RcppExport SEXP _ABM_newDecrementLogger(SEXP variableSEXP, SEXP filterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type variable(variableSEXP);
+    Rcpp::traits::input_parameter< Nullable<Function> >::type filter(filterSEXP);
+    rcpp_result_gen = Rcpp::wrap(newDecrementLogger(variable, filter));
+    return rcpp_result_gen;
+END_RCPP
+}
 // newConfigurationModel
 XP<ConfigurationModel> newConfigurationModel(Function rng);
 RcppExport SEXP _ABM_newConfigurationModel(SEXP rngSEXP) {
@@ -308,8 +332,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // addTransition
-void addTransition(XP<Simulation> sim, List from, Nullable<List> contact_from, List to, Nullable<List> contact_to, Nullable<XP<Contact> > contact, SEXP waiting_time, Nullable<Function> to_change_callback, Nullable<Function> changed_callback);
-RcppExport SEXP _ABM_addTransition(SEXP simSEXP, SEXP fromSEXP, SEXP contact_fromSEXP, SEXP toSEXP, SEXP contact_toSEXP, SEXP contactSEXP, SEXP waiting_timeSEXP, SEXP to_change_callbackSEXP, SEXP changed_callbackSEXP) {
+void addTransition(XP<Simulation> sim, List from, Nullable<List> contact_from, List to, Nullable<List> contact_to, Nullable<XP<Contact> > contact, SEXP waiting_time, Nullable<Function> to_change_callback, Nullable<Function> changed_callback, Nullable<List> logging);
+RcppExport SEXP _ABM_addTransition(SEXP simSEXP, SEXP fromSEXP, SEXP contact_fromSEXP, SEXP toSEXP, SEXP contact_toSEXP, SEXP contactSEXP, SEXP waiting_timeSEXP, SEXP to_change_callbackSEXP, SEXP changed_callbackSEXP, SEXP loggingSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XP<Simulation> >::type sim(simSEXP);
@@ -321,7 +345,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type waiting_time(waiting_timeSEXP);
     Rcpp::traits::input_parameter< Nullable<Function> >::type to_change_callback(to_change_callbackSEXP);
     Rcpp::traits::input_parameter< Nullable<Function> >::type changed_callback(changed_callbackSEXP);
-    addTransition(sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback, changed_callback);
+    Rcpp::traits::input_parameter< Nullable<List> >::type logging(loggingSEXP);
+    addTransition(sim, from, contact_from, to, contact_to, contact, waiting_time, to_change_callback, changed_callback, logging);
     return R_NilValue;
 END_RCPP
 }
@@ -400,6 +425,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_newStateLogger", (DL_FUNC) &_ABM_newStateLogger, 3},
     {"_ABM_newEvent", (DL_FUNC) &_ABM_newEvent, 2},
     {"_ABM_getTime", (DL_FUNC) &_ABM_getTime, 1},
+    {"_ABM_newIncrementLogger", (DL_FUNC) &_ABM_newIncrementLogger, 2},
+    {"_ABM_newDecrementLogger", (DL_FUNC) &_ABM_newDecrementLogger, 2},
     {"_ABM_newConfigurationModel", (DL_FUNC) &_ABM_newConfigurationModel, 1},
     {"_ABM_newPopulation", (DL_FUNC) &_ABM_newPopulation, 2},
     {"_ABM_addAgent", (DL_FUNC) &_ABM_addAgent, 2},
@@ -411,7 +438,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_runSimulation", (DL_FUNC) &_ABM_runSimulation, 2},
     {"_ABM_resumeSimulation", (DL_FUNC) &_ABM_resumeSimulation, 2},
     {"_ABM_addLogger", (DL_FUNC) &_ABM_addLogger, 2},
-    {"_ABM_addTransition", (DL_FUNC) &_ABM_addTransition, 9},
+    {"_ABM_addTransition", (DL_FUNC) &_ABM_addTransition, 10},
     {"_ABM_stateMatch", (DL_FUNC) &_ABM_stateMatch, 2},
     {"_ABM_newExpWaitingTime", (DL_FUNC) &_ABM_newExpWaitingTime, 1},
     {"_ABM_newGammaWaitingTime", (DL_FUNC) &_ABM_newGammaWaitingTime, 2},

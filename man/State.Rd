@@ -15,6 +15,6 @@ The state matches the rule if and only if each domain (names of the
 list) in rule has the same value as in state. The domains in domains of the
 state not listed in rule are not matched. In addition, to match to a rule,
 the domain values must be either a number or a character. This is useful
-for identifying state changes. See \code{\link[=newCounter]{newCounter()}} and
-the \link{Simulation} class' \code{addTransition} method for more details.
+for identifying state changes. See \code{inc()}, \code{dec()}, and the
+\link{Simulation} class' \code{addTransition} method for more details.
 }

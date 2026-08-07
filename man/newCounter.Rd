@@ -34,3 +34,8 @@ in a state that matches the "from" argument. Specifically, if the agent
 jumps to "from", then the count increases by 1. If the agents jumps away
 from "from", then the count decreases by 1.
 }
+\section{Lifecycle}{
+\code{newCounter()} is deprecated. Use \code{newStateLogger()} for simulation
+state variables, and use \code{inc()} or \code{dec()} in a transition's
+\code{logging} argument for event-driven updates.
+}

@@ -12,27 +12,6 @@ using namespace Rcpp;
 
 using namespace Rcpp;
 
-class TransitionEvent : public Event {
-public:
-  TransitionEvent(double time, Transition &rule);
-  
-  virtual bool handle(Simulation &sim, Agent &agent);
-  
-protected:
-  Transition &_rule;
-};
-
-class ContactEvent : public Event {
-public:
-  ContactEvent(double time, PAgent contact, ContactTransition &rule);
-  
-  virtual bool handle(Simulation &sim, Agent &agent);
-  
-protected:
-  ContactTransition &_rule;
-  PAgent _contact;
-};
-
 WaitingTime::~WaitingTime()
 {
 }
@@ -53,6 +32,7 @@ bool TransitionEvent::handle(Simulation &sim, Agent &agent)
     if (_rule.toChange(t, agent)) {
       PRINT("%lf, NA, %d, NA, 1\n", t, agent.id());
       agent.set(_rule.to());
+      _rule.log(sim, *this, agent);
       _rule.changed(t, agent);
     }
   } else PRINT("%lf, NA, %d, NA, 0\n", t, agent.id());
@@ -62,8 +42,9 @@ bool TransitionEvent::handle(Simulation &sim, Agent &agent)
 Transition::Transition(const List &from, const List &to, 
                        PWaitingTime waiting_time, 
                        Nullable<Function> to_change_callback, 
-                       Nullable<Function> changed_callback)
-  : _from(from), _to(to), _waiting_time(waiting_time)
+                       Nullable<Function> changed_callback,
+                       const std::vector<PEventLogger> &logging)
+  : _from(from), _to(to), _waiting_time(waiting_time), _logging(logging)
 {
   _to_change = to_change_callback.isNull() ? nullptr : new Function(to_change_callback);
   _changed = changed_callback.isNull()? nullptr : new Function(changed_callback);
@@ -79,6 +60,18 @@ void Transition::changed(double time, Agent &agent)
 {
   if (_changed != nullptr)
     (*_changed)(NumericVector::create(time), XP<Agent>(agent));
+}
+
+void Transition::log(Simulation &simulation, TransitionEvent &event, Agent &agent)
+{
+  for (auto &logger : _logging)
+    logger->log(simulation, agent, event);
+}
+
+void Transition::log(Simulation &simulation, ContactEvent &event, Agent &agent)
+{
+  for (auto &logger : _logging)
+    logger->log(simulation, agent, event);
 }
 
 
@@ -110,6 +103,7 @@ bool ContactEvent::handle(Simulation &sim, Agent &agent)
         agent.set(_rule.to());
       if (!_contact->match(_rule.contactTo()))
         _contact->set(_rule.contactTo());
+      _rule.log(sim, *this, agent);
       _rule.changed(t, agent, *_contact);
     } else PRINT("%lf, NA, %ld, %ld, 0\n", t, agent.id(), _contact->id());
     _rule.schedule(t, agent);
@@ -123,8 +117,10 @@ ContactTransition::ContactTransition(
   Contact &contact,
   PWaitingTime waiting_time, 
   Rcpp::Nullable<Rcpp::Function> to_change_callback, 
-  Rcpp::Nullable<Rcpp::Function> changed_callback)
-  : Transition(agent_from, agent_to, waiting_time, to_change_callback, changed_callback),
+  Rcpp::Nullable<Rcpp::Function> changed_callback,
+  const std::vector<PEventLogger> &logging)
+  : Transition(agent_from, agent_to, waiting_time, to_change_callback,
+               changed_callback, logging),
     _contact_from(contact_from), _contact_to(contact_to), _contact(contact)
 {
 }

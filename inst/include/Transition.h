@@ -1,8 +1,13 @@
 #pragma once
 
 #include "Contact.h"
+#include "EventLogger.h"
 #include "RNG.h"
 #include <string>
+#include <vector>
+
+class ContactEvent;
+class TransitionEvent;
 
 /**
  * A class representing a random waiting time for a stqte transition
@@ -73,7 +78,8 @@ public:
   Transition(const Rcpp::List &from, const Rcpp::List &to, 
              PWaitingTime waiting_time, 
              Rcpp::Nullable<Rcpp::Function> to_change_callback=R_NilValue, 
-             Rcpp::Nullable<Rcpp::Function> changed_callback=R_NilValue);
+             Rcpp::Nullable<Rcpp::Function> changed_callback=R_NilValue,
+             const std::vector<PEventLogger> &logging = {});
   
   /**
    * Destructor
@@ -113,6 +119,12 @@ public:
    * @param agent the agent to initiate the contact
    */
   void changed(double time, Agent &agent);
+
+  /**
+   * Invoke the event loggers after a successful transition.
+   */
+  void log(Simulation &simulation, TransitionEvent &event, Agent &agent);
+  void log(Simulation &simulation, ContactEvent &event, Agent &agent);
 
   /**
    * Schedule an agent for the next contact event
@@ -155,6 +167,11 @@ protected:
    * The R callback function after the state has changed
    */
   Rcpp::Function *_changed;
+
+  /**
+   * Operations to invoke after a successful transition.
+   */
+  std::vector<PEventLogger> _logging;
 };
 
 /**
@@ -205,7 +222,8 @@ public:
      Contact &contact,
      PWaitingTime waiting_time, 
      Rcpp::Nullable<Rcpp::Function> to_change_callback=R_NilValue, 
-     Rcpp::Nullable<Rcpp::Function> changed_callback=R_NilValue);
+     Rcpp::Nullable<Rcpp::Function> changed_callback=R_NilValue,
+     const std::vector<PEventLogger> &logging = {});
   
   /**
    * returns the state for the contact to be matched before the 
@@ -276,6 +294,38 @@ protected:
    * the contact pattern 
    */
   Contact &_contact;
+};
+
+/**
+ * An event for a spontaneous transition.
+ */
+class TransitionEvent : public Event {
+public:
+  TransitionEvent(double time, Transition &rule);
+
+  virtual bool handle(Simulation &sim, Agent &agent);
+
+  Transition &rule() const { return _rule; }
+
+protected:
+  Transition &_rule;
+};
+
+/**
+ * An event for a transition caused by contact with another agent.
+ */
+class ContactEvent : public Event {
+public:
+  ContactEvent(double time, PAgent contact, ContactTransition &rule);
+
+  virtual bool handle(Simulation &sim, Agent &agent);
+
+  ContactTransition &rule() const { return _rule; }
+  Agent &contact() const { return *_contact; }
+
+protected:
+  ContactTransition &_rule;
+  PAgent _contact;
 };
 
 /**

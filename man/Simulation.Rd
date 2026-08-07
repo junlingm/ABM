@@ -144,8 +144,8 @@ by all logger.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{logger, }}{an external pointer returned by functions like
-newCounter or newStateLogger.}
+\item{\code{logger}}{an external pointer returned by functions like
+\code{newStateLogger()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -168,7 +168,8 @@ the simulation object itself (invisible)
   rule,
   waiting.time,
   to_change_callback = NULL,
-  changed_callback = NULL
+  changed_callback = NULL,
+  logging = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -186,6 +187,9 @@ the change should occur. See the details section.}
 
 \item{\code{changed_callback}}{the R callback function after the change
 happened. See the details section.}
+
+\item{\code{logging}}{\code{NULL} or a list of event loggers, such as
+\code{inc()} and \code{dec()}, to apply after a successful transition.}
 }
 \if{html}{\out{</div>}}
 }
