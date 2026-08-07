@@ -2,21 +2,22 @@
 % Please edit documentation in R/Agent.R
 \name{setState}
 \alias{setState}
-\title{Set the state of the agent}
+\title{Merge values into the state of the agent}
 \arguments{
 \item{agent}{an external pointer returned by newAgent}
 
-\item{state}{an R list giving the components of the state to be
-undated.}
+\item{state}{an R list giving the state values to update. Existing named
+domains are replaced and new named domains are added; other domains remain
+unchanged.}
 }
 \description{
-Set the state of the agent
+Merge values into the state of the agent
 }
 \details{
 In this framework, a state is a list, each named
-component is called a domain. This function only updates the
-values of the domain given in the "value" list, while leave the
-other components not in the "value" list unchanged.
+component is called a domain. This function replaces values for
+matching named domains and adds new named domains, while leaving
+other components unchanged.
 
 If agent is an R6 object, then we should either use agent$schedule,
 or use schedule(agent$get, event)

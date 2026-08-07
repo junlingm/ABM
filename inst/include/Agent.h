@@ -65,9 +65,10 @@ public:
   virtual bool handle(Simulation &sim, Agent &agent);
 
   /**
-   * Set the state of the agent
+   * Merge values into the state of the agent
    * 
-   * @param state an Rcpp List that holds the state
+   * @param state an Rcpp List whose values replace matching named domains or
+   * are added as new domains
    */
   void set(const Rcpp::List &state);
 

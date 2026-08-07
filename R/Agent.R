@@ -167,14 +167,15 @@ NULL
 #' @export
 NULL
 
-#' Set the state of the agent
+#' Merge values into the state of the agent
 #' 
 #' @name setState
 #' 
 #' @param agent an external pointer returned by newAgent
 #' 
-#' @param state an R list giving the components of the state to be
-#' undated.
+#' @param state an R list giving the state values to update. Existing named
+#' domains are replaced and new named domains are added; other domains remain
+#' unchanged.
 #' 
 #' @details In this framework, a state is a list, each named
 #' component is called a domain. This function only updates the 

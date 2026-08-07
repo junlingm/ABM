@@ -10,3 +10,11 @@ stopifnot(identical(initial$value, 1.5))
 setState(agent, list(value = -2.25))
 updated <- sim$resume(1)
 stopifnot(identical(updated$value, -2.25))
+
+# Setting state merges named domains instead of replacing the whole state.
+setState(agent, list(status = "active"))
+merged_state <- getState(agent)
+stopifnot(
+  identical(merged_state$value, -2.25),
+  identical(merged_state$status, "active")
+)
