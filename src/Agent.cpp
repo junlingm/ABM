@@ -61,14 +61,27 @@ void Agent::stateChanged(Agent &agent, const State &from)
 
 PAgent Agent::leave()
 {
-  if (_population == nullptr) 
-    return nullptr;
+  Population *owner = _population;
+  if (owner == nullptr)
+    stop("agent is not attached to a population");
   State save = _state;
   stateChanging(*this, State());
   _state = State();
   stateChanged(*this);
-  PAgent agent = _population->remove(*this);
+  if (_population != owner) {
+    _state = save;
+    stop("agent changed populations while leaving");
+  }
+  PAgent agent;
+  try {
+    agent = owner->remove(*this);
+  } catch (...) {
+    _state = save;
+    throw;
+  }
   _state = save;
+  if (!agent)
+    stop("agent could not be removed from its population");
   return agent;
 }
 

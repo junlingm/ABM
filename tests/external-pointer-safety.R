@@ -1,5 +1,13 @@
 library(ABM)
 
+# Leaving an unattached agent cannot produce an owning pointer for transfer.
+unattached <- Agent$new()
+unattached_error <- try(unattached$leave(), silent = TRUE)
+stopifnot(
+  inherits(unattached_error, "try-error"),
+  grepl("agent is not attached to a population", unattached_error, fixed = TRUE)
+)
+
 # A handle for a base class accepts a derived object.
 sim <- Simulation$new()
 stopifnot(identical(getID(sim$get), 0L))
