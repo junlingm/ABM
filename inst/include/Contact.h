@@ -16,6 +16,9 @@ class Population;
  */
 class Contact {
 public:
+  typedef Contact PointerBase;
+  static constexpr std::uint32_t TAG = XP_CONTACT;
+
   /**
    * Constructor
    */

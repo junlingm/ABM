@@ -1,154 +1,220 @@
 #pragma once
 
 #include <Rcpp.h>
+#include <cstdint>
 #include <memory>
+#include <type_traits>
 
 /**
- * A template class that encapsulates the external pointers
- * 
- * The memory management in this framework is done on C++ side for 
- * performance reasons. However, some objects created in C++ are returned
- * to R side for management, for example, newAgent returns an agent to
- * the R side. As such objects are not maintained on the C++ side, and
- * R is responsible for managing their lifespan, this is done with an 
- * external pointer holding a shared_ptr object to be passed to R. This 
- * allows the shared_ptr to manage the life span on the C++ side
- * 
- * However, some components of the framework, such as event handlers or 
- * transition callbacks can be R functions that needs to take the 
- * reference to the C++ objects. These references should not be managed on
- * the R side, and thus needs to be distinguished with the shared_ptr
- * above. On the other hand, both point to the same object, and thus
- * devising two interfaces for the same access can be confusing and error 
- * prune.
- * 
- * This template class solves this problem by holding both a shared_ptr 
- * and a normal pointer pointing to the C++ object. If the aim is to pass
- * reference, then the shared_ptr is nullptr. And this class does the
- * required translation to the required pointer types.
+ * Capabilities supported by objects exposed through external pointers.
+ * Derived classes include the capabilities of their base classes in TAG.
+ */
+enum XPTag : std::uint32_t {
+  XP_EVENT        = 1u << 0,
+  XP_CALENDAR     = 1u << 1,
+  XP_AGENT        = 1u << 2,
+  XP_POPULATION   = 1u << 3,
+  XP_SIMULATION   = 1u << 4,
+  XP_CONTACT      = 1u << 5,
+  XP_LOGGER       = 1u << 6,
+  XP_EVENT_LOGGER = 1u << 7,
+  XP_WAITING_TIME = 1u << 8
+};
+
+/**
+ * A lifetime token for references passed to an R callback. The callback owns
+ * the shared token; borrowed external pointers retain only a weak reference.
+ */
+class XPLease {
+};
+
+typedef std::shared_ptr<XPLease> PXPLease;
+
+/**
+ * Storage shared by all external-pointer types in one polymorphic family.
+ *
+ * Managed pointers own the object through _p. Borrowed pointers keep a raw
+ * pointer and may optionally be limited by a callback lease.
  */
 template<class T>
 class Pointer {
 public:
-  /**
-   * Constructor for a shared_ptr pointing to a C++ object
-   */
-  Pointer(std::shared_ptr<T> p) : _p(p), __p(p.get()) { }
-  /**
-   * Constructor for a refernce to a C++ object.
-   */
-  Pointer(T &p) : __p(&p) { }
+  explicit Pointer(std::shared_ptr<T> p)
+    : _p(std::move(p)), _borrowed(nullptr), _scoped(false)
+  {
+    if (!_p)
+      Rcpp::stop("cannot create an ABM handle for a null object");
+  }
 
-  /**
-   * returns a const C++ pointer to the object.
-   */
-  operator const T*() const { return __p; }
-  
-  /**
-   * returns C++ pointer to the object.
-   */
-  operator T*() { return __p; }
-  
-  /**
-   * returns a shared_ptr to the object, or nullptr if the object
-   * is passed by reference.
-   */
+  explicit Pointer(T &p)
+    : _borrowed(&p), _scoped(false)
+  {
+  }
+
+  Pointer(T &p, const PXPLease &lease)
+    : _borrowed(&p), _lease(lease), _scoped(true)
+  {
+    if (!lease)
+      Rcpp::stop("cannot create an ABM callback handle without a lease");
+  }
+
+  T *checked()
+  {
+    if (_p)
+      return _p.get();
+    if (_borrowed == nullptr)
+      Rcpp::stop("ABM handle has no object");
+    if (_scoped && _lease.expired())
+      Rcpp::stop("ABM callback handle has expired");
+    return _borrowed;
+  }
+
+  const T *checked() const
+  {
+    if (_p)
+      return _p.get();
+    if (_borrowed == nullptr)
+      Rcpp::stop("ABM handle has no object");
+    if (_scoped && _lease.expired())
+      Rcpp::stop("ABM callback handle has expired");
+    return _borrowed;
+  }
+
+  operator const T*() const { return checked(); }
+  operator T*() { return checked(); }
+
+  /** Returns nullptr for borrowed pointers, including scoped borrows. */
   operator std::shared_ptr<T>() const { return _p; }
 
-  /**
-   * access to the C++ object
-   */
-  T *operator->() { return __p; }
-  
-  /**
-   * const access to the C++ object
-   */
-  const T *operator->() const { return __p; }
+  T *operator->() { return checked(); }
+  const T *operator->() const { return checked(); }
 
-  /**
-   * returns whether this object points to a managed C++ object (true)
-   * or a reference to asn object (false) 
-   */
   bool managed() const { return bool(_p); }
 
 private:
-  /**
-   * The shared_ptr pointing to a C++ object. Is nullptr if the object
-   * passes a reference.
-   */
   std::shared_ptr<T> _p;
-  /**
-   * holds to a pointer to a C++ object passing either a shared_ptr or
-   * a reference.
-   */
-  T *__p;
+  T *_borrowed;
+  std::weak_ptr<XPLease> _lease;
+  bool _scoped;
 };
 
 /**
- * An external pointer that holds a Pointer object pointing to a C++
- * object either using a shared_ptr or passing by reference.
+ * An external pointer to an ABM object.
+ *
+ * T must define:
+ *   - PointerBase: the polymorphic root stored by its pointer family
+ *   - TAG: the capability bits required to use the object as T
  */
 template<class T>
-class XP : public Rcpp::XPtr<Pointer<T> > {
-public:
-  /**
-   * Constructor that converts from an R value
-   * 
-   * @param p an R object holding an external pointer to a Pointer object
-   */
-  XP(SEXP p)
-    : Rcpp::XPtr<Pointer<T> >(p)
+class XP : public Rcpp::XPtr<Pointer<typename T::PointerBase> > {
+private:
+  typedef typename T::PointerBase PointerBase;
+  typedef Pointer<PointerBase> Holder;
+  typedef Rcpp::XPtr<Holder> XPtrBase;
+
+  static Rcpp::IntegerVector makeTag()
   {
+    return Rcpp::IntegerVector::create(static_cast<int>(T::TAG));
   }
 
-  /**
-   * Constructor converts a shared_ptr to an external pointer
-   * 
-   * @param p a shared_ptr pointing a C++ object
-   */
-  XP(const std::shared_ptr<T> &p)
-    : Rcpp::XPtr<Pointer<T> >(new Pointer<T>(p))
+  static void validateTag(SEXP p)
   {
+    SEXP tag = R_ExternalPtrTag(p);
+    if (TYPEOF(tag) != INTSXP || Rf_xlength(tag) != 1 ||
+        INTEGER(tag)[0] == NA_INTEGER)
+      Rcpp::stop("invalid ABM external-pointer tag");
+
+    std::uint32_t actual = static_cast<std::uint32_t>(INTEGER(tag)[0]);
+    std::uint32_t required = static_cast<std::uint32_t>(T::TAG);
+    if ((actual & required) != required)
+      Rcpp::stop("ABM external pointer does not support the requested type");
+  }
+
+  Holder *holder()
+  {
+    return XPtrBase::checked_get();
+  }
+
+  const Holder *holder() const
+  {
+    return XPtrBase::checked_get();
+  }
+
+  T *checked()
+  {
+    PointerBase *base = holder()->checked();
+    T *p = dynamic_cast<T*>(base);
+    if (p == nullptr)
+      Rcpp::stop("ABM external pointer has an incompatible C++ type");
+    return p;
+  }
+
+  const T *checked() const
+  {
+    const PointerBase *base = holder()->checked();
+    const T *p = dynamic_cast<const T*>(base);
+    if (p == nullptr)
+      Rcpp::stop("ABM external pointer has an incompatible C++ type");
+    return p;
+  }
+
+public:
+  explicit XP(SEXP p)
+    : XPtrBase(p)
+  {
+    validateTag(p);
+  }
+
+  XP(const std::shared_ptr<T> &p)
+    : XPtrBase(
+        new Holder(std::static_pointer_cast<PointerBase>(p)),
+        true,
+        makeTag())
+  {
+    static_assert(std::is_base_of<PointerBase, T>::value,
+                  "T must derive from T::PointerBase");
     this->attr("class") = p->classes;
   }
-  
-  /**
-   * Constructor that converts a C++ reference to an external pointer
-   * 
-   * @param p a C++ reference
-   */
+
   XP(T &p)
-    : Rcpp::XPtr<Pointer<T> >(new Pointer<T>(p))
+    : XPtrBase(
+        new Holder(static_cast<PointerBase&>(p)),
+        true,
+        makeTag())
   {
+    static_assert(std::is_base_of<PointerBase, T>::value,
+                  "T must derive from T::PointerBase");
     this->attr("class") = p.classes;
   }
 
-  /**
-   * converts to a normal const C++ pointer
-   */
-  operator const T*() const { return *this->get(); }
-  
-  /**
-   * converts to a normal C++ pointer
-   */
-  operator T*() { return *this->get(); }
-  
-  /**
-   * converts to a shared_ptr
-   * 
-   * @details returns nullptr if the esternal pointer holding a reference
-   * to a C++ object.
-   */
-  operator std::shared_ptr<T> () const { return *this->get(); }
-  
-  /**
-   * access to the C++ object
-   */
-  T *operator->() { return *this->get(); }
+  XP(T &p, const PXPLease &lease)
+    : XPtrBase(
+        new Holder(static_cast<PointerBase&>(p), lease),
+        true,
+        makeTag())
+  {
+    static_assert(std::is_base_of<PointerBase, T>::value,
+                  "T must derive from T::PointerBase");
+    this->attr("class") = p.classes;
+  }
 
-  /**
-   * const access to the C++ object
-   */
-  const T *operator->() const { return *this->get(); }
+  operator const T*() const { return checked(); }
+  operator T*() { return checked(); }
 
+  operator std::shared_ptr<T>() const
+  {
+    std::shared_ptr<PointerBase> base = *holder();
+    if (!base)
+      return nullptr;
+    std::shared_ptr<T> p = std::dynamic_pointer_cast<T>(base);
+    if (!p)
+      Rcpp::stop("ABM external pointer has an incompatible C++ type");
+    return p;
+  }
+
+  T &operator*() { return *checked(); }
+  const T &operator*() const { return *checked(); }
+
+  T *operator->() { return checked(); }
+  const T *operator->() const { return checked(); }
 };

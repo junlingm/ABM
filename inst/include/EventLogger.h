@@ -1,5 +1,6 @@
 #pragma once
 
+#include "XP.h"
 #include <Rcpp.h>
 #include <memory>
 #include <string>
@@ -17,6 +18,9 @@ class TransitionEvent;
  */
 class EventLogger {
 public:
+  typedef EventLogger PointerBase;
+  static constexpr std::uint32_t TAG = XP_EVENT_LOGGER;
+
   virtual ~EventLogger();
 
   virtual void log(

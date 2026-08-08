@@ -53,13 +53,17 @@ Transition::Transition(const List &from, const List &to,
 bool Transition::toChange(double time, Agent &agent)
 {
   if (_to_change == nullptr) return true;
-  return as<bool>((*_to_change)(NumericVector::create(time), XP<Agent>(agent)));
+  PXPLease lease = std::make_shared<XPLease>();
+  return as<bool>((*_to_change)(
+    NumericVector::create(time), XP<Agent>(agent, lease)));
 }
 
 void Transition::changed(double time, Agent &agent)
 {
-  if (_changed != nullptr)
-    (*_changed)(NumericVector::create(time), XP<Agent>(agent));
+  if (_changed != nullptr) {
+    PXPLease lease = std::make_shared<XPLease>();
+    (*_changed)(NumericVector::create(time), XP<Agent>(agent, lease));
+  }
 }
 
 void Transition::log(Simulation &simulation, TransitionEvent &event, Agent &agent)
@@ -128,13 +132,22 @@ ContactTransition::ContactTransition(
 bool ContactTransition::toChange(double time, Agent &agent, Agent &contact)
 {
   if (_to_change == nullptr) return true;
-  return as<bool>((*_to_change)(NumericVector::create(time), XP<Agent>(agent), XP<Agent>(contact)));
+  PXPLease lease = std::make_shared<XPLease>();
+  return as<bool>((*_to_change)(
+    NumericVector::create(time),
+    XP<Agent>(agent, lease),
+    XP<Agent>(contact, lease)));
 }
 
 void ContactTransition::changed(double time, Agent &agent, Agent &contact)
 {
-  if (_changed != nullptr)
-    (*_changed)(NumericVector::create(time), XP<Agent>(agent), XP<Agent>(contact));
+  if (_changed != nullptr) {
+    PXPLease lease = std::make_shared<XPLease>();
+    (*_changed)(
+      NumericVector::create(time),
+      XP<Agent>(agent, lease),
+      XP<Agent>(contact, lease));
+  }
 }
 
 void ContactTransition::schedule(double time, Agent &agent)

@@ -14,6 +14,9 @@
  */
 class Logger {
 public:
+  typedef Logger PointerBase;
+  static constexpr std::uint32_t TAG = XP_LOGGER;
+
   /**
    * Constructor with a given name for the logger
    * 

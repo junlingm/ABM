@@ -14,6 +14,9 @@ class TransitionEvent;
  */
 class WaitingTime {
 public:
+  typedef WaitingTime PointerBase;
+  static constexpr std::uint32_t TAG = XP_WAITING_TIME;
+
   /**
    * Destructor
    */
