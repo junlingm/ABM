@@ -1,3 +1,12 @@
+# Version 0.5.1
+* External pointers now validate their capability tags and callback-scoped
+  handles expire safely after the callback returns.
+* Agent removal now rejects unattached agents and validates population
+  ownership, preserving agent state when removal fails.
+* Fixed leaks from transition callbacks and removed the cross-language cycle
+  between R-defined contacts and their C++ bridges.
+* Added regression tests for external-pointer and contact lifecycle safety.
+
 # Version 0.5.0
 * Added event-driven transition logging with `inc()` and `dec()` operations,
   optional filters, and `NULL` as the default transition logging setting.
