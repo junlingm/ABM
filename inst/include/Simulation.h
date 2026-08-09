@@ -9,6 +9,8 @@
 
 class Simulation : public Population {
 public:
+  static constexpr std::uint32_t TAG = Population::TAG | XP_SIMULATION;
+
   /**
    * Constructor
    * 

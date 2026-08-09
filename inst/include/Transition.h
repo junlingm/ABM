@@ -3,6 +3,7 @@
 #include "Contact.h"
 #include "EventLogger.h"
 #include "RNG.h"
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,9 @@ class TransitionEvent;
  */
 class WaitingTime {
 public:
+  typedef WaitingTime PointerBase;
+  static constexpr std::uint32_t TAG = XP_WAITING_TIME;
+
   /**
    * Destructor
    */
@@ -162,11 +166,11 @@ protected:
    * if the state change should happen (if return true) or not (if
    * return false)
    */
-  Rcpp::Function *_to_change;
+  std::unique_ptr<Rcpp::Function> _to_change;
   /**
    * The R callback function after the state has changed
    */
-  Rcpp::Function *_changed;
+  std::unique_ptr<Rcpp::Function> _changed;
 
   /**
    * Operations to invoke after a successful transition.

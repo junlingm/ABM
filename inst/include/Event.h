@@ -30,6 +30,9 @@ typedef std::shared_ptr<Event> PEvent;
  */
 class Event {
 public:
+  typedef Event PointerBase;
+  static constexpr std::uint32_t TAG = XP_EVENT;
+
   /**
    * constructor with the event time
    * 
@@ -156,6 +159,8 @@ protected:
  */
 class Calendar : public Event {
 public:
+  static constexpr std::uint32_t TAG = Event::TAG | XP_CALENDAR;
+
   /**
    * Constructor that creates an empty calendar
    */

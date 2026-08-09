@@ -228,6 +228,6 @@ void addTransition(
     List cf(contact_from), ct(contact_to);
     XP<Contact> c(contact);
     sim->add(new ContactTransition(from, cf, to, ct,
-        **c, w, to_change_callback, changed_callback, event_loggers));
+        *c, w, to_change_callback, changed_callback, event_loggers));
   }
 }

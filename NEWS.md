@@ -1,3 +1,22 @@
+# Version 0.5.1
+* External pointers now validate their capability tags and callback-scoped
+  handles expire safely after the callback returns.
+* Agent removal now rejects unattached agents and validates population
+  ownership, preserving agent state when removal fails.
+* Fixed leaks from transition callbacks and removed the cross-language cycle
+  between R-defined contacts and their C++ bridges.
+* Added regression tests for external-pointer and contact lifecycle safety.
+
+# Version 0.5.0
+* Added event-driven transition logging with `inc()` and `dec()` operations,
+  optional filters, and `NULL` as the default transition logging setting.
+* `Simulation$addLogger()` now accepts a state name with an optional output
+  name. Explicit `StateLogger` registration and `newCounter()` are deprecated.
+* Agent state updates merge named domains, and legacy state-change logging now
+  uses pre- and post-change notifications without cloning the full state.
+* Simulation state variables are updated in place, avoiding unnecessary state
+  notifications for event-driven counter updates.
+
 # Version 0.4.4
 * Fixed configuration-model networks when agents are added or removed after
   network construction. New edges now use the sampled degree-weighted node,

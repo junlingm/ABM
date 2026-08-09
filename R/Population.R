@@ -66,11 +66,16 @@ Population <- R6::R6Class(
 #' 
 #' @details If the contact has already been added, this call does nothing.
     addContact = function(contact) {
-      if (inherits(contact, "R6Contact"))
+      r6_contact <- NULL
+      if (inherits(contact, "R6Contact")) {
+        r6_contact <- contact
         contact = contact$get
+      }
       if (!inherits(contact, "Contact"))
         stop("invalid contact argument")
       addContact(private$agent, contact)
+      if (!is.null(r6_contact))
+        private$contacts[[length(private$contacts) + 1L]] <- r6_contact
       invisible(self)
     },
     
@@ -116,6 +121,10 @@ Population <- R6::R6Class(
 #' 
 #' The population size, an integer
     size = function() { getSize(private$agent) }
+  ),
+
+  private = list(
+    contacts = list()
   )
 )
 

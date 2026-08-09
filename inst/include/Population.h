@@ -25,6 +25,8 @@
  */
 class Population : public Agent {
 public:
+  static constexpr std::uint32_t TAG = Agent::TAG | XP_POPULATION;
+
   /**
    * Constructor 
    * 

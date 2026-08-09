@@ -25,6 +25,8 @@ class ContactTransition;
  */
 class Agent : public Calendar {
 public:
+  static constexpr std::uint32_t TAG = Calendar::TAG | XP_AGENT;
+
   typedef unsigned long IDType;
   typedef unsigned int IndexType;
   /**

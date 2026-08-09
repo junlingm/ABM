@@ -19,7 +19,9 @@ REvent::REvent(double time, Function handler)
 
 bool REvent::handle(Simulation &sim, Agent &agent)
 {
-  _handler(wrap(time()), XP<Simulation>(sim), XP<Agent>(agent));
+  PXPLease lease = std::make_shared<XPLease>();
+  _handler(
+    wrap(time()), XP<Simulation>(sim, lease), XP<Agent>(agent, lease));
   return false;
 }
 

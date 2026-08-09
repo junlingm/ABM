@@ -71,7 +71,7 @@ void Population::report()
 PAgent Population::remove(Agent &agent)
 {
   if (agent._population != this) 
-    return NULL;
+    stop("agent is not managed by this population");
   for (auto &c : _contacts)
     c->remove(agent);
   agent._contactEvents->clearEvents();
