@@ -21,9 +21,7 @@ TransitionEvent::TransitionEvent(double time, Transition &rule)
 {
 }
 
-Transition::~Transition()
-{
-}
+Transition::~Transition() = default;
 
 bool TransitionEvent::handle(Simulation &sim, Agent &agent)
 {
@@ -46,8 +44,10 @@ Transition::Transition(const List &from, const List &to,
                        const std::vector<PEventLogger> &logging)
   : _from(from), _to(to), _waiting_time(waiting_time), _logging(logging)
 {
-  _to_change = to_change_callback.isNull() ? nullptr : new Function(to_change_callback);
-  _changed = changed_callback.isNull()? nullptr : new Function(changed_callback);
+  if (!to_change_callback.isNull())
+    _to_change.reset(new Function(to_change_callback));
+  if (!changed_callback.isNull())
+    _changed.reset(new Function(changed_callback));
 }
 
 bool Transition::toChange(double time, Agent &agent)

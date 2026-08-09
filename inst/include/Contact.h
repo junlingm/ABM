@@ -198,33 +198,23 @@ public:
   
 private:
   /**
+   * Return the R6 object while it is still alive.
+   */
+  Rcpp::Environment object() const;
+
+  /**
+   * Look up an R6 callback without retaining its closure between calls.
+   */
+  Rcpp::Function callback(const char *name) const;
+
+  /**
    * A vector of length one that holds the random contact. This avoids
    * creating the vector and copying the contact
    */
   std::vector<Agent*> _neighbors;
   
   /**
-   * The R6 object
+   * A weak reference to the R6 object.
    */
-  Rcpp::Environment _r6;
-
-  /** 
-   * The R6 contact method 
-   */
-  Rcpp::Function _r6_contact;
-  
-  /** 
-   * The R6 addAgent
-   */
-  Rcpp::Function _r6_addAgent;
-
-  /** 
-   * The R6 attach
-   */
-  Rcpp::Function _r6_attach;
-
-  /** 
-   * The R6 remove
-   */
-  Rcpp::Function _r6_remove;
+  Rcpp::WeakReference _r6;
 };

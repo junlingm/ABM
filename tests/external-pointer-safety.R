@@ -79,3 +79,19 @@ stopifnot(
     fixed = TRUE
   )
 )
+
+# R-defined contacts are retained by their owning population, while the C++
+# bridge keeps only a weak reference to the R6 object.
+TestContact <- R6::R6Class(
+  "TestContact",
+  inherit = Contact,
+  public = list(
+    contact = function(time, agent) list(),
+    addAgent = function(agent) invisible(NULL),
+    build = function() invisible(NULL),
+    remove = function(agent) invisible(NULL)
+  )
+)
+r_contact_sim <- Simulation$new(1)
+r_contact_sim$addContact(TestContact$new())
+invisible(r_contact_sim$run(0))

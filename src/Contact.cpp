@@ -56,17 +56,29 @@ void RandomMixing::build()
 }
 
 RContact::RContact(Environment r6)
-  : Contact(), _r6(r6), 
-    _r6_contact(r6["contact"]),
-    _r6_addAgent(r6["addAgent"]),
-    _r6_attach(r6["attach"]),
-    _r6_remove(r6["remove"])
+  : Contact(),
+    _r6(R_MakeWeakRef(r6, R_NilValue, R_NilValue, FALSE))
 {
+}
+
+Environment RContact::object() const
+{
+  SEXP key = _r6.key();
+  if (key == R_NilValue)
+    stop("R contact object is no longer available");
+  return Environment(key);
+}
+
+Function RContact::callback(const char *name) const
+{
+  Environment r6 = object();
+  return Function(r6[name]);
 }
 
 const std::vector<Agent*> &RContact::contact(double time, Agent &agent)
 {
-  GenericVector c = _r6_contact(time, XP<Agent>(agent));
+  Function contact = callback("contact");
+  GenericVector c = contact(time, XP<Agent>(agent));
   size_t n = c.size();
   _neighbors.resize(n);
   for (size_t i = 0; i < n; ++i) {
@@ -78,17 +90,20 @@ const std::vector<Agent*> &RContact::contact(double time, Agent &agent)
 
 void RContact::add(Agent &agent)
 {
-  _r6_addAgent(XP<Agent>(agent));
+  Function addAgent = callback("addAgent");
+  addAgent(XP<Agent>(agent));
 }
 
 void RContact::build()
 {
-  _r6_attach(XP<Population>(*_population));
+  Function attach = callback("attach");
+  attach(XP<Population>(*_population));
 }
 
 void RContact::remove(Agent &agent)
 {
-  _r6_remove(XP<Agent>(agent));
+  Function remove = callback("remove");
+  remove(XP<Agent>(agent));
 }
 
 
