@@ -38,6 +38,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 NeedsCompilation: yes
+SystemRequirements: C++17
 Packaged: 2023-08-31 05:55:57 UTC; jma
 Author: Junling Ma [aut, cre]
 Maintainer: Junling Ma <junlingm@uvic.ca>
