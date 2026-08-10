@@ -153,19 +153,21 @@ Simulation <- R6::R6Class(
 #' states of both the agent who initiate the contact and the contact
 #' agent. The two states are connected by a + sign, the one before the
 #' + sign is the initiator, and the one after the sign is the contact.
-#' The transition must be associated with a contact type, using a `~`
+#' The transition is normally associated with a contact type using a `~`
 #' operator. The preferred form is a string, such as `"physical"`; every
-#' attached contact with that type can then generate the transition. For
-#' example, suppose `S = list("S")`, `I = list("I")`, and
-#' `m = newRandomMixing(type = "physical")`, then a possible rule specifying
-#' an infectious agent contacting a susceptible agent causing it to become
-#' exposed is
+#' attached contact with that type can then generate the transition. If the
+#' simulation has exactly one distinct contact type, the `~` part may be
+#' omitted and that type is inferred. For example, suppose
+#' `S = list("S")`, `I = list("I")`, and
+#' `m = newRandomMixing(type = "physical")`, then either of these rules is
+#' equivalent:
 #'
 #' I + S -> I + list("E") ~ "physical"
+#' I + S -> I + list("E")
 #'
 #' A Contact object can still be supplied for compatibility, but this form is
-#' deprecated; its type is copied when the transition is created. A type can
-#' also be stored in a variable and used after `~`.
+#' deprecated; its type is copied when the transition is created. If multiple
+#' contact types are attached, a type must be supplied after `~`.
 #' 
 #' For a transition caused by a contact, the callback functions take
 #' the third argument:
@@ -208,7 +210,8 @@ Simulation <- R6::R6Class(
     # parse a side of the transition, either a starting state
     # or a target state (or pairs). If it is a pair connected by ", 
     # it must be a transition caused by contact, and thus must be
-    # associated with a contact object following a ~.
+    # associated with a contact type following a ~. When there is only one
+    # contact type in the simulation, the ~ part may be omitted.
     parse.side = function(side, envir) {
       if (is.call(side) && as.character(side[[1]]) == "~") {
         contact_expr <- side[[3]]
@@ -242,7 +245,7 @@ Simulation <- R6::R6Class(
         stop("conact can only be specied once")
       if (is.null(contact)) contact = to$contact
       if ((!is.null(from$second) && is.null(to$second)) ||
-          (!is.null(from$second) && is.null(to$second)))
+          (is.null(from$second) && !is.null(to$second)))
         stop("from and to arguments for a contact must both have two states")
       if (is.null(from$second) && is.null(from$second) && !is.null(contact))
         stop("contact is specified for a non-contact transition")

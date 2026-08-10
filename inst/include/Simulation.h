@@ -5,6 +5,7 @@
 #include "Transition.h"
 #include <list>
 #include <map>
+#include <set>
 #include <vector>
 
 class Simulation : public Population {
@@ -122,7 +123,10 @@ public:
   static Rcpp::CharacterVector classes;
   
 protected:
-  void registerTransitions(Population &population);
+  void collectContactTypes(Population &population,
+                           std::set<std::string> &types);
+  void registerTransitions(Population &population,
+                           const std::set<std::string> &types);
 
   /**
    * Select legacy loggers that may be affected by an impending state change.

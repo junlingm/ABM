@@ -122,7 +122,7 @@ bool ContactEvent::handle(Simulation &sim, Agent &agent)
 ContactTransition::ContactTransition(
   const Rcpp::List &agent_from, const Rcpp::List &contact_from, 
   const Rcpp::List &agent_to, const Rcpp::List &contact_to,
-  std::string contact_type,
+  std::optional<std::string> contact_type,
   PWaitingTime waiting_time, 
   Rcpp::Nullable<Rcpp::Function> to_change_callback, 
   Rcpp::Nullable<Rcpp::Function> changed_callback,
@@ -132,8 +132,6 @@ ContactTransition::ContactTransition(
     _contact_from(contact_from), _contact_to(contact_to),
     _contact_type(std::move(contact_type))
 {
-  if (_contact_type.empty())
-    stop("contact type must not be empty");
 }
 
 bool ContactTransition::toChange(double time, Agent &agent, Agent &contact)

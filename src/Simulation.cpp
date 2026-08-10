@@ -26,24 +26,48 @@ Simulation::~Simulation()
 void Simulation::report()
 {
   prepareContacts();
-  registerTransitions(*this);
+  std::set<std::string> types;
+  collectContactTypes(*this, types);
+  registerTransitions(*this, types);
   Population::report();
 }
 
-void Simulation::registerTransitions(Population &population)
+void Simulation::collectContactTypes(
+    Population &population, std::set<std::string> &types)
 {
+  for (auto &contact : population._contacts)
+    types.insert(contact->type());
+  for (auto &agent : population._agents) {
+    Population *nested = dynamic_cast<Population*>(agent.get());
+    if (nested)
+      collectContactTypes(*nested, types);
+  }
+}
+
+void Simulation::registerTransitions(
+    Population &population, const std::set<std::string> &types)
+{
+  for (auto rule : _rules) {
+    ContactTransition *transition = dynamic_cast<ContactTransition*>(rule);
+    if (transition && !transition->contactType() && types.size() != 1)
+      stop("a contact transition without a type requires exactly one "
+           "contact type");
+  }
   for (auto &contact : population._contacts) {
     contact->clearTransitions();
     for (auto rule : _rules) {
       ContactTransition *transition = dynamic_cast<ContactTransition*>(rule);
-      if (transition && contact->type() == transition->contactType())
+      if (transition &&
+          ((!transition->contactType() && types.size() == 1) ||
+           (transition->contactType() &&
+            contact->type() == *transition->contactType())))
         contact->addTransition(*transition);
     }
   }
   for (auto &agent : population._agents) {
     Population *nested = dynamic_cast<Population*>(agent.get());
     if (nested)
-      registerTransitions(*nested);
+      registerTransitions(*nested, types);
   }
 }
 
@@ -270,16 +294,21 @@ void addTransition(
     }
   }
 
-  if (contact == R_NilValue)
+  bool contact_rule = !contact_from.isNull() || !contact_to.isNull();
+  if (!contact_rule) {
+    if (contact != R_NilValue)
+      stop("contact states are required for a contact transition");
     sim->add(new Transition(
       from, to, w, to_change_callback, changed_callback, event_loggers));
-  else {
+  } else {
     if (contact_from.isNull())
       std::range_error("contact from state is NULL");
     if (contact_to.isNull())
       std::range_error("contact to state is NULL");
     List cf(contact_from), ct(contact_to);
-    std::string type = contactType(contact);
+    std::optional<std::string> type;
+    if (contact != R_NilValue)
+      type = contactType(contact);
     sim->add(new ContactTransition(from, cf, to, ct,
         type, w, to_change_callback, changed_callback, event_loggers));
   }

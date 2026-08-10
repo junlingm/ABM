@@ -224,19 +224,20 @@ A transition caused by contact, the formula needs to specify the
 states of both the agent who initiate the contact and the contact
 agent. The two states are connected by a + sign, the one before the
 sign is the initiator, and the one after the sign is the contact.
-The transition must be associated with a contact type, using a ~
+The transition is normally associated with a contact type, using a ~
 operator. The preferred form is a string, such as "physical"; every
-attached contact with that type can then generate the transition. For
-example, suppose S=list("S"), I=list("I"), and
-m=newRandomMixing(type = "physical"), then a possible rule specifying
-an infectious agent contacting a susceptible agent causing it to become
-exposed is
+attached contact with that type can then generate the transition. If the
+simulation has exactly one distinct contact type, the ~ part may be omitted.
+For example, suppose S=list("S"), I=list("I"), and
+m=newRandomMixing(type = "physical"), then either of these rules is
+equivalent:
 
 I + S -> I + list("E") ~ "physical"
+I + S -> I + list("E")
 
 A Contact object can still be supplied for compatibility, but this form is
-deprecated; its type is copied when the transition is created. A type can
-also be stored in a variable and used after ~.
+deprecated; its type is copied when the transition is created. If multiple
+contact types are attached, a type must be supplied after ~.
 
 For a transition caused by a contact, the callback functions take
 the third argument:

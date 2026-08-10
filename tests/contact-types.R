@@ -22,6 +22,43 @@ stopifnot(
   identical(typed_result$I, c(1, 1))
 )
 
+# With one distinct contact type, the type can be inferred by omitting ~.
+inferred_sim <- Simulation$new(
+  2,
+  function(i) list(stage = if (i == 1) "S" else "I")
+)
+inferred_sim$state <- list(S = 1, I = 1)
+inferred_sim$addContact(newRandomMixing(type = "physical"))
+inferred_sim$addTransition(
+  S + I -> I + I,
+  function(time) 0,
+  logging = list(dec("S"), inc("I"))
+)
+inferred_sim$addLogger("S")
+inferred_sim$addLogger("I")
+inferred_result <- inferred_sim$run(c(0, 1))
+stopifnot(
+  identical(inferred_result$S, c(1, 0)),
+  identical(inferred_result$I, c(1, 2))
+)
+
+# With multiple contact types, omitting ~ is ambiguous and must fail.
+ambiguous_sim <- Simulation$new(
+  2,
+  function(i) list(stage = if (i == 1) "S" else "I")
+)
+ambiguous_sim$addContact(newRandomMixing(type = "physical"))
+ambiguous_sim$addContact(newRandomMixing(type = "social"))
+ambiguous_sim$addTransition(
+  S + I -> I + I,
+  function(time) 0
+)
+ambiguous_error <- try(ambiguous_sim$run(0), silent = TRUE)
+stopifnot(
+  inherits(ambiguous_error, "try-error"),
+  grepl("exactly one contact type", ambiguous_error, fixed = TRUE)
+)
+
 # Matching physical contact patterns share the same transition rule.
 shared_sim <- Simulation$new(
   2,

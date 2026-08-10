@@ -4,6 +4,7 @@
 #include "EventLogger.h"
 #include "RNG.h"
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -201,7 +202,8 @@ public:
    * @param contact_to the targeting state for the contact
    * 
    * @param contact_type the contact type used to register this transition
-   * with matching contact patterns
+   * with matching contact patterns. An omitted value infers the type when the
+   * simulation has exactly one contact type.
    *
    * @param waiting_time the waiting_time for the transition to occur,
    * a shared_ptr<WaitingTime> point to a WaitingTime object.
@@ -226,7 +228,7 @@ public:
    */
   ContactTransition(const Rcpp::List &agent_from, const Rcpp::List &contact_from, 
      const Rcpp::List &agent_to, const Rcpp::List &contact_to,
-     std::string contact_type,
+     std::optional<std::string> contact_type,
      PWaitingTime waiting_time, 
      Rcpp::Nullable<Rcpp::Function> to_change_callback=R_NilValue, 
      Rcpp::Nullable<Rcpp::Function> changed_callback=R_NilValue,
@@ -247,7 +249,10 @@ public:
   /**
    * returns the contact type used to register this transition
    */
-  const std::string &contactType() const { return _contact_type; }
+  const std::optional<std::string> &contactType() const
+  {
+    return _contact_type;
+  }
   
   /**
    * Calls the R callback function before the state change
@@ -301,7 +306,7 @@ protected:
   /**
    * the contact type used for registration
    */
-  std::string _contact_type;
+  std::optional<std::string> _contact_type;
 };
 
 /**
