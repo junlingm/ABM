@@ -216,3 +216,12 @@ stopifnot(
     fixed = TRUE
   )
 )
+
+# A surviving Agent can be added to another Population after its original
+# Population is destroyed. Its calendar must not retain the destroyed owner.
+replacement_sim <- Simulation$new()
+replacement_sim$addAgent(surviving_agent)
+stopifnot(
+  replacement_sim$size == 1,
+  identical(getState(surviving_agent)$state, "S")
+)

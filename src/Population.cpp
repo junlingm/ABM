@@ -43,6 +43,7 @@ Population::~Population()
     contact->detach(*this);
   for (auto &agent : _agents) {
     if (agent && agent->_population == this) {
+      unschedule(agent);
       agent->_population = nullptr;
       agent->_membership_lease.reset();
     }
