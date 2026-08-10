@@ -59,17 +59,6 @@ void Population::add(PContact contact)
     contact->add(*a);
 }
 
-void Population::prepareContacts()
-{
-  for (auto &contact : _contacts)
-    contact->attach(*this);
-  for (auto &agent : _agents) {
-    Population *population = dynamic_cast<Population*>(agent.get());
-    if (population)
-      population->prepareContacts();
-  }
-}
-
 void Population::report()
 {
   for (auto &c : _contacts)

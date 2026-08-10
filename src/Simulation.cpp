@@ -25,7 +25,6 @@ Simulation::~Simulation()
 
 void Simulation::report()
 {
-  prepareContacts();
   resetContactRates(*this);
   std::set<std::string> types;
   collectContactTypes(*this, types);
@@ -135,13 +134,8 @@ void Simulation::stateChanged(Agent &agent, const State &from)
     for (auto c : _loggers)
       c->log(agent, from);
     for (auto r : _rules) {
-      ContactTransition *contact = dynamic_cast<ContactTransition*>(r);
-      if (!from.match(r->from()) && agent.match(r->from())) {
-        if (contact)
-          contact->schedule(_current_time, agent);
-        else
-          r->schedule(_current_time, agent);
-      }
+      if (!from.match(r->from()) && agent.match(r->from()))
+        r->schedule(_current_time, agent);
     }
   }
 }
@@ -168,10 +162,7 @@ void Simulation::stateChanged(Agent &agent)
     for (auto rule : _pending_rules) {
       if (!agent.match(rule->from()))
         continue;
-      ContactTransition *contact = dynamic_cast<ContactTransition*>(rule);
-      if (contact) {
-        contact->schedule(_current_time, agent);
-      } else rule->schedule(_current_time, agent);
+      rule->schedule(_current_time, agent);
     }
   }
   _pending_loggers.clear();

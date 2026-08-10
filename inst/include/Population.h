@@ -89,11 +89,6 @@ public:
   void add(PContact contact);
 
   /**
-   * Attach all contacts in this population and nested populations.
-   */
-  void prepareContacts();
-
-  /**
    * the population size
    * 
    * It is the number of agents in the population.

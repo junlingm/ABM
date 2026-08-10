@@ -252,7 +252,7 @@ Simulation <- R6::R6Class(
       if ((!is.null(from$second) && is.null(to$second)) ||
           (is.null(from$second) && !is.null(to$second)))
         stop("from and to arguments for a contact must both have two states")
-      if (is.null(from$second) && is.null(from$second) && !is.null(contact))
+      if (is.null(from$second) && is.null(to$second) && !is.null(contact))
         stop("contact is specified for a non-contact transition")
       list(from=from, to=to, contact=contact)
     }
