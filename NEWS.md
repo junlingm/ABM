@@ -1,6 +1,7 @@
 # Version 0.5.1
-* External pointers now validate their capability tags and callback-scoped
-  handles expire safely after the callback returns.
+* External pointers now validate their capability tags. Borrowed handles
+  expire safely when their callback, contact membership, or population
+  lifetime ends.
 * Agent removal now rejects unattached agents and validates population
   ownership, preserving agent state when removal fails.
 * Fixed leaks from transition callbacks and removed the cross-language cycle

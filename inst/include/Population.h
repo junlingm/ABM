@@ -55,6 +55,13 @@ public:
    */
   Population(Rcpp::List states);
 
+  ~Population() override;
+
+  /**
+   * Token for handles borrowed for the lifetime of this population.
+   */
+  const PXPLease &lifetimeLease() const { return _lifetime_lease; }
+
   /**
    * Add an agent to the populaton
    * 
@@ -138,15 +145,20 @@ public:
    * automatically called by the simulation when it needs to collect
    * the state information from the agent.
    */
-  virtual void report();
+  void report() override;
 
 protected:
   friend class Simulation;
 
   /**
+   * Expires borrowed R handles when this population is destroyed.
+   */
+  PXPLease _lifetime_lease;
+
+  /**
    * getting noticed that the agent is added to a simulation
    */
-  virtual void attached(Simulation &sim);
+  void attached(Simulation &sim) override;
   
   /**
    * A vector holding all agents in the population

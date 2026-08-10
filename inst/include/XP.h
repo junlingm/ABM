@@ -22,8 +22,9 @@ enum XPTag : std::uint32_t {
 };
 
 /**
- * A lifetime token for references passed to an R callback. The callback owns
- * the shared token; borrowed external pointers retain only a weak reference.
+ * A lifetime token for borrowed references passed to R. The scope that owns
+ * the referenced object or callback owns the shared token; borrowed external
+ * pointers retain only a weak reference.
  */
 class XPLease {
 };
@@ -34,28 +35,23 @@ typedef std::shared_ptr<XPLease> PXPLease;
  * Storage shared by all external-pointer types in one polymorphic family.
  *
  * Managed pointers own the object through _p. Borrowed pointers keep a raw
- * pointer and may optionally be limited by a callback lease.
+ * pointer whose validity is limited by a required lease.
  */
 template<class T>
 class Pointer {
 public:
   explicit Pointer(std::shared_ptr<T> p)
-    : _p(std::move(p)), _borrowed(nullptr), _scoped(false)
+    : _p(std::move(p)), _borrowed(nullptr)
   {
     if (!_p)
       Rcpp::stop("cannot create an ABM handle for a null object");
   }
 
-  explicit Pointer(T &p)
-    : _borrowed(&p), _scoped(false)
-  {
-  }
-
   Pointer(T &p, const PXPLease &lease)
-    : _borrowed(&p), _lease(lease), _scoped(true)
+    : _borrowed(&p), _lease(lease)
   {
     if (!lease)
-      Rcpp::stop("cannot create an ABM callback handle without a lease");
+      Rcpp::stop("cannot create a borrowed ABM handle without a lease");
   }
 
   T *checked()
@@ -64,8 +60,8 @@ public:
       return _p.get();
     if (_borrowed == nullptr)
       Rcpp::stop("ABM handle has no object");
-    if (_scoped && _lease.expired())
-      Rcpp::stop("ABM callback handle has expired");
+    if (_lease.expired())
+      Rcpp::stop("ABM borrowed handle has expired");
     return _borrowed;
   }
 
@@ -75,8 +71,8 @@ public:
       return _p.get();
     if (_borrowed == nullptr)
       Rcpp::stop("ABM handle has no object");
-    if (_scoped && _lease.expired())
-      Rcpp::stop("ABM callback handle has expired");
+    if (_lease.expired())
+      Rcpp::stop("ABM borrowed handle has expired");
     return _borrowed;
   }
 
@@ -95,7 +91,6 @@ private:
   std::shared_ptr<T> _p;
   T *_borrowed;
   std::weak_ptr<XPLease> _lease;
-  bool _scoped;
 };
 
 /**
@@ -174,17 +169,6 @@ public:
     static_assert(std::is_base_of<PointerBase, T>::value,
                   "T must derive from T::PointerBase");
     this->attr("class") = p->classes;
-  }
-
-  XP(T &p)
-    : XPtrBase(
-        new Holder(static_cast<PointerBase&>(p)),
-        true,
-        makeTag())
-  {
-    static_assert(std::is_base_of<PointerBase, T>::value,
-                  "T must derive from T::PointerBase");
-    this->attr("class") = p.classes;
   }
 
   XP(T &p, const PXPLease &lease)

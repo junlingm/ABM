@@ -113,6 +113,11 @@ public:
   /** the population that it is in */
   const Population *population() const { return _population; }
 
+  /**
+   * Token for handles borrowed by the current population membership.
+   */
+  const PXPLease &membershipLease() const { return _membership_lease; }
+
   /** the simulation that it is in */
   virtual Simulation *simulation();
   /** the simulation that it is in */
@@ -155,6 +160,11 @@ protected:
    * The population that the agent is in
    */
   Population *_population;
+
+  /**
+   * Expires borrowed contact handles when the agent leaves its population.
+   */
+  PXPLease _membership_lease;
 
 private:
   friend class Simulation; // so that Simulation can call attached

@@ -120,6 +120,11 @@ public:
    */
   void attach(Population &population);
 
+  /**
+   * Clear the associated population during population destruction.
+   */
+  void detach(Population &population);
+
   /** 
    * Finalize the contact pattern
    * 

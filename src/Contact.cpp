@@ -49,6 +49,12 @@ void Contact::attach(Population &population)
   build();
 }
 
+void Contact::detach(Population &population)
+{
+  if (_population == &population)
+    _population = nullptr;
+}
+
 RandomMixing::RandomMixing(std::string type, PWaitingTime waiting_time)
   : Contact(std::move(type), std::move(waiting_time)), _neighbors(1)
 {
@@ -108,7 +114,7 @@ Function RContact::callback(const char *name) const
 const std::vector<Agent*> &RContact::contact(double time, Agent &agent)
 {
   Function contact = callback("contact");
-  GenericVector c = contact(time, XP<Agent>(agent));
+  GenericVector c = contact(time, XP<Agent>(agent, agent.membershipLease()));
   size_t n = c.size();
   _neighbors.resize(n);
   for (size_t i = 0; i < n; ++i) {
@@ -121,19 +127,19 @@ const std::vector<Agent*> &RContact::contact(double time, Agent &agent)
 void RContact::add(Agent &agent)
 {
   Function addAgent = callback("addAgent");
-  addAgent(XP<Agent>(agent));
+  addAgent(XP<Agent>(agent, agent.membershipLease()));
 }
 
 void RContact::build()
 {
   Function attach = callback("attach");
-  attach(XP<Population>(*_population));
+  attach(XP<Population>(*_population, _population->lifetimeLease()));
 }
 
 void RContact::remove(Agent &agent)
 {
   Function remove = callback("remove");
-  remove(XP<Agent>(agent));
+  remove(XP<Agent>(agent, agent.membershipLease()));
 }
 
 

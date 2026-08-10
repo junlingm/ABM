@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 Population::Population(size_t n, Nullable<Function> initializer)
-  : Agent()
+  : Agent(), _lifetime_lease(std::make_shared<XPLease>())
 {
   if (n) _agents.reserve(n);
   if (initializer.isNull()) {
@@ -24,7 +24,7 @@ Population::Population(size_t n, Nullable<Function> initializer)
 }
 
 Population::Population(List states)
-  : Agent()
+  : Agent(), _lifetime_lease(std::make_shared<XPLease>())
 {
   size_t n = states.size();
   for (size_t i = 0; i < n; ++i) {
@@ -33,6 +33,19 @@ Population::Population(List states)
       s = List(s);
     auto agent = std::make_shared<Agent>(s);
     add(agent);
+  }
+}
+
+Population::~Population()
+{
+  _lifetime_lease.reset();
+  for (auto &contact : _contacts)
+    contact->detach(*this);
+  for (auto &agent : _agents) {
+    if (agent && agent->_population == this) {
+      agent->_population = nullptr;
+      agent->_membership_lease.reset();
+    }
   }
 }
 
@@ -45,6 +58,7 @@ void Population::add(PAgent agent)
   _agents.push_back(agent);
   schedule(agent);
   agent->_population = this;
+  agent->_membership_lease = std::make_shared<XPLease>();
   agent->report();
   for (auto c : _contacts)
     c->add(*agent);
@@ -79,6 +93,7 @@ PAgent Population::remove(Agent &agent)
     c->remove(agent);
   agent._contactEvents->clearEvents();
   agent._population = nullptr;
+  agent._membership_lease.reset();
   unsigned int i = agent._index;
   agent._index = 0;
   size_t n = _agents.size();
