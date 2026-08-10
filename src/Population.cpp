@@ -54,6 +54,9 @@ void Population::add(PAgent agent)
 
 void Population::add(PContact contact)
 {
+  for (const auto &existing : _contacts)
+    if (existing == contact)
+      return;
   _contacts.push_back(contact);
   for (auto &a : _agents)
     contact->add(*a);

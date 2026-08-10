@@ -75,6 +75,35 @@ stopifnot(
         duplicate_rate_error, fixed = TRUE)
 )
 
+# Adding the same contact object more than once is a no-op.
+same_contact_sim <- Simulation$new(1)
+same_contact <- newRandomMixing(rate = 1, type = "physical")
+same_contact_sim$addContact(same_contact)
+same_contact_sim$addContact(same_contact)
+stopifnot(!inherits(try(same_contact_sim$run(0), silent = TRUE), "try-error"))
+
+# R-defined contacts are likewise retained and attached only once.
+build_count <- 0L
+DuplicateRContact <- R6::R6Class(
+  "DuplicateRContact",
+  inherit = Contact,
+  public = list(
+    contact = function(time, agent) list(),
+    addAgent = function(agent) invisible(NULL),
+    build = function() {
+      build_count <<- build_count + 1L
+      invisible(NULL)
+    },
+    remove = function(agent) invisible(NULL)
+  )
+)
+same_r_contact_sim <- Simulation$new(1)
+same_r_contact <- DuplicateRContact$new(rate = 1, type = "r-defined")
+same_r_contact_sim$addContact(same_r_contact)
+same_r_contact_sim$addContact(same_r_contact)
+invisible(same_r_contact_sim$run(0))
+stopifnot(identical(build_count, 1L))
+
 # A transition type must identify one contact pattern, not several patterns.
 duplicate_sim <- Simulation$new(
   2,

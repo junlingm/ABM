@@ -74,7 +74,12 @@ Population <- R6::R6Class(
       if (!inherits(contact, "Contact"))
         stop("invalid contact argument")
       addContact(private$agent, contact)
-      if (!is.null(r6_contact))
+      retained <- !is.null(r6_contact) && any(vapply(
+        private$contacts,
+        function(existing) identical(existing$get, contact),
+        logical(1)
+      ))
+      if (!is.null(r6_contact) && !retained)
         private$contacts[[length(private$contacts) + 1L]] <- r6_contact
       invisible(self)
     },
