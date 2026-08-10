@@ -53,6 +53,9 @@ Albert-Barabasi networkm which can be built while adding the agents.
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
+\item{\code{type}}{The string used to associate this contact pattern with
+contact transitions.}
+
 \item{\code{get}}{.The external pointer pointing to the C++ RContact object.}
 
 \item{\code{attached}}{a logical value indicating whether the object has been attached
@@ -78,7 +81,17 @@ to a population}
 \subsection{Method \code{new()}}{
 the constructor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Contact$new()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Contact$new(type = "contact")}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{a non-empty string identifying the kind of contact pattern.
+Contact transitions are registered with every attached contact having the
+same type.}
+}
+\if{html}{\out{</div>}}
 }
 
 }

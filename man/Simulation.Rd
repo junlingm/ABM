@@ -223,19 +223,20 @@ following two arguments
 A transition caused by contact, the formula needs to specify the
 states of both the agent who initiate the contact and the contact
 agent. The two states are connected by a + sign, the one before the
-\itemize{
-\item sign is the initiator, and the one after the sign is the contact.
-The transition must be associated with a Contact object, using
-a ~ operator. The Contact object must be specified by a variable name
-that hold the external pointer to the object (created by e.g.,
-the newRandomMixing function) For example, suppose S=list("S"),
-I=list("I"), and m=newRandomMixing(sim), then a possible rule
-specifying an infectious agent contacting a susceptible agent causing
-it to become exposed can be
-specified by
-}
+sign is the initiator, and the one after the sign is the contact.
+The transition must be associated with a contact type, using a ~
+operator. The preferred form is a string, such as "physical"; every
+attached contact with that type can then generate the transition. For
+example, suppose S=list("S"), I=list("I"), and
+m=newRandomMixing(type = "physical"), then a possible rule specifying
+an infectious agent contacting a susceptible agent causing it to become
+exposed is
 
-I + S -> I + list("E") ~ m
+I + S -> I + list("E") ~ "physical"
+
+A Contact object can still be supplied for compatibility, but this form is
+deprecated; its type is copied when the transition is created. A type can
+also be stored in a variable and used after ~.
 
 For a transition caused by a contact, the callback functions take
 the third argument:

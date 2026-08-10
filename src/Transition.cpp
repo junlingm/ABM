@@ -1,4 +1,5 @@
 #include "../inst/include/Simulation.h"
+#include <utility>
 
 using namespace Rcpp;
 
@@ -87,15 +88,18 @@ void Transition::schedule(double time, Agent &agent)
     agent.schedule(std::make_shared<TransitionEvent>(time + wait_time, *this));
 }
 
-ContactEvent::ContactEvent(double time, PAgent contact, ContactTransition &rule)
-  : Event(time), _rule(rule), _contact(contact)
+ContactEvent::ContactEvent(double time, PAgent contact, Contact &source,
+                           ContactTransition &rule)
+  : Event(time), _rule(rule), _source(source), _contact(contact)
 {
 }
 
 bool ContactEvent::handle(Simulation &sim, Agent &agent)
 {
   double t = time();
-  if (agent.population() != _contact->population()) {
+  Population *owner = agent.population();
+  if (owner == nullptr || owner != _contact->population() ||
+      owner != _source.population()) {
     PRINT("%lf, NA, %ld, %ld, 0\n", t, agent.id(), _contact->id());
     return false;
   }
@@ -110,7 +114,7 @@ bool ContactEvent::handle(Simulation &sim, Agent &agent)
       _rule.log(sim, *this, agent);
       _rule.changed(t, agent, *_contact);
     } else PRINT("%lf, NA, %ld, %ld, 0\n", t, agent.id(), _contact->id());
-    _rule.schedule(t, agent);
+    _rule.schedule(t, agent, _source);
   } else PRINT("%lf, NA, %ld, %ld, 0\n", t, agent.id(), _contact->id());
   return false;
 }
@@ -118,15 +122,18 @@ bool ContactEvent::handle(Simulation &sim, Agent &agent)
 ContactTransition::ContactTransition(
   const Rcpp::List &agent_from, const Rcpp::List &contact_from, 
   const Rcpp::List &agent_to, const Rcpp::List &contact_to,
-  Contact &contact,
+  std::string contact_type,
   PWaitingTime waiting_time, 
   Rcpp::Nullable<Rcpp::Function> to_change_callback, 
   Rcpp::Nullable<Rcpp::Function> changed_callback,
   const std::vector<PEventLogger> &logging)
   : Transition(agent_from, agent_to, waiting_time, to_change_callback,
                changed_callback, logging),
-    _contact_from(contact_from), _contact_to(contact_to), _contact(contact)
+    _contact_from(contact_from), _contact_to(contact_to),
+    _contact_type(std::move(contact_type))
 {
+  if (_contact_type.empty())
+    stop("contact type must not be empty");
 }
 
 bool ContactTransition::toChange(double time, Agent &agent, Agent &contact)
@@ -150,12 +157,14 @@ void ContactTransition::changed(double time, Agent &agent, Agent &contact)
   }
 }
 
-void ContactTransition::schedule(double time, Agent &agent)
+void ContactTransition::schedule(double time, Agent &agent, Contact &source)
 {
-  auto contact = _contact.contact(time, agent);
+  if (!agent.match(from())) return;
+  if (source.population() != agent.population()) return;
+  auto contact = source.contact(time, agent);
   if (contact.empty()) return;
   double waiting_time = R_PosInf;
-  Agent* next_contact;
+  Agent* next_contact = nullptr;
   for (auto c : contact) {
     double t = _waiting_time->waitingTime(time);
     if (t < waiting_time) {
@@ -164,9 +173,14 @@ void ContactTransition::schedule(double time, Agent &agent)
     }
   }
   if (waiting_time < R_PosInf) {
+    if (next_contact == nullptr)
+      stop("contact returned a null agent");
     PRINT("%lf, %lf, %ld, %ld, NA\n", time, waiting_time+time, agent.id(), next_contact->id());
+    PAgent managed = source.population()->agent(*next_contact);
+    if (!managed)
+      stop("contact returned an agent not managed by its population");
     agent._contactEvents->schedule(std::make_shared<ContactEvent>(
-        waiting_time + time, next_contact->population()->agent(*next_contact), *this));
+        waiting_time + time, managed, source, *this));
   }
 }
 

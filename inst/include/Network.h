@@ -8,9 +8,9 @@ public:
   /**
    * Constructor with the associated population
    * 
-   * @param population the associated population
+   * @param type the contact type used to register contact transitions
    */
-  Network();
+  explicit Network(std::string type = "contact");
 
   /**
    * Return the contacts of an agent at a given time
@@ -96,7 +96,8 @@ public:
    * generated degrees. Stubs are randomly paired. Self-loops and duplicate
    * edges are dropped, as is the final dangling stub when their total is odd.
    */
-  ConfigurationModel(Rcpp::Function degree_rng);
+  ConfigurationModel(Rcpp::Function degree_rng,
+                     std::string type = "contact");
   
 protected:
   /**

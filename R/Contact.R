@@ -14,8 +14,12 @@ Contact = R6::R6Class(
   "R6Contact",
   public = list(
 #' @description the constructor
-    initialize = function() {
-      private$pointer = newContact(self)
+#'
+#' @param type a non-empty string identifying the kind of contact pattern.
+#' Contact transitions are registered with every attached contact having the
+#' same type. It defaults to `"contact"`.
+    initialize = function(type = "contact") {
+      private$pointer = newContact(self, type)
     },
   
 #' @description attach to a population
@@ -87,7 +91,12 @@ Contact = R6::R6Class(
     population = NULL
   ),
   active = list(
-#' @field get
+#' @field type
+#'
+#' The string used to associate this contact pattern with contact transitions.
+    type = function() { getContactType(private$pointer) },
+
+    #' @field get
 #'
 #'.The external pointer pointing to the C++ RContact object.
     get = function() { private$pointer },
@@ -106,6 +115,9 @@ Contact = R6::R6Class(
 #' 
 #' @name newRandomMixing
 #'
+#' @param type a non-empty string identifying the contact type. Contact
+#' transitions using the same type are registered with this pattern.
+#'
 #' @export
 #' 
 #' @examples
@@ -122,6 +134,8 @@ NULL
 #' @name newConfigurationModel
 #' 
 #' @param rng a function that generates random degrees
+#' @param type a non-empty string identifying the contact type. Contact
+#' transitions using the same type are registered with this pattern.
 #'
 #' @return an external pointer.
 #' 

@@ -57,6 +57,11 @@ public:
   virtual Rcpp::List run(const Rcpp::NumericVector &time);
 
   /**
+   * Prepare contacts and register type-based transitions before reporting.
+   */
+  virtual void report() override;
+
+  /**
    * Continue a previously run simulation
    * 
    * @param time the time points to return the logger values.
@@ -117,6 +122,8 @@ public:
   static Rcpp::CharacterVector classes;
   
 protected:
+  void registerTransitions(Population &population);
+
   /**
    * Select legacy loggers that may be affected by an impending state change.
    */

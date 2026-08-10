@@ -200,6 +200,9 @@ public:
    * 
    * @param contact_to the targeting state for the contact
    * 
+   * @param contact_type the contact type used to register this transition
+   * with matching contact patterns
+   *
    * @param waiting_time the waiting_time for the transition to occur,
    * a shared_ptr<WaitingTime> point to a WaitingTime object.
    * 
@@ -223,7 +226,7 @@ public:
    */
   ContactTransition(const Rcpp::List &agent_from, const Rcpp::List &contact_from, 
      const Rcpp::List &agent_to, const Rcpp::List &contact_to,
-     Contact &contact,
+     std::string contact_type,
      PWaitingTime waiting_time, 
      Rcpp::Nullable<Rcpp::Function> to_change_callback=R_NilValue, 
      Rcpp::Nullable<Rcpp::Function> changed_callback=R_NilValue,
@@ -242,9 +245,9 @@ public:
   const Rcpp::List &contactTo() const { return _contact_to; }
 
   /**
-   * returns the contact pattern
+   * returns the contact type used to register this transition
    */
-  Contact &contact() const { return _contact; }
+  const std::string &contactType() const { return _contact_type; }
   
   /**
    * Calls the R callback function before the state change
@@ -282,7 +285,8 @@ public:
    * @details the agent must match the state in agent_from specified
    * in the constructor
    */
-  virtual void schedule(double time, Agent &agent);
+  using Transition::schedule;
+  void schedule(double time, Agent &agent, Contact &contact);
   
 protected:
   /**
@@ -294,10 +298,10 @@ protected:
    * the state of the contacted agent to be set to after contact
    */
   Rcpp::List _contact_to;
-  /** 
-   * the contact pattern 
+  /**
+   * the contact type used for registration
    */
-  Contact &_contact;
+  std::string _contact_type;
 };
 
 /**
@@ -320,15 +324,21 @@ protected:
  */
 class ContactEvent : public Event {
 public:
-  ContactEvent(double time, PAgent contact, ContactTransition &rule);
+  /**
+   * @param source the contact pattern that created this event
+   */
+  ContactEvent(double time, PAgent contact, Contact &source,
+               ContactTransition &rule);
 
   virtual bool handle(Simulation &sim, Agent &agent);
 
   ContactTransition &rule() const { return _rule; }
+  Contact &source() const { return _source; }
   Agent &contact() const { return *_contact; }
 
 protected:
   ContactTransition &_rule;
+  Contact &_source;
   PAgent _contact;
 };
 

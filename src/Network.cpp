@@ -2,11 +2,12 @@
 #include "../inst/include/Population.h"
 #include "../inst/include/RNG.h"
 #include <algorithm>
+#include <utility>
 
 using namespace Rcpp;
 
-Network::Network()
-  : Contact()
+Network::Network(std::string type)
+  : Contact(std::move(type))
 {
 }
 
@@ -51,8 +52,8 @@ void Network::build()
   buildNetwork();
 }
 
-ConfigurationModel::ConfigurationModel(Function degree_rng)
-  : Network(), _rng(degree_rng)
+ConfigurationModel::ConfigurationModel(Function degree_rng, std::string type)
+  : Network(std::move(type)), _rng(degree_rng)
 {
 }
 
@@ -118,7 +119,9 @@ void ConfigurationModel::grow(Agent &agent)
 }
 
 // [[Rcpp::export]]
-XP<ConfigurationModel> newConfigurationModel(Function rng)
+XP<ConfigurationModel> newConfigurationModel(
+    Function rng, std::string type = "contact")
 {
-  return XP<ConfigurationModel>(std::make_shared<ConfigurationModel>(rng));
+  return XP<ConfigurationModel>(
+    std::make_shared<ConfigurationModel>(rng, std::move(type)));
 }

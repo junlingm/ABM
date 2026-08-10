@@ -6,6 +6,7 @@
 #include <vector>
 
 class Population;
+class ContactTransition;
 
 /**
  * An abstract class that represent the contact pattern of a population. 
@@ -21,8 +22,10 @@ public:
 
   /**
    * Constructor
+   *
+   * @param type the contact type used to register contact transitions
    */
-  Contact();
+  explicit Contact(std::string type = "contact");
   
   /**
    * Destructor
@@ -40,6 +43,27 @@ public:
    */
   virtual const std::vector<Agent*> &contact(double time, Agent &agent) = 0;
   Population *population() { return _population; }
+  const std::string &type() const { return _type; }
+
+  /**
+   * Register a contact transition for this contact pattern.
+   */
+  void addTransition(ContactTransition &transition);
+
+  /**
+   * Remove all registered contact transitions.
+   */
+  void clearTransitions();
+
+  /**
+   * Schedule newly eligible contact transitions for an agent.
+   */
+  void schedule(double time, Agent &agent, const State &from);
+
+  /**
+   * Reschedule one transition through this contact pattern.
+   */
+  void schedule(double time, Agent &agent, ContactTransition &transition);
 
   /**
    * remove an agent
@@ -107,6 +131,8 @@ protected:
    * The associated population
    */
   Population *_population;
+  std::string _type;
+  std::vector<ContactTransition*> _transitions;
 };
 
 typedef std::shared_ptr<Contact> PContact;
@@ -117,11 +143,11 @@ typedef std::shared_ptr<Contact> PContact;
 class RandomMixing : public Contact {
 public:
   /**
-   * Constructor with the associated population
+   * Constructor
    * 
-   * @param population the associated population
+   * @param type the contact type used to register contact transitions
    */
-  RandomMixing();
+  explicit RandomMixing(std::string type = "contact");
 
   /**
    * Return the contacts of an agent at a given time
@@ -169,7 +195,7 @@ public:
    * 
    * @param r6 the R6 object representing a contact pattern
    */
-  RContact(Rcpp::Environment r6);
+  explicit RContact(Rcpp::Environment r6, std::string type = "contact");
   
   /**
    * Return the contacts of an agent at a given time

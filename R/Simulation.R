@@ -7,7 +7,7 @@
 #' its ```addTransition``` method. ASt last, it maintains loggers, which
 #' record (or count) the state changes, and report their values at specified 
 #' times. 
-#' 
+#'
 #' @export
 Simulation <- R6::R6Class(
   "R6Simulation",
@@ -153,16 +153,19 @@ Simulation <- R6::R6Class(
 #' states of both the agent who initiate the contact and the contact
 #' agent. The two states are connected by a + sign, the one before the
 #' + sign is the initiator, and the one after the sign is the contact.
-#' The transition must be associated with a Contact object, using 
-#' a ~ operator. The Contact object must be specified by a variable name
-#' that hold the external pointer to the object (created by e.g., 
-#' the newRandomMixing function) For example, suppose S=list("S"),
-#' I=list("I"), and m=newRandomMixing(sim), then a possible rule 
-#' specifying an infectious agent contacting a susceptible agent causing 
-#' it to become exposed can be 
-#' specified by
-#' 
-#' I + S -> I + list("E") ~ m
+#' The transition must be associated with a contact type, using a `~`
+#' operator. The preferred form is a string, such as `"physical"`; every
+#' attached contact with that type can then generate the transition. For
+#' example, suppose `S = list("S")`, `I = list("I")`, and
+#' `m = newRandomMixing(type = "physical")`, then a possible rule specifying
+#' an infectious agent contacting a susceptible agent causing it to become
+#' exposed is
+#'
+#' I + S -> I + list("E") ~ "physical"
+#'
+#' A Contact object can still be supplied for compatibility, but this form is
+#' deprecated; its type is copied when the transition is created. A type can
+#' also be stored in a variable and used after `~`.
 #' 
 #' For a transition caused by a contact, the callback functions take
 #' the third argument:
@@ -208,9 +211,13 @@ Simulation <- R6::R6Class(
     # associated with a contact object following a ~.
     parse.side = function(side, envir) {
       if (is.call(side) && as.character(side[[1]]) == "~") {
-        if (!exists(side[[3]], envir=envir))
-          stop(paste("the contact", as.character(contact), "does not exist"))
-        contact = get(side[[3]], envir=envir)
+        contact_expr <- side[[3]]
+        if (is.name(contact_expr)) {
+          if (!exists(as.character(contact_expr), envir = envir))
+            stop("the contact type or object ", as.character(contact_expr),
+                 " does not exist")
+          contact = get(contact_expr, envir = envir)
+        } else contact = eval(contact_expr, envir = envir)
         if (inherits(contact, "R6Contact"))
           contact = contact$get
         side = side[[2]]

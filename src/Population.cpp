@@ -59,6 +59,31 @@ void Population::add(PContact contact)
     contact->add(*a);
 }
 
+void Population::prepareContacts()
+{
+  for (auto &contact : _contacts)
+    contact->attach(*this);
+  for (auto &agent : _agents) {
+    Population *population = dynamic_cast<Population*>(agent.get());
+    if (population)
+      population->prepareContacts();
+  }
+}
+
+void Population::scheduleContacts(double time, Agent &agent,
+                                  const State &from)
+{
+  for (auto &contact : _contacts)
+    contact->schedule(time, agent, from);
+}
+
+void Population::scheduleContactTransition(
+    double time, Agent &agent, ContactTransition &transition)
+{
+  for (auto &contact : _contacts)
+    contact->schedule(time, agent, transition);
+}
+
 void Population::report()
 {
   for (auto &c : _contacts)

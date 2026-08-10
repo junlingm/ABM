@@ -23,6 +23,30 @@ Simulation::~Simulation()
     delete r;
 }
 
+void Simulation::report()
+{
+  prepareContacts();
+  registerTransitions(*this);
+  Population::report();
+}
+
+void Simulation::registerTransitions(Population &population)
+{
+  for (auto &contact : population._contacts) {
+    contact->clearTransitions();
+    for (auto rule : _rules) {
+      ContactTransition *transition = dynamic_cast<ContactTransition*>(rule);
+      if (transition && contact->type() == transition->contactType())
+        contact->addTransition(*transition);
+    }
+  }
+  for (auto &agent : population._agents) {
+    Population *nested = dynamic_cast<Population*>(agent.get());
+    if (nested)
+      registerTransitions(*nested);
+  }
+}
+
 List Simulation::run(const NumericVector &time)
 {
   if (time.size() != 0) {
@@ -65,10 +89,13 @@ void Simulation::stateChanged(Agent &agent, const State &from)
     for (auto c : _loggers)
       c->log(agent, from);
     for (auto r : _rules) {
-      if (!from.match(r->from()) && agent.match(r->from())) {
+      ContactTransition *contact = dynamic_cast<ContactTransition*>(r);
+      if (!contact && !from.match(r->from()) && agent.match(r->from()))
         r->schedule(_current_time, agent);
-      }
     }
+    Population *owner = agent.population();
+    if (owner)
+      owner->scheduleContacts(_current_time, agent, from);
   }
 }
 
@@ -91,9 +118,16 @@ void Simulation::stateChanged(Agent &agent)
   if (!std::isnan(_current_time)) {
     for (auto logger : _pending_loggers)
       logger->stateChanged(agent);
-    for (auto rule : _pending_rules)
-      if (agent.match(rule->from()))
-        rule->schedule(_current_time, agent);
+    Population *owner = agent.population();
+    for (auto rule : _pending_rules) {
+      if (!agent.match(rule->from()))
+        continue;
+      ContactTransition *contact = dynamic_cast<ContactTransition*>(rule);
+      if (contact) {
+        if (owner)
+          owner->scheduleContactTransition(_current_time, agent, *contact);
+      } else rule->schedule(_current_time, agent);
+    }
   }
   _pending_loggers.clear();
   _pending_rules.clear();
@@ -181,11 +215,30 @@ void addLogger(XP<Simulation> sim, XP<Logger> logger)
   sim->add(logger);
 }
 
+static std::string contactType(SEXP contact)
+{
+  if (TYPEOF(contact) == STRSXP) {
+    if (Rf_xlength(contact) != 1 || STRING_ELT(contact, 0) == NA_STRING)
+      stop("contact type must be a single, non-missing string");
+    std::string type = as<std::string>(contact);
+    if (type.empty())
+      stop("contact type must not be empty");
+    return type;
+  }
+  if (TYPEOF(contact) == EXTPTRSXP) {
+    warning("Passing a Contact object to addTransition() is deprecated; "
+            "use its contact type string instead");
+    XP<Contact> pointer(contact);
+    return pointer->type();
+  }
+  stop("contact must be a type string or a Contact object");
+}
+
 // [[Rcpp::export]]
 void addTransition(
     XP<Simulation> sim, 
     List from, Nullable<List> contact_from, 
-    List to, Nullable<List> contact_to, Nullable<XP<Contact> > contact,
+    List to, Nullable<List> contact_to, SEXP contact,
     SEXP waiting_time, 
     Nullable<Function> to_change_callback = R_NilValue, 
     Nullable<Function> changed_callback = R_NilValue,
@@ -217,7 +270,7 @@ void addTransition(
     }
   }
 
-  if (contact.isNull())
+  if (contact == R_NilValue)
     sim->add(new Transition(
       from, to, w, to_change_callback, changed_callback, event_loggers));
   else {
@@ -226,8 +279,8 @@ void addTransition(
     if (contact_to.isNull())
       std::range_error("contact to state is NULL");
     List cf(contact_from), ct(contact_to);
-    XP<Contact> c(contact);
+    std::string type = contactType(contact);
     sim->add(new ContactTransition(from, cf, to, ct,
-        *c, w, to_change_callback, changed_callback, event_loggers));
+        type, w, to_change_callback, changed_callback, event_loggers));
   }
 }

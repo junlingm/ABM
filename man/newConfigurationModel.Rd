@@ -5,6 +5,9 @@
 \title{Creates a random network using the configuration model}
 \arguments{
 \item{rng}{a function that generates random degrees}
+
+\item{type}{a non-empty string identifying the contact type. Contact
+transitions using the same type are registered with this pattern.}
 }
 \value{
 an external pointer.

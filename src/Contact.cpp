@@ -2,12 +2,16 @@
 #include "../inst/include/Agent.h"
 #include "../inst/include/Population.h"
 #include "../inst/include/RNG.h"
+#include "../inst/include/Transition.h"
+#include <utility>
 
 using namespace Rcpp;
 
-Contact::Contact()
-  : _population(nullptr)
+Contact::Contact(std::string type)
+  : _population(nullptr), _type(std::move(type))
 {
+  if (_type.empty())
+    stop("contact type must not be empty");
 }
 
 Contact::~Contact()
@@ -16,12 +20,46 @@ Contact::~Contact()
 
 void Contact::attach(Population &population)
 {
+  if (_population == &population)
+    return;
+  if (_population != nullptr)
+    stop("contact is already attached to a different population");
   _population = &population;
   build();
 }
 
-RandomMixing::RandomMixing()
-  : Contact(), _neighbors(1)
+void Contact::addTransition(ContactTransition &transition)
+{
+  for (auto registered : _transitions)
+    if (registered == &transition)
+      return;
+  _transitions.push_back(&transition);
+}
+
+void Contact::clearTransitions()
+{
+  _transitions.clear();
+}
+
+void Contact::schedule(double time, Agent &agent, const State &from)
+{
+  for (auto transition : _transitions)
+    if (!from.match(transition->from()) && agent.match(transition->from()))
+      transition->schedule(time, agent, *this);
+}
+
+void Contact::schedule(double time, Agent &agent,
+                       ContactTransition &transition)
+{
+  for (auto registered : _transitions)
+    if (registered == &transition) {
+      transition.schedule(time, agent, *this);
+      return;
+    }
+}
+
+RandomMixing::RandomMixing(std::string type)
+  : Contact(std::move(type)), _neighbors(1)
 {
 }
 
@@ -55,8 +93,8 @@ void RandomMixing::build()
 {
 }
 
-RContact::RContact(Environment r6)
-  : Contact(),
+RContact::RContact(Environment r6, std::string type)
+  : Contact(std::move(type)),
     _r6(R_MakeWeakRef(r6, R_NilValue, R_NilValue, FALSE))
 {
 }
@@ -115,9 +153,9 @@ CharacterVector Contact::classes = CharacterVector::create("Contact");
  * @return an external pointer
  */
 // [[Rcpp::export]]
-XP<Contact> newRandomMixing()
+XP<Contact> newRandomMixing(std::string type = "contact")
 {
-  return XP<Contact>(std::make_shared<RandomMixing>());
+  return XP<Contact>(std::make_shared<RandomMixing>(std::move(type)));
 }
   
 /**
@@ -130,7 +168,13 @@ XP<Contact> newRandomMixing()
  * @details this is an internal method used by the R6Contact class
  */
 // [[Rcpp::export]]
-XP<Contact> newContact(Environment r6)
+XP<Contact> newContact(Environment r6, std::string type = "contact")
 {
-  return XP<Contact>(std::make_shared<RContact>(r6));
+  return XP<Contact>(std::make_shared<RContact>(r6, std::move(type)));
+}
+
+// [[Rcpp::export]]
+std::string getContactType(XP<Contact> contact)
+{
+  return contact->type();
 }

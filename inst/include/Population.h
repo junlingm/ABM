@@ -87,6 +87,22 @@ public:
    * nothing.
    */
   void add(PContact contact);
+
+  /**
+   * Attach all contacts in this population and nested populations.
+   */
+  void prepareContacts();
+
+  /**
+   * Schedule newly eligible contact transitions for an agent.
+   */
+  void scheduleContacts(double time, Agent &agent, const State &from);
+
+  /**
+   * Reschedule one contact transition through matching contacts.
+   */
+  void scheduleContactTransition(double time, Agent &agent,
+                                 ContactTransition &transition);
   
   /**
    * the population size
@@ -141,6 +157,8 @@ public:
   virtual void report();
 
 protected:
+  friend class Simulation;
+
   /**
    * getting noticed that the agent is added to a simulation
    */

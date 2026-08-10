@@ -3,6 +3,10 @@
 \name{newRandomMixing}
 \alias{newRandomMixing}
 \title{Creates a RandomMixing object}
+\arguments{
+\item{type}{a non-empty string identifying the contact type. Contact
+transitions using the same type are registered with this pattern.}
+}
 \value{
 an external pointer.
 }
