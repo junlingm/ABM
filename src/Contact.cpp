@@ -7,11 +7,32 @@
 
 using namespace Rcpp;
 
-Contact::Contact(std::string type)
-  : _population(nullptr), _type(std::move(type))
+Contact::Contact(std::string type, PWaitingTime waiting_time)
+  : _population(nullptr), _type(std::move(type)),
+    _waiting_time(std::move(waiting_time)),
+    _explicit_rate(static_cast<bool>(_waiting_time))
 {
   if (_type.empty())
     stop("contact type must not be empty");
+}
+
+void Contact::assignLegacyRate(PWaitingTime waiting_time)
+{
+  if (!waiting_time) return;
+  if (_waiting_time)
+    stop("contact rate is defined more than once");
+  _waiting_time = std::move(waiting_time);
+}
+
+void Contact::resetLegacyRate()
+{
+  if (!_explicit_rate)
+    _waiting_time.reset();
+}
+
+double Contact::waitingTime(double time) const
+{
+  return _waiting_time ? _waiting_time->waitingTime(time) : R_PosInf;
 }
 
 Contact::~Contact()
@@ -28,38 +49,8 @@ void Contact::attach(Population &population)
   build();
 }
 
-void Contact::addTransition(ContactTransition &transition)
-{
-  for (auto registered : _transitions)
-    if (registered == &transition)
-      return;
-  _transitions.push_back(&transition);
-}
-
-void Contact::clearTransitions()
-{
-  _transitions.clear();
-}
-
-void Contact::schedule(double time, Agent &agent, const State &from)
-{
-  for (auto transition : _transitions)
-    if (!from.match(transition->from()) && agent.match(transition->from()))
-      transition->schedule(time, agent, *this);
-}
-
-void Contact::schedule(double time, Agent &agent,
-                       ContactTransition &transition)
-{
-  for (auto registered : _transitions)
-    if (registered == &transition) {
-      transition.schedule(time, agent, *this);
-      return;
-    }
-}
-
-RandomMixing::RandomMixing(std::string type)
-  : Contact(std::move(type)), _neighbors(1)
+RandomMixing::RandomMixing(std::string type, PWaitingTime waiting_time)
+  : Contact(std::move(type), std::move(waiting_time)), _neighbors(1)
 {
 }
 
@@ -93,8 +84,9 @@ void RandomMixing::build()
 {
 }
 
-RContact::RContact(Environment r6, std::string type)
-  : Contact(std::move(type)),
+RContact::RContact(Environment r6, std::string type,
+                   PWaitingTime waiting_time)
+  : Contact(std::move(type), std::move(waiting_time)),
     _r6(R_MakeWeakRef(r6, R_NilValue, R_NilValue, FALSE))
 {
 }
@@ -147,15 +139,30 @@ void RContact::remove(Agent &agent)
 
 CharacterVector Contact::classes = CharacterVector::create("Contact");
 
+static PWaitingTime parseWaitingTime(SEXP value)
+{
+  if (value == R_NilValue)
+    return nullptr;
+  if (TYPEOF(value) == EXTPTRSXP)
+    return as<XP<WaitingTime> >(value);
+  if (Rf_isFunction(value))
+    return std::make_shared<RWaitingTime>(as<Function>(value));
+  if (Rf_isNumeric(value))
+    return std::make_shared<ExpWaitingTime>(as<double>(value));
+  stop("contact rate must be a waiting-time object, function, number, or NULL");
+}
+
 /**
  * Create an object of the RandomMixing class
  * 
  * @return an external pointer
  */
 // [[Rcpp::export]]
-XP<Contact> newRandomMixing(std::string type = "contact")
+XP<Contact> newRandomMixing(SEXP rate = R_NilValue,
+                            std::string type = "contact")
 {
-  return XP<Contact>(std::make_shared<RandomMixing>(std::move(type)));
+  return XP<Contact>(std::make_shared<RandomMixing>(
+      std::move(type), parseWaitingTime(rate)));
 }
   
 /**
@@ -168,9 +175,11 @@ XP<Contact> newRandomMixing(std::string type = "contact")
  * @details this is an internal method used by the R6Contact class
  */
 // [[Rcpp::export]]
-XP<Contact> newContact(Environment r6, std::string type = "contact")
+XP<Contact> newContact(Environment r6, SEXP rate = R_NilValue,
+                       std::string type = "contact")
 {
-  return XP<Contact>(std::make_shared<RContact>(r6, std::move(type)));
+  return XP<Contact>(std::make_shared<RContact>(
+      r6, std::move(type), parseWaitingTime(rate)));
 }
 
 // [[Rcpp::export]]

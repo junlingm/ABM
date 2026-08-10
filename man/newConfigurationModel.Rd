@@ -6,8 +6,13 @@
 \arguments{
 \item{rng}{a function that generates random degrees}
 
+\item{rate}{a waiting-time generator for contact events. It can be a numeric
+exponential rate, a function, or a WaitingTime object. It defaults to
+\code{NULL}; omitting it emits a deprecation warning unless a legacy
+transition rate is supplied.}
+
 \item{type}{a non-empty string identifying the contact type. Contact
-transitions using the same type are registered with this pattern.}
+transitions are registered with the matching contact pattern.}
 }
 \value{
 an external pointer.

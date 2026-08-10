@@ -146,11 +146,10 @@ S = list(stage = "S")
 I = list(stage = "I")
 R = list(stage = "R")
 physical = "physical"
-m = newRandomMixing(type = physical)
+m = newRandomMixing(beta, type = physical)
 sim$addContact(m)
 sim$addTransition(
   S + I -> I + I ~ physical,
-  beta,
   logging = list(dec("S"), inc("I"))
 )
 sim$addTransition(

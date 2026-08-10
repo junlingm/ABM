@@ -9,8 +9,10 @@ public:
    * Constructor with the associated population
    * 
    * @param type the contact type used to register contact transitions
+   * @param waiting_time the contact waiting-time generator
    */
-  explicit Network(std::string type = "contact");
+  explicit Network(std::string type = "contact",
+                   PWaitingTime waiting_time = nullptr);
 
   /**
    * Return the contacts of an agent at a given time
@@ -90,6 +92,7 @@ public:
    * Constructor
    * 
    * @param degree_rng an R function generating the random degrees
+   * @param waiting_time the contact waiting-time generator
    * 
    * @details degree_rng takes one argument n, giving the number of degrees to 
    * generate and returns a Rcpp::IntegerVector of length n holding the 
@@ -97,7 +100,8 @@ public:
    * edges are dropped, as is the final dangling stub when their total is odd.
    */
   ConfigurationModel(Rcpp::Function degree_rng,
-                     std::string type = "contact");
+                     std::string type = "contact",
+                     PWaitingTime waiting_time = nullptr);
   
 protected:
   /**

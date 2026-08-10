@@ -1,13 +1,14 @@
 #include "../inst/include/Network.h"
 #include "../inst/include/Population.h"
 #include "../inst/include/RNG.h"
+#include "../inst/include/Transition.h"
 #include <algorithm>
 #include <utility>
 
 using namespace Rcpp;
 
-Network::Network(std::string type)
-  : Contact(std::move(type))
+Network::Network(std::string type, PWaitingTime waiting_time)
+  : Contact(std::move(type), std::move(waiting_time))
 {
 }
 
@@ -52,8 +53,9 @@ void Network::build()
   buildNetwork();
 }
 
-ConfigurationModel::ConfigurationModel(Function degree_rng, std::string type)
-  : Network(std::move(type)), _rng(degree_rng)
+ConfigurationModel::ConfigurationModel(Function degree_rng, std::string type,
+                                       PWaitingTime waiting_time)
+  : Network(std::move(type), std::move(waiting_time)), _rng(degree_rng)
 {
 }
 
@@ -120,8 +122,20 @@ void ConfigurationModel::grow(Agent &agent)
 
 // [[Rcpp::export]]
 XP<ConfigurationModel> newConfigurationModel(
-    Function rng, std::string type = "contact")
+    Function rng, SEXP rate = R_NilValue, std::string type = "contact")
 {
+  PWaitingTime waiting_time;
+  if (rate != R_NilValue) {
+    if (TYPEOF(rate) == EXTPTRSXP)
+      waiting_time = as<XP<WaitingTime> >(rate);
+    else if (Rf_isFunction(rate))
+      waiting_time = std::make_shared<RWaitingTime>(as<Function>(rate));
+    else if (Rf_isNumeric(rate))
+      waiting_time = std::make_shared<ExpWaitingTime>(as<double>(rate));
+    else
+      stop("contact rate must be a waiting-time object, function, number, or NULL");
+  }
   return XP<ConfigurationModel>(
-    std::make_shared<ConfigurationModel>(rng, std::move(type)));
+    std::make_shared<ConfigurationModel>(
+      rng, std::move(type), std::move(waiting_time)));
 }

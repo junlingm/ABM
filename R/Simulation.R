@@ -118,7 +118,8 @@ Simulation <- R6::R6Class(
 #' 
 #' @param waiting.time either an external pointer to a WaitingTime object
 #' such as one returned by newExpWaitingTime or newGammaWaitingTime, or
-#' a function (see the details section)
+#' a function (see the details section). It defaults to `NULL` for contact
+#' transitions, which should specify their rate on the Contact instead.
 #'  
 #' @param to_change_callback the R callback function to determine if 
 #' the change should occur. See the details section.
@@ -155,8 +156,11 @@ Simulation <- R6::R6Class(
 #' + sign is the initiator, and the one after the sign is the contact.
 #' The transition is normally associated with a contact type using a `~`
 #' operator. The preferred form is a string, such as `"physical"`; every
-#' attached contact with that type can then generate the transition. If the
-#' simulation has exactly one distinct contact type, the `~` part may be
+#' matching contact pattern can then generate the transition. Its
+#' contact rate is defined by the Contact object. If a transition-level
+#' waiting time is supplied for a contact transition, it is accepted for
+#' compatibility but deprecated. If the simulation has exactly one contact
+#' pattern, the `~` part may be
 #' omitted and that type is inferred. For example, suppose
 #' `S = list("S")`, `I = list("I")`, and
 #' `m = newRandomMixing(type = "physical")`, then either of these rules is
@@ -167,12 +171,13 @@ Simulation <- R6::R6Class(
 #'
 #' A Contact object can still be supplied for compatibility, but this form is
 #' deprecated; its type is copied when the transition is created. If multiple
-#' contact types are attached, a type must be supplied after `~`.
+#' contact patterns match a type, registration fails because the association
+#' is ambiguous.
 #' 
 #' For a transition caused by a contact, the callback functions take
 #' the third argument:
 #'   3. contact: the contact agent, an external pointer
-  addTransition = function(rule, waiting.time,
+  addTransition = function(rule, waiting.time = NULL,
                              to_change_callback = NULL,
                              changed_callback = NULL,
                              logging = NULL)

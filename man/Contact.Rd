@@ -81,15 +81,19 @@ to a population}
 \subsection{Method \code{new()}}{
 the constructor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Contact$new(type = "contact")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Contact$new(rate = NULL, type = "contact")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{rate}}{a waiting-time generator for contact events. It can be a
+numeric exponential rate, a function, or a WaitingTime object. It defaults to
+\code{NULL}; omitting it emits a deprecation warning unless a legacy
+transition rate is supplied.}
+
 \item{\code{type}}{a non-empty string identifying the kind of contact pattern.
-Contact transitions are registered with every attached contact having the
-same type.}
+Contact transitions are registered with the matching contact pattern.}
 }
 \if{html}{\out{</div>}}
 }

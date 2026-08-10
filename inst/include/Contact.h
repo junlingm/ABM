@@ -6,7 +6,8 @@
 #include <vector>
 
 class Population;
-class ContactTransition;
+class WaitingTime;
+typedef std::shared_ptr<WaitingTime> PWaitingTime;
 
 /**
  * An abstract class that represent the contact pattern of a population. 
@@ -23,9 +24,13 @@ public:
   /**
    * Constructor
    *
-   * @param type the contact type used to register contact transitions
+   * @param type the contact type used to register one contact transition
+   * pattern
+   *
+   * @param waiting_time the contact waiting-time generator
    */
-  explicit Contact(std::string type = "contact");
+  explicit Contact(std::string type = "contact",
+                   PWaitingTime waiting_time = nullptr);
   
   /**
    * Destructor
@@ -46,24 +51,24 @@ public:
   const std::string &type() const { return _type; }
 
   /**
-   * Register a contact transition for this contact pattern.
+   * Draw the waiting time for a contact event.
    */
-  void addTransition(ContactTransition &transition);
+  double waitingTime(double time) const;
 
   /**
-   * Remove all registered contact transitions.
+   * Whether this contact has a configured waiting-time generator.
    */
-  void clearTransitions();
+  bool hasRate() const { return static_cast<bool>(_waiting_time); }
 
   /**
-   * Schedule newly eligible contact transitions for an agent.
+   * Assign a legacy transition-level rate during registration.
    */
-  void schedule(double time, Agent &agent, const State &from);
+  void assignLegacyRate(PWaitingTime waiting_time);
 
   /**
-   * Reschedule one transition through this contact pattern.
+   * Remove a rate assigned by a previous registration pass.
    */
-  void schedule(double time, Agent &agent, ContactTransition &transition);
+  void resetLegacyRate();
 
   /**
    * remove an agent
@@ -132,7 +137,8 @@ protected:
    */
   Population *_population;
   std::string _type;
-  std::vector<ContactTransition*> _transitions;
+  PWaitingTime _waiting_time;
+  bool _explicit_rate;
 };
 
 typedef std::shared_ptr<Contact> PContact;
@@ -146,8 +152,10 @@ public:
    * Constructor
    * 
    * @param type the contact type used to register contact transitions
+   * @param waiting_time the contact waiting-time generator
    */
-  explicit RandomMixing(std::string type = "contact");
+  explicit RandomMixing(std::string type = "contact",
+                        PWaitingTime waiting_time = nullptr);
 
   /**
    * Return the contacts of an agent at a given time
@@ -194,8 +202,11 @@ public:
    * @param population the associated population
    * 
    * @param r6 the R6 object representing a contact pattern
+   *
+   * @param waiting_time the contact waiting-time generator
    */
-  explicit RContact(Rcpp::Environment r6, std::string type = "contact");
+  explicit RContact(Rcpp::Environment r6, std::string type = "contact",
+                    PWaitingTime waiting_time = nullptr);
   
   /**
    * Return the contacts of an agent at a given time

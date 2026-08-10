@@ -111,25 +111,27 @@ BEGIN_RCPP
 END_RCPP
 }
 // newRandomMixing
-XP<Contact> newRandomMixing(std::string type);
-RcppExport SEXP _ABM_newRandomMixing(SEXP typeSEXP) {
+XP<Contact> newRandomMixing(SEXP rate, std::string type);
+RcppExport SEXP _ABM_newRandomMixing(SEXP rateSEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type rate(rateSEXP);
     Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
-    rcpp_result_gen = Rcpp::wrap(newRandomMixing(type));
+    rcpp_result_gen = Rcpp::wrap(newRandomMixing(rate, type));
     return rcpp_result_gen;
 END_RCPP
 }
 // newContact
-XP<Contact> newContact(Environment r6, std::string type);
-RcppExport SEXP _ABM_newContact(SEXP r6SEXP, SEXP typeSEXP) {
+XP<Contact> newContact(Environment r6, SEXP rate, std::string type);
+RcppExport SEXP _ABM_newContact(SEXP r6SEXP, SEXP rateSEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Environment >::type r6(r6SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type rate(rateSEXP);
     Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
-    rcpp_result_gen = Rcpp::wrap(newContact(r6, type));
+    rcpp_result_gen = Rcpp::wrap(newContact(r6, rate, type));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -219,14 +221,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // newConfigurationModel
-XP<ConfigurationModel> newConfigurationModel(Function rng, std::string type);
-RcppExport SEXP _ABM_newConfigurationModel(SEXP rngSEXP, SEXP typeSEXP) {
+XP<ConfigurationModel> newConfigurationModel(Function rng, SEXP rate, std::string type);
+RcppExport SEXP _ABM_newConfigurationModel(SEXP rngSEXP, SEXP rateSEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Function >::type rng(rngSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type rate(rateSEXP);
     Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
-    rcpp_result_gen = Rcpp::wrap(newConfigurationModel(rng, type));
+    rcpp_result_gen = Rcpp::wrap(newConfigurationModel(rng, rate, type));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -433,8 +436,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_setState", (DL_FUNC) &_ABM_setState, 2},
     {"_ABM_leave", (DL_FUNC) &_ABM_leave, 1},
     {"_ABM_setDeathTime", (DL_FUNC) &_ABM_setDeathTime, 2},
-    {"_ABM_newRandomMixing", (DL_FUNC) &_ABM_newRandomMixing, 1},
-    {"_ABM_newContact", (DL_FUNC) &_ABM_newContact, 2},
+    {"_ABM_newRandomMixing", (DL_FUNC) &_ABM_newRandomMixing, 2},
+    {"_ABM_newContact", (DL_FUNC) &_ABM_newContact, 3},
     {"_ABM_getContactType", (DL_FUNC) &_ABM_getContactType, 1},
     {"_ABM_newCounter", (DL_FUNC) &_ABM_newCounter, 4},
     {"_ABM_newStateLogger", (DL_FUNC) &_ABM_newStateLogger, 3},
@@ -442,7 +445,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_getTime", (DL_FUNC) &_ABM_getTime, 1},
     {"_ABM_newIncrementLogger", (DL_FUNC) &_ABM_newIncrementLogger, 2},
     {"_ABM_newDecrementLogger", (DL_FUNC) &_ABM_newDecrementLogger, 2},
-    {"_ABM_newConfigurationModel", (DL_FUNC) &_ABM_newConfigurationModel, 2},
+    {"_ABM_newConfigurationModel", (DL_FUNC) &_ABM_newConfigurationModel, 3},
     {"_ABM_newPopulation", (DL_FUNC) &_ABM_newPopulation, 2},
     {"_ABM_addAgent", (DL_FUNC) &_ABM_addAgent, 2},
     {"_ABM_getSize", (DL_FUNC) &_ABM_getSize, 1},

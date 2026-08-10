@@ -37,12 +37,12 @@ setDeathTime <- function(agent, time) {
     invisible(.Call(`_ABM_setDeathTime`, agent, time))
 }
 
-newRandomMixing <- function(type = "contact") {
-    .Call(`_ABM_newRandomMixing`, type)
+newRandomMixing <- function(rate = NULL, type = "contact") {
+    .Call(`_ABM_newRandomMixing`, rate, type)
 }
 
-newContact <- function(r6, type = "contact") {
-    .Call(`_ABM_newContact`, r6, type)
+newContact <- function(r6, rate = NULL, type = "contact") {
+    .Call(`_ABM_newContact`, r6, rate, type)
 }
 
 getContactType <- function(contact) {
@@ -73,8 +73,8 @@ newDecrementLogger <- function(variable, filter = NULL) {
     .Call(`_ABM_newDecrementLogger`, variable, filter)
 }
 
-newConfigurationModel <- function(rng, type = "contact") {
-    .Call(`_ABM_newConfigurationModel`, rng, type)
+newConfigurationModel <- function(rng, rate = NULL, type = "contact") {
+    .Call(`_ABM_newConfigurationModel`, rng, rate, type)
 }
 
 newPopulation <- function(n, initializer = NULL) {

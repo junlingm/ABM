@@ -172,7 +172,7 @@ the simulation object itself (invisible)
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Simulation$addTransition(
   rule,
-  waiting.time,
+  waiting.time = NULL,
   to_change_callback = NULL,
   changed_callback = NULL,
   logging = NULL
@@ -186,7 +186,8 @@ the simulation object itself (invisible)
 
 \item{\code{waiting.time}}{either an external pointer to a WaitingTime object
 such as one returned by newExpWaitingTime or newGammaWaitingTime, or
-a function (see the details section)}
+a function (see the details section). It defaults to \code{NULL} for contact
+transitions, which should specify their rate on the Contact instead.}
 
 \item{\code{to_change_callback}}{the R callback function to determine if
 the change should occur. See the details section.}
@@ -225,9 +226,11 @@ states of both the agent who initiate the contact and the contact
 agent. The two states are connected by a + sign, the one before the
 sign is the initiator, and the one after the sign is the contact.
 The transition is normally associated with a contact type, using a ~
-operator. The preferred form is a string, such as "physical"; every
-attached contact with that type can then generate the transition. If the
-simulation has exactly one distinct contact type, the ~ part may be omitted.
+operator. The preferred form is a string, such as "physical"; the matching
+contact pattern can then generate the transition. Its contact rate is defined
+by the Contact object. If a transition-level waiting time is supplied for a
+contact transition, it is accepted for compatibility but deprecated. If the
+simulation has exactly one contact pattern, the ~ part may be omitted.
 For example, suppose S=list("S"), I=list("I"), and
 m=newRandomMixing(type = "physical"), then either of these rules is
 equivalent:
@@ -237,7 +240,8 @@ I + S -> I + list("E")
 
 A Contact object can still be supplied for compatibility, but this form is
 deprecated; its type is copied when the transition is created. If multiple
-contact types are attached, a type must be supplied after ~.
+contact patterns match a type, registration fails because the association is
+ambiguous.
 
 For a transition caused by a contact, the callback functions take
 the third argument:

@@ -43,8 +43,6 @@ public:
   static Rcpp::CharacterVector classes;
 };
 
-typedef std::shared_ptr<WaitingTime> PWaitingTime;
-
 /**
  * Represents a normal (spontaneous) state transition
  * 
@@ -202,11 +200,11 @@ public:
    * @param contact_to the targeting state for the contact
    * 
    * @param contact_type the contact type used to register this transition
-   * with matching contact patterns. An omitted value infers the type when the
-   * simulation has exactly one contact type.
+   * with one matching contact pattern. An omitted value infers the type when
+   * the simulation has exactly one contact pattern.
    *
-   * @param waiting_time the waiting_time for the transition to occur,
-   * a shared_ptr<WaitingTime> point to a WaitingTime object.
+   * @param waiting_time a deprecated fallback waiting-time generator. New
+   * contact transitions should set the rate on their Contact instead.
    * 
    * @param to_change_callback the R callback function to determine if 
    * the change should occur. See the details section.
@@ -253,6 +251,22 @@ public:
   {
     return _contact_type;
   }
+
+  /**
+   * Return the deprecated transition-level waiting-time generator.
+   */
+  const PWaitingTime &waitingTime() const { return _waiting_time; }
+
+  /**
+   * Associate this transition with its contact pattern. A transition must
+   * resolve to exactly one contact pattern at registration time.
+   */
+  void addContact(Contact &contact);
+
+  /**
+   * Remove the contact pattern associated during registration.
+   */
+  void clearContact();
   
   /**
    * Calls the R callback function before the state change
@@ -291,6 +305,7 @@ public:
    * in the constructor
    */
   using Transition::schedule;
+  void schedule(double time, Agent &agent) override;
   void schedule(double time, Agent &agent, Contact &contact);
   
 protected:
@@ -307,6 +322,7 @@ protected:
    * the contact type used for registration
    */
   std::optional<std::string> _contact_type;
+  Contact *_contact = nullptr;
 };
 
 /**

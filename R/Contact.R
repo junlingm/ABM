@@ -15,11 +15,17 @@ Contact = R6::R6Class(
   public = list(
 #' @description the constructor
 #'
+#' @param rate a waiting-time generator for contact events. It can be a
+#' numeric exponential rate, a function, or a WaitingTime object. It defaults
+#' to `NULL`; omitting it emits a deprecation warning unless a legacy
+#' transition rate is supplied.
+#'
 #' @param type a non-empty string identifying the kind of contact pattern.
-#' Contact transitions are registered with every attached contact having the
-#' same type. It defaults to `"contact"`.
-    initialize = function(type = "contact") {
-      private$pointer = newContact(self, type)
+#' Contact transitions are registered with the matching contact pattern. A
+#' transition type must identify exactly one contact pattern. It defaults to
+#' `"contact"`.
+    initialize = function(rate = NULL, type = "contact") {
+      private$pointer = newContact(self, rate, type)
     },
   
 #' @description attach to a population
@@ -115,6 +121,10 @@ Contact = R6::R6Class(
 #' 
 #' @name newRandomMixing
 #'
+#' @param rate a waiting-time generator for contact events. It can be a
+#' numeric exponential rate, a function, or a WaitingTime object. It defaults
+#' to `NULL`; omitting it emits a deprecation warning unless a legacy
+#' transition rate is supplied.
 #' @param type a non-empty string identifying the contact type. Contact
 #' transitions using the same type are registered with this pattern.
 #'
@@ -134,6 +144,10 @@ NULL
 #' @name newConfigurationModel
 #' 
 #' @param rng a function that generates random degrees
+#' @param rate a waiting-time generator for contact events. It can be a
+#' numeric exponential rate, a function, or a WaitingTime object. It defaults
+#' to `NULL`; omitting it emits a deprecation warning unless a legacy
+#' transition rate is supplied.
 #' @param type a non-empty string identifying the contact type. Contact
 #' transitions using the same type are registered with this pattern.
 #'

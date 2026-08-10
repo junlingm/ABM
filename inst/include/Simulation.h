@@ -115,14 +115,15 @@ public:
   unsigned int nextID() { return ++_next_id; }
 
   /** the simulation that it is in */
-  virtual Simulation *simulation();
+  Simulation *simulation() override;
   /** the simulation that it is in */
-  virtual const Simulation *simulation() const;
+  const Simulation *simulation() const override;
   
 
   static Rcpp::CharacterVector classes;
   
 protected:
+  void resetContactRates(Population &population);
   void collectContactTypes(Population &population,
                            std::set<std::string> &types);
   void registerTransitions(Population &population,
@@ -131,12 +132,12 @@ protected:
   /**
    * Select legacy loggers that may be affected by an impending state change.
    */
-  virtual void stateChanging(Agent &agent, const Rcpp::List &state);
+  void stateChanging(Agent &agent, const Rcpp::List &state) override;
 
   /**
    * Complete a state change for the loggers selected by stateChanging().
    */
-  virtual void stateChanged(Agent &agent);
+  void stateChanged(Agent &agent) override;
 
   /**
    * The state of an agent has changed
@@ -145,7 +146,7 @@ protected:
    * 
    * @param from the state of the agent before the change.
    */
-  virtual void stateChanged(Agent &agent, const State &from);
+  void stateChanged(Agent &agent, const State &from) override;
   
   std::list<std::shared_ptr<Logger> > _loggers;
   std::vector<Logger*> _pending_loggers;

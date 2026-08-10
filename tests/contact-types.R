@@ -22,16 +22,30 @@ stopifnot(
   identical(typed_result$I, c(1, 1))
 )
 
+# A contact without a rate emits a migration warning.
+unrated_sim <- Simulation$new(1)
+unrated_sim$addContact(newRandomMixing(type = "unrated"))
+unrated_warning <- FALSE
+withCallingHandlers(
+  unrated_sim$run(0),
+  warning = function(condition) {
+    if (grepl("Contact has no rate", conditionMessage(condition), fixed = TRUE))
+      unrated_warning <<- TRUE
+    invokeRestart("muffleWarning")
+  }
+)
+stopifnot(unrated_warning)
+
 # With one distinct contact type, the type can be inferred by omitting ~.
 inferred_sim <- Simulation$new(
   2,
   function(i) list(stage = if (i == 1) "S" else "I")
 )
 inferred_sim$state <- list(S = 1, I = 1)
-inferred_sim$addContact(newRandomMixing(type = "physical"))
+# A positional rate uses the default contact type, so the type can be inferred.
+inferred_sim$addContact(newRandomMixing(function(time) 0))
 inferred_sim$addTransition(
   S + I -> I + I,
-  function(time) 0,
   logging = list(dec("S"), inc("I"))
 )
 inferred_sim$addLogger("S")
@@ -40,6 +54,42 @@ inferred_result <- inferred_sim$run(c(0, 1))
 stopifnot(
   identical(inferred_result$S, c(1, 0)),
   identical(inferred_result$I, c(1, 2))
+)
+
+# Defining a rate on both Contact and transition is rejected.
+duplicate_rate_sim <- Simulation$new(
+  2,
+  function(i) list(stage = if (i == 1) "S" else "I")
+)
+duplicate_rate_sim$addContact(newRandomMixing(
+  type = "physical", rate = function(time) 0
+))
+duplicate_rate_sim$addTransition(
+  S + I -> I + I ~ "physical",
+  function(time) 0
+)
+duplicate_rate_error <- try(duplicate_rate_sim$run(0), silent = TRUE)
+stopifnot(
+  inherits(duplicate_rate_error, "try-error"),
+  grepl("contact rate is defined more than once",
+        duplicate_rate_error, fixed = TRUE)
+)
+
+# A transition type must identify one contact pattern, not several patterns.
+duplicate_sim <- Simulation$new(
+  2,
+  function(i) list(stage = if (i == 1) "S" else "I")
+)
+duplicate_sim$addContact(newRandomMixing(type = "physical"))
+duplicate_sim$addContact(newRandomMixing(type = "physical"))
+duplicate_sim$addTransition(
+  S + I -> I + I ~ "physical",
+  function(time) 0
+)
+duplicate_error <- try(duplicate_sim$run(0), silent = TRUE)
+stopifnot(
+  inherits(duplicate_error, "try-error"),
+  grepl("multiple contact patterns", duplicate_error, fixed = TRUE)
 )
 
 # With multiple contact types, omitting ~ is ambiguous and must fail.
@@ -56,28 +106,7 @@ ambiguous_sim$addTransition(
 ambiguous_error <- try(ambiguous_sim$run(0), silent = TRUE)
 stopifnot(
   inherits(ambiguous_error, "try-error"),
-  grepl("exactly one contact type", ambiguous_error, fixed = TRUE)
-)
-
-# Matching physical contact patterns share the same transition rule.
-shared_sim <- Simulation$new(
-  2,
-  function(i) list(stage = if (i == 1) "S" else "I")
-)
-shared_sim$state <- list(S = 1, I = 1)
-shared_sim$addContact(newRandomMixing(type = "physical"))
-shared_sim$addContact(newRandomMixing(type = "physical"))
-shared_sim$addTransition(
-  S + I -> I + I ~ "physical",
-  function(time) 0,
-  logging = list(dec("S"), inc("I"))
-)
-shared_sim$addLogger("S")
-shared_sim$addLogger("I")
-shared_result <- shared_sim$run(c(0, 1))
-stopifnot(
-  identical(shared_result$S, c(1, 0)),
-  identical(shared_result$I, c(1, 2))
+  grepl("exactly one contact pattern", ambiguous_error, fixed = TRUE)
 )
 
 # Passing a Contact object remains supported but warns and registers its type.

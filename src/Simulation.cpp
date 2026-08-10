@@ -26,17 +26,39 @@ Simulation::~Simulation()
 void Simulation::report()
 {
   prepareContacts();
+  resetContactRates(*this);
   std::set<std::string> types;
   collectContactTypes(*this, types);
+  for (auto rule : _rules) {
+    ContactTransition *transition = dynamic_cast<ContactTransition*>(rule);
+    if (transition && !transition->contactType() && types.size() != 1)
+      stop("a contact transition without a type requires exactly one "
+           "contact pattern");
+    if (transition)
+      transition->clearContact();
+  }
   registerTransitions(*this, types);
   Population::report();
+}
+
+void Simulation::resetContactRates(Population &population)
+{
+  for (auto &contact : population._contacts)
+    contact->resetLegacyRate();
+  for (auto &agent : population._agents) {
+    Population *nested = dynamic_cast<Population*>(agent.get());
+    if (nested)
+      resetContactRates(*nested);
+  }
 }
 
 void Simulation::collectContactTypes(
     Population &population, std::set<std::string> &types)
 {
-  for (auto &contact : population._contacts)
-    types.insert(contact->type());
+  for (auto &contact : population._contacts) {
+    if (!types.insert(contact->type()).second)
+      stop("multiple contact patterns have the same type");
+  }
   for (auto &agent : population._agents) {
     Population *nested = dynamic_cast<Population*>(agent.get());
     if (nested)
@@ -47,22 +69,22 @@ void Simulation::collectContactTypes(
 void Simulation::registerTransitions(
     Population &population, const std::set<std::string> &types)
 {
-  for (auto rule : _rules) {
-    ContactTransition *transition = dynamic_cast<ContactTransition*>(rule);
-    if (transition && !transition->contactType() && types.size() != 1)
-      stop("a contact transition without a type requires exactly one "
-           "contact type");
-  }
   for (auto &contact : population._contacts) {
-    contact->clearTransitions();
     for (auto rule : _rules) {
       ContactTransition *transition = dynamic_cast<ContactTransition*>(rule);
       if (transition &&
           ((!transition->contactType() && types.size() == 1) ||
            (transition->contactType() &&
             contact->type() == *transition->contactType())))
-        contact->addTransition(*transition);
+      {
+        if (transition->waitingTime())
+          contact->assignLegacyRate(transition->waitingTime());
+        transition->addContact(*contact);
+      }
     }
+    if (!contact->hasRate())
+      warning("Contact has no rate; specify rate when creating the Contact; "
+              "transition-level rates are deprecated");
   }
   for (auto &agent : population._agents) {
     Population *nested = dynamic_cast<Population*>(agent.get());
@@ -114,12 +136,13 @@ void Simulation::stateChanged(Agent &agent, const State &from)
       c->log(agent, from);
     for (auto r : _rules) {
       ContactTransition *contact = dynamic_cast<ContactTransition*>(r);
-      if (!contact && !from.match(r->from()) && agent.match(r->from()))
-        r->schedule(_current_time, agent);
+      if (!from.match(r->from()) && agent.match(r->from())) {
+        if (contact)
+          contact->schedule(_current_time, agent);
+        else
+          r->schedule(_current_time, agent);
+      }
     }
-    Population *owner = agent.population();
-    if (owner)
-      owner->scheduleContacts(_current_time, agent, from);
   }
 }
 
@@ -142,14 +165,12 @@ void Simulation::stateChanged(Agent &agent)
   if (!std::isnan(_current_time)) {
     for (auto logger : _pending_loggers)
       logger->stateChanged(agent);
-    Population *owner = agent.population();
     for (auto rule : _pending_rules) {
       if (!agent.match(rule->from()))
         continue;
       ContactTransition *contact = dynamic_cast<ContactTransition*>(rule);
       if (contact) {
-        if (owner)
-          owner->scheduleContactTransition(_current_time, agent, *contact);
+        contact->schedule(_current_time, agent);
       } else rule->schedule(_current_time, agent);
     }
   }
@@ -268,8 +289,12 @@ void addTransition(
     Nullable<Function> changed_callback = R_NilValue,
     Nullable<List> logging = R_NilValue)
 {
+  bool contact_rule = !contact_from.isNull() || !contact_to.isNull();
   PWaitingTime w;
-  if (TYPEOF(waiting_time) == EXTPTRSXP)
+  if (waiting_time == R_NilValue) {
+    if (!contact_rule)
+      stop("waiting_time is required for a spontaneous transition");
+  } else if (TYPEOF(waiting_time) == EXTPTRSXP)
     w = as<XP<WaitingTime> >(waiting_time);
   else if (Rf_isFunction(waiting_time)) 
     w = std::make_shared<RWaitingTime>(as<Function>(waiting_time));
@@ -277,6 +302,9 @@ void addTransition(
     w = std::make_shared<ExpWaitingTime>(as<double>(waiting_time));
   else
     throw std::range_error("waiting_time is invalid");
+  if (contact_rule && waiting_time != R_NilValue)
+    warning("Supplying waiting.time for a contact transition is deprecated; "
+            "specify the rate on the Contact instead");
   if (to_change_callback != R_NilValue && !Rf_isFunction(to_change_callback))
     std::range_error("to_change_callback must be a function or NULL");
   if (changed_callback != R_NilValue && !Rf_isFunction(changed_callback))
@@ -294,7 +322,6 @@ void addTransition(
     }
   }
 
-  bool contact_rule = !contact_from.isNull() || !contact_to.isNull();
   if (!contact_rule) {
     if (contact != R_NilValue)
       stop("contact states are required for a contact transition");

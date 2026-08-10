@@ -70,20 +70,6 @@ void Population::prepareContacts()
   }
 }
 
-void Population::scheduleContacts(double time, Agent &agent,
-                                  const State &from)
-{
-  for (auto &contact : _contacts)
-    contact->schedule(time, agent, from);
-}
-
-void Population::scheduleContactTransition(
-    double time, Agent &agent, ContactTransition &transition)
-{
-  for (auto &contact : _contacts)
-    contact->schedule(time, agent, transition);
-}
-
 void Population::report()
 {
   for (auto &c : _contacts)

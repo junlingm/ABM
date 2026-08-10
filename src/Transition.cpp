@@ -155,8 +155,29 @@ void ContactTransition::changed(double time, Agent &agent, Agent &contact)
   }
 }
 
+void ContactTransition::addContact(Contact &contact)
+{
+  if (_contact == &contact)
+    return;
+  if (_contact != nullptr)
+    stop("contact transition matches multiple contact patterns");
+  _contact = &contact;
+}
+
+void ContactTransition::clearContact()
+{
+  _contact = nullptr;
+}
+
+void ContactTransition::schedule(double time, Agent &agent)
+{
+  if (_contact != nullptr)
+    schedule(time, agent, *_contact);
+}
+
 void ContactTransition::schedule(double time, Agent &agent, Contact &source)
 {
+  if (_contact != &source) return;
   if (!agent.match(from())) return;
   if (source.population() != agent.population()) return;
   auto contact = source.contact(time, agent);
@@ -164,7 +185,7 @@ void ContactTransition::schedule(double time, Agent &agent, Contact &source)
   double waiting_time = R_PosInf;
   Agent* next_contact = nullptr;
   for (auto c : contact) {
-    double t = _waiting_time->waitingTime(time);
+    double t = source.waitingTime(time);
     if (t < waiting_time) {
       waiting_time = t;
       next_contact = c;
