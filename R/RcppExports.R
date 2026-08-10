@@ -49,6 +49,10 @@ getContactType <- function(contact) {
     .Call(`_ABM_getContactType`, contact)
 }
 
+isContactAttached <- function(contact) {
+    .Call(`_ABM_isContactAttached`, contact)
+}
+
 newCounter <- function(name, from, to = NULL, initial = 0L) {
     .Call(`_ABM_newCounter`, name, from, to, initial)
 }

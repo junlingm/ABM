@@ -35,8 +35,8 @@ Contact = R6::R6Class(
 #' @details. This method should be called from the C++ side. Users should not
 #' call this directly.
     attach = function(population) {
-      if (!is.null(private$population))
-        stop("Already attached to a population")
+      if (!isContactAttached(private$pointer))
+        stop("Contact has not been attached by a population")
       private$population = population
       self$build()
     },
@@ -111,7 +111,7 @@ Contact = R6::R6Class(
   #' 
   #' a logical value indicating whether the object has been attached
   #' to a population
-    attached = function() { !is.null(private$population) }
+    attached = function() { isContactAttached(private$pointer) }
   )
 )
 

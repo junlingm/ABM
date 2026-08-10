@@ -203,6 +203,7 @@ expired_destroyed_membership <- try(
 detached_surviving_agent <- try(leave(surviving_agent), silent = TRUE)
 stopifnot(
   identical(getState(surviving_agent)$state, "S"),
+  !destruction_contact$attached,
   inherits(expired_destroyed_membership, "try-error"),
   grepl(
     "borrowed handle has expired",
@@ -216,6 +217,13 @@ stopifnot(
     fixed = TRUE
   )
 )
+
+# C++ detachment is authoritative for an R6 Contact, which can then be
+# attached to a replacement Population without retaining stale R6 state.
+replacement_contact_sim <- Simulation$new(list(S))
+replacement_contact_sim$addContact(destruction_contact)
+invisible(replacement_contact_sim$run(0))
+stopifnot(destruction_contact$attached)
 
 # A surviving Agent can be added to another Population after its original
 # Population is destroyed. Its calendar must not retain the destroyed owner.

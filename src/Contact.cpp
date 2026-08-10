@@ -193,3 +193,9 @@ std::string getContactType(XP<Contact> contact)
 {
   return contact->type();
 }
+
+// [[Rcpp::export]]
+bool isContactAttached(XP<Contact> contact)
+{
+  return contact->population() != nullptr;
+}

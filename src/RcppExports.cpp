@@ -146,6 +146,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// isContactAttached
+bool isContactAttached(XP<Contact> contact);
+RcppExport SEXP _ABM_isContactAttached(SEXP contactSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XP<Contact> >::type contact(contactSEXP);
+    rcpp_result_gen = Rcpp::wrap(isContactAttached(contact));
+    return rcpp_result_gen;
+END_RCPP
+}
 // newCounter
 XP<Counter> newCounter(std::string name, List from, Nullable<List> to, int initial);
 RcppExport SEXP _ABM_newCounter(SEXP nameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP initialSEXP) {
@@ -439,6 +450,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_newRandomMixing", (DL_FUNC) &_ABM_newRandomMixing, 2},
     {"_ABM_newContact", (DL_FUNC) &_ABM_newContact, 3},
     {"_ABM_getContactType", (DL_FUNC) &_ABM_getContactType, 1},
+    {"_ABM_isContactAttached", (DL_FUNC) &_ABM_isContactAttached, 1},
     {"_ABM_newCounter", (DL_FUNC) &_ABM_newCounter, 4},
     {"_ABM_newStateLogger", (DL_FUNC) &_ABM_newStateLogger, 3},
     {"_ABM_newEvent", (DL_FUNC) &_ABM_newEvent, 2},
