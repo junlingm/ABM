@@ -148,6 +148,11 @@ protected:
   friend class Simulation;
 
   /**
+   * Normalize one initial state and add its agent to this population.
+   */
+  void addInitialAgent(SEXP state);
+
+  /**
    * Assign IDs to this population and all agents contained by it.
    */
   void setID(Simulation &sim) override;

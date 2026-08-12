@@ -6,20 +6,15 @@ using namespace Rcpp;
 Population::Population(size_t n, Nullable<Function> initializer)
   : Agent()
 {
-  if (n) _agents.reserve(n);
+  _agents.reserve(n);
   if (initializer.isNull()) {
-    for (size_t i = 0; i < n; ++i) {
-      auto agent = makeOwned<Agent>();
-      add(agent);
-    }
+    for (size_t i = 0; i < n; ++i)
+      addInitialAgent(R_NilValue);
   } else {
     Function f(initializer);
     for (size_t i = 0; i < n; ++i) {
-      SEXP s = f(i + 1);
-      if (!Rf_isNewList(s) && s != R_NilValue)
-        s = List(s);
-      auto agent = makeOwned<Agent>(Nullable<List>(s));
-      add(agent);
+      SEXP state = f(i + 1);
+      addInitialAgent(state);
     }
   }
 }
@@ -28,13 +23,16 @@ Population::Population(List states)
   : Agent()
 {
   size_t n = states.size();
-  for (size_t i = 0; i < n; ++i) {
-    SEXP s= states[i];
-    if (!Rf_isNewList(s) && s != R_NilValue)
-      s = List(s);
-    auto agent = makeOwned<Agent>(Nullable<List>(s));
-    add(agent);
-  }
+  _agents.reserve(n);
+  for (size_t i = 0; i < n; ++i)
+    addInitialAgent(states[i]);
+}
+
+void Population::addInitialAgent(SEXP state)
+{
+  if (!Rf_isNewList(state) && state != R_NilValue)
+    state = List(state);
+  add(makeOwned<Agent>(Nullable<List>(state)));
 }
 
 Population::~Population()
