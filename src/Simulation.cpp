@@ -238,7 +238,7 @@ XP<Simulation> newSimulation(SEXP n, Nullable<Function> initializer = R_NilValue
     if (N < 0) N = 0;
     return XP<Simulation>(std::make_shared<Simulation>(N, initializer));
   }
-  if (Rf_isVector(n))
+  if (Rf_isNewList(n))
     return XP<Simulation>(std::make_shared<Simulation>(List(n)));
   stop("n must be an integer or a list");
 }

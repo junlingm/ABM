@@ -16,7 +16,7 @@ Population::Population(size_t n, Nullable<Function> initializer)
     Function f(initializer);
     for (size_t i = 0; i < n; ++i) {
       SEXP s = f(i + 1);
-      if (!Rf_isList(s) && s != R_NilValue)
+      if (!Rf_isNewList(s) && s != R_NilValue)
         s = List(s);
       auto agent = std::make_shared<Agent>(Nullable<List>(s));
       add(agent);
@@ -30,7 +30,7 @@ Population::Population(List states)
   size_t n = states.size();
   for (size_t i = 0; i < n; ++i) {
     SEXP s= states[i];
-    if (!Rf_isList(s) && s != R_NilValue)
+    if (!Rf_isNewList(s) && s != R_NilValue)
       s = List(s);
     auto agent = std::make_shared<Agent>(s);
     add(agent);
@@ -161,7 +161,7 @@ XP<Population> newPopulation(SEXP n, Nullable<Function> initializer = R_NilValue
 {
   if (n == R_NilValue)
     return XP<Population>(std::make_shared<Population>());
-  if (Rf_isList(n))
+  if (Rf_isNewList(n))
     return XP<Population>(std::make_shared<Population>(List(n)));
   if (!Rf_isNumeric(n))
     stop("n must be an integer or a list");
