@@ -1,8 +1,8 @@
 Type: Package
 Package: ABM
 Title: Agent Based Model Simulation Framework
-Version: 0.5.1
-Date: 2026-08-06
+Version: 0.6.0
+Date: 2026-08-12
 Authors@R: 
     person("Junling", "Ma", , "junlingm@uvic.ca", role = c("aut", "cre"))
 Description: A high-performance, flexible and extensible framework to

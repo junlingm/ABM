@@ -1,3 +1,5 @@
+# Version 0.6.0
+
 # Version 0.5.1
 * External pointers now validate their capability tags. Borrowed handles
   expire safely when their callback, contact membership, or population
