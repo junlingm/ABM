@@ -277,8 +277,8 @@ public:
    * 
    * @param agent the agent to schedule a contact event
    * 
-   * @details the agent must match the state in agent_from specified
-   * in the constructor
+   * @details the caller must provide a matching contact attached to the
+   * agent's population, and the agent must match agent_from.
    */
   void schedule(double time, Agent &agent, Contact &contact);
   

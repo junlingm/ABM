@@ -188,8 +188,6 @@ bool ContactTransition::matches(const Contact &contact) const
 void ContactTransition::schedule(
     double time, Agent &agent, Contact &source)
 {
-  if (!matches(source)) return;
-  if (source.population() != agent.population()) return;
   const auto &contact = source.contact(time, agent);
   if (contact.empty()) return;
   double waiting_time = R_PosInf;
