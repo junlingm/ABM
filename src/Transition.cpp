@@ -121,7 +121,7 @@ bool ContactEvent::handle(Simulation &sim, Agent &agent)
       _rule.changed(t, agent, *_contact);
     } else PRINT("%lf, NA, %ld, %ld, 0\n", t, agent.id(), _contact->id());
     if (!left_from)
-      _rule.scheduleContact(t, agent, _source);
+      _rule.schedule(t, agent, _source);
   } else PRINT("%lf, NA, %ld, %ld, 0\n", t, agent.id(), _contact->id());
   return false;
 }
@@ -174,7 +174,7 @@ bool ContactTransition::matches(const Contact &contact) const
   return !_contact_type || contact.type() == *_contact_type;
 }
 
-void ContactTransition::scheduleContact(
+void ContactTransition::schedule(
     double time, Agent &agent, Contact &source)
 {
   if (!matches(source)) return;

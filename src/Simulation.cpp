@@ -75,7 +75,7 @@ void Simulation::scheduleContactTransition(
     return;
   for (const auto &contact : population->_contacts)
     if (rule.matches(*contact))
-      rule.scheduleContact(time, agent, *contact);
+      rule.schedule(time, agent, *contact);
 }
 
 List Simulation::run(const NumericVector &time)

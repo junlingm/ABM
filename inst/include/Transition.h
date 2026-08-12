@@ -280,7 +280,7 @@ public:
    * @details the agent must match the state in agent_from specified
    * in the constructor
    */
-  void scheduleContact(double time, Agent &agent, Contact &contact);
+  void schedule(double time, Agent &agent, Contact &contact);
   
 protected:
   /**
