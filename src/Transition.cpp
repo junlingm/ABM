@@ -52,7 +52,7 @@ bool TransitionEvent::handle(Simulation &sim, Agent &agent)
   return false;
 }
 
-TransitionRule::TransitionRule(
+TransitionBase::TransitionBase(
     const List &from, const List &to,
     Nullable<Function> to_change_callback,
     Nullable<Function> changed_callback,
@@ -70,7 +70,7 @@ Transition::Transition(const List &from, const List &to,
                        Nullable<Function> to_change_callback,
                        Nullable<Function> changed_callback,
                        const std::vector<PEventLogger> &logging)
-  : TransitionRule(from, to, to_change_callback, changed_callback, logging),
+  : TransitionBase(from, to, to_change_callback, changed_callback, logging),
     _waiting_time(waiting_time)
 {
 }
@@ -159,7 +159,7 @@ ContactTransition::ContactTransition(
   Rcpp::Nullable<Rcpp::Function> to_change_callback, 
   Rcpp::Nullable<Rcpp::Function> changed_callback,
   const std::vector<PEventLogger> &logging)
-  : TransitionRule(agent_from, agent_to, to_change_callback,
+  : TransitionBase(agent_from, agent_to, to_change_callback,
                    changed_callback, logging),
     _contact_from(contact_from), _contact_to(contact_to),
     _contact_type(std::move(contact_type)), _waiting_time(waiting_time)

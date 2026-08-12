@@ -46,17 +46,17 @@ public:
 /**
  * State and callback storage shared by transition rule types.
  */
-class TransitionRule {
+class TransitionBase {
 public:
-  TransitionRule(const Rcpp::List &from, const Rcpp::List &to,
-                 Rcpp::Nullable<Rcpp::Function> to_change_callback,
-                 Rcpp::Nullable<Rcpp::Function> changed_callback,
-                 const std::vector<PEventLogger> &logging);
-
   const Rcpp::List &from() const { return _from; }
   const Rcpp::List &to() const { return _to; }
 
 protected:
+  TransitionBase(const Rcpp::List &from, const Rcpp::List &to,
+                 Rcpp::Nullable<Rcpp::Function> to_change_callback,
+                 Rcpp::Nullable<Rcpp::Function> changed_callback,
+                 const std::vector<PEventLogger> &logging);
+
   Rcpp::List _from;
   Rcpp::List _to;
   std::unique_ptr<Rcpp::Function> _to_change;
@@ -71,7 +71,7 @@ protected:
  * agent contacts (such as disease transmission). They may be, 
  * for example, recovery. 
  */
-class Transition : public TransitionRule {
+class Transition : public TransitionBase {
 public:
   /**
    * Constructor
@@ -161,7 +161,7 @@ protected:
  * The state transitions represented by this class are caused by 
  * agent contacts (such as disease transmission).
  */
-class ContactTransition : public TransitionRule {
+class ContactTransition : public TransitionBase {
 public:
   /**
    * Constructor
