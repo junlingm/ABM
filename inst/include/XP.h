@@ -186,8 +186,7 @@ class Pointer {
 public:
   virtual ~Pointer() = default;
 
-  virtual T *checked() = 0;
-  virtual const T *checked() const = 0;
+  virtual T *checked() const = 0;
 
   /** Returns an owning pointer, or nullptr for a borrowed handle. */
   virtual OwnedPointer<T> owned() const = 0;
@@ -206,8 +205,7 @@ public:
       Rcpp::stop("cannot create an ABM handle for a null object");
   }
 
-  T *checked() override { return _pointer.get(); }
-  const T *checked() const override { return _pointer.get(); }
+  T *checked() const override { return _pointer.get(); }
 
   OwnedPointer<T> owned() const override { return _pointer; }
 
@@ -228,19 +226,16 @@ public:
       Rcpp::stop("cannot create a borrowed ABM handle without a lease");
   }
 
-  T *checked() override { return checkedPointer(); }
-  const T *checked() const override { return checkedPointer(); }
-
-  OwnedPointer<T> owned() const override { return nullptr; }
-
-private:
-  T *checkedPointer() const
+  T *checked() const override
   {
     if (_lease.expired())
       Rcpp::stop("ABM borrowed handle has expired");
     return _pointer;
   }
 
+  OwnedPointer<T> owned() const override { return nullptr; }
+
+private:
   T *_pointer;
   std::weak_ptr<XPLease> _lease;
 };
@@ -277,29 +272,15 @@ private:
       Rcpp::stop("ABM external pointer does not support the requested type");
   }
 
-  Holder *holder()
+  Holder *holder() const
   {
     return XPtrBase::checked_get();
   }
 
-  const Holder *holder() const
-  {
-    return XPtrBase::checked_get();
-  }
-
-  T *checked()
+  T *checked() const
   {
     PointerBase *base = holder()->checked();
     T *p = dynamic_cast<T*>(base);
-    if (p == nullptr)
-      Rcpp::stop("ABM external pointer has an incompatible C++ type");
-    return p;
-  }
-
-  const T *checked() const
-  {
-    const PointerBase *base = holder()->checked();
-    const T *p = dynamic_cast<const T*>(base);
     if (p == nullptr)
       Rcpp::stop("ABM external pointer has an incompatible C++ type");
     return p;
