@@ -180,7 +180,7 @@ void ContactTransition::schedule(double time, Agent &agent, Contact &source)
   if (_contact != &source) return;
   if (!agent.match(from())) return;
   if (source.population() != agent.population()) return;
-  auto contact = source.contact(time, agent);
+  const auto &contact = source.contact(time, agent);
   if (contact.empty()) return;
   double waiting_time = R_PosInf;
   Agent* next_contact = nullptr;
