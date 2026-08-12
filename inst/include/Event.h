@@ -6,13 +6,13 @@
 class Calendar;
 
 class Agent;
-typedef std::shared_ptr<Agent> PAgent;
+typedef OwnedPointer<Agent> PAgent;
 
 class Simulation;
-typedef std::shared_ptr<Simulation> PSimulation;
+typedef OwnedPointer<Simulation> PSimulation;
 
 class Event;
-typedef std::shared_ptr<Event> PEvent;
+typedef OwnedPointer<Event> PEvent;
 
 /**
  * An abstract class that represent an event.
@@ -28,9 +28,9 @@ typedef std::shared_ptr<Event> PEvent;
  * agent (or another agent in the simulation). The state change 
  * is then logged by loggers that recognize the state change.
  */
-class Event {
+class Event : public RefCountedObject {
 public:
-  typedef Event PointerBase;
+  typedef RefCountedObject PointerBase;
   static constexpr std::uint32_t TAG = XP_EVENT;
 
   /**
@@ -169,14 +169,14 @@ public:
   /**
    * Schedules an event
    * 
-   * @param a shared_ptr<Event> object that points the event to be scheduled
+   * @param event an owning pointer to the event to be scheduled
    */
   void schedule(PEvent event);
   
   /**
    * Remove a scheduled event
    * 
-   * @param a shared_ptr<Event> object that points to the event to be removed.
+   * @param event an owning pointer to the event to be removed.
    * 
    * @details The event must be scheduled by the agent, otherwise 
    * the call returns without any action.
@@ -214,4 +214,4 @@ private:
   std::multimap<double, PEvent> _events;
 };
 
-typedef std::shared_ptr<Calendar> PCalendar;
+typedef OwnedPointer<Calendar> PCalendar;

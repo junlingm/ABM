@@ -68,7 +68,7 @@ const std::vector<Agent*> &RandomMixing::contact(double time, Agent &agent)
   else {
     while (true) {
       size_t i = _unif.get() * n;
-      auto c = _population->agentAtIndex(i).get();
+      auto c = _population->agentAtIndex(i);
       if (c != &agent) {
         _neighbors[0] = c;
         break;
@@ -152,9 +152,9 @@ static PWaitingTime parseWaitingTime(SEXP value)
   if (TYPEOF(value) == EXTPTRSXP)
     return as<XP<WaitingTime> >(value);
   if (Rf_isFunction(value))
-    return std::make_shared<RWaitingTime>(as<Function>(value));
+    return makeOwned<RWaitingTime>(as<Function>(value));
   if (Rf_isNumeric(value))
-    return std::make_shared<ExpWaitingTime>(as<double>(value));
+    return makeOwned<ExpWaitingTime>(as<double>(value));
   stop("contact rate must be a waiting-time object, function, number, or NULL");
 }
 
@@ -167,7 +167,7 @@ static PWaitingTime parseWaitingTime(SEXP value)
 XP<Contact> newRandomMixing(SEXP rate = R_NilValue,
                             std::string type = "contact")
 {
-  return XP<Contact>(std::make_shared<RandomMixing>(
+  return XP<Contact>(makeOwned<RandomMixing>(
       std::move(type), parseWaitingTime(rate)));
 }
   
@@ -184,7 +184,7 @@ XP<Contact> newRandomMixing(SEXP rate = R_NilValue,
 XP<Contact> newContact(Environment r6, SEXP rate = R_NilValue,
                        std::string type = "contact")
 {
-  return XP<Contact>(std::make_shared<RContact>(
+  return XP<Contact>(makeOwned<RContact>(
       r6, std::move(type), parseWaitingTime(rate)));
 }
 

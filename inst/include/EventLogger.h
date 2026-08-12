@@ -16,9 +16,9 @@ class TransitionEvent;
  * Event loggers update state held by the simulation. They are distinct from
  * report loggers, which only read values at requested report times.
  */
-class EventLogger {
+class EventLogger : public RefCountedObject {
 public:
-  typedef EventLogger PointerBase;
+  typedef RefCountedObject PointerBase;
   static constexpr std::uint32_t TAG = XP_EVENT_LOGGER;
 
   virtual ~EventLogger();
@@ -31,7 +31,7 @@ public:
   static Rcpp::CharacterVector classes;
 };
 
-typedef std::shared_ptr<EventLogger> PEventLogger;
+typedef OwnedPointer<EventLogger> PEventLogger;
 
 /**
  * An event logger that changes a numeric simulation state variable.

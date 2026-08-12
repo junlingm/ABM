@@ -12,9 +12,9 @@
  * observation at each time point given to each run. Each logger has a 
  * name, which becomes the the column name int eh data.frame.
  */
-class Logger {
+class Logger : public RefCountedObject {
 public:
-  typedef Logger PointerBase;
+  typedef RefCountedObject PointerBase;
   static constexpr std::uint32_t TAG = XP_LOGGER;
 
   /**
@@ -196,9 +196,12 @@ protected:
    * the agent whose state will be logged. If R_NilValue, then
    * the current agent whose state has changed will be logged.
    */
-  std::weak_ptr<Agent> _agent;
+  Agent *_agent;
+  std::weak_ptr<XPLease> _agent_lease;
   /**
    * the namme of the state to be logged.
    */
   std::string _state;
 };
+
+typedef OwnedPointer<Logger> PLogger;

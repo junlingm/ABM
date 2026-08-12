@@ -89,11 +89,11 @@ void Network::connect(int from, int to)
 {
   if (from == to) return;
   // avoid multiple edges
-  auto t = _population->agentAtIndex(to).get();
+  auto t = _population->agentAtIndex(to);
   for (auto c : _neighbors[from])
     if (c == t) return;
   _neighbors[from].push_back(t);
-  _neighbors[to].push_back(_population->agentAtIndex(from).get());
+  _neighbors[to].push_back(_population->agentAtIndex(from));
 }
 
 void ConfigurationModel::grow(Agent &agent)
@@ -129,13 +129,13 @@ XP<ConfigurationModel> newConfigurationModel(
     if (TYPEOF(rate) == EXTPTRSXP)
       waiting_time = as<XP<WaitingTime> >(rate);
     else if (Rf_isFunction(rate))
-      waiting_time = std::make_shared<RWaitingTime>(as<Function>(rate));
+      waiting_time = makeOwned<RWaitingTime>(as<Function>(rate));
     else if (Rf_isNumeric(rate))
-      waiting_time = std::make_shared<ExpWaitingTime>(as<double>(rate));
+      waiting_time = makeOwned<ExpWaitingTime>(as<double>(rate));
     else
       stop("contact rate must be a waiting-time object, function, number, or NULL");
   }
   return XP<ConfigurationModel>(
-    std::make_shared<ConfigurationModel>(
+    makeOwned<ConfigurationModel>(
       rng, std::move(type), std::move(waiting_time)));
 }

@@ -14,9 +14,9 @@ class TransitionEvent;
 /**
  * A class representing a random waiting time for a stqte transition
  */
-class WaitingTime {
+class WaitingTime : public RefCountedObject {
 public:
-  typedef WaitingTime PointerBase;
+  typedef RefCountedObject PointerBase;
   static constexpr std::uint32_t TAG = XP_WAITING_TIME;
 
   /**
@@ -81,7 +81,7 @@ public:
    * @param to the target state of the transition
    * 
    * @param waiting_time the waiting_time for the transition to occur,
-   * a shared_ptr<WaitingTime> point to a WaitingTime object.
+   * an owning pointer to a WaitingTime object.
    * 
    * @param to_change_callback the R callback function to determine if 
    * the change should occur. See the details section.
@@ -326,7 +326,7 @@ public:
   /**
    * @param source the contact pattern that created this event
    */
-  ContactEvent(double time, PAgent contact, Contact &source,
+  ContactEvent(double time, Agent &contact, Contact &source,
                ContactTransition &rule);
 
   virtual bool handle(Simulation &sim, Agent &agent);
@@ -338,7 +338,8 @@ public:
 protected:
   ContactTransition &_rule;
   Contact &_source;
-  PAgent _contact;
+  Agent *_contact;
+  std::weak_ptr<XPLease> _contact_lease;
 };
 
 /**

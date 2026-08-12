@@ -28,7 +28,7 @@ bool REvent::handle(Simulation &sim, Agent &agent)
 // [[Rcpp::export]]
 XP<Event> newEvent(double time, Function handler)
 {
-  return XP<Event>(std::make_shared<REvent>(time, handler));
+  return XP<Event>(makeOwned<REvent>(time, handler));
 }
   
 // [[Rcpp::export]]

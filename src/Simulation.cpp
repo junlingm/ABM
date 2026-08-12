@@ -169,7 +169,7 @@ void Simulation::stateChanged(Agent &agent)
   _pending_contact_transitions.clear();
 }
 
-void Simulation::add(std::shared_ptr<Logger> logger)
+void Simulation::add(PLogger logger)
 {
   if (logger) {
     // preventing the same counter added twice
@@ -232,14 +232,14 @@ CharacterVector Simulation::classes = CharacterVector::create("Simulation", "Pop
 XP<Simulation> newSimulation(SEXP n, Nullable<Function> initializer = R_NilValue)
 {
   if (n == R_NilValue)
-    return XP<Simulation>(std::make_shared<Simulation>());
+    return XP<Simulation>(makeOwned<Simulation>());
   if (Rf_isNumeric(n)) {
     int N = as<int>(n); 
     if (N < 0) N = 0;
-    return XP<Simulation>(std::make_shared<Simulation>(N, initializer));
+    return XP<Simulation>(makeOwned<Simulation>(N, initializer));
   }
   if (Rf_isNewList(n))
-    return XP<Simulation>(std::make_shared<Simulation>(List(n)));
+    return XP<Simulation>(makeOwned<Simulation>(List(n)));
   stop("n must be an integer or a list");
 }
 
@@ -298,9 +298,9 @@ void addTransition(
   } else if (TYPEOF(waiting_time) == EXTPTRSXP)
     w = as<XP<WaitingTime> >(waiting_time);
   else if (Rf_isFunction(waiting_time)) 
-    w = std::make_shared<RWaitingTime>(as<Function>(waiting_time));
+    w = makeOwned<RWaitingTime>(as<Function>(waiting_time));
   else if (Rf_isNumeric(waiting_time))
-    w = std::make_shared<ExpWaitingTime>(as<double>(waiting_time));
+    w = makeOwned<ExpWaitingTime>(as<double>(waiting_time));
   else
     throw std::range_error("waiting_time is invalid");
   if (contact_rule && waiting_time != R_NilValue)

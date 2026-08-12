@@ -37,6 +37,8 @@ public:
    */
   Agent(Rcpp::Nullable<Rcpp::List> state = R_NilValue);
 
+  virtual ~Agent();
+
   /**
    * Returns the agent id (a long value)
    */
@@ -119,6 +121,9 @@ public:
    */
   const PXPLease &membershipLease();
 
+  /** Lazily create a token that expires when this agent is destroyed. */
+  const PXPLease &lifetimeLease() const;
+
   /** the simulation that it is in */
   virtual Simulation *simulation();
   /** the simulation that it is in */
@@ -178,6 +183,9 @@ protected:
    * Expires borrowed contact handles when the agent leaves its population.
    */
   PXPLease _membership_lease;
+
+  /** Optional lifetime token for uncommon long-lived observers. */
+  mutable std::unique_ptr<PXPLease> _lifetime_lease;
 
 private:
   friend class Simulation; // so that Simulation can call attached

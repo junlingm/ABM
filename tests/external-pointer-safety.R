@@ -233,3 +233,51 @@ stopifnot(
   replacement_sim$size == 1,
   identical(getState(surviving_agent)$state, "S")
 )
+
+# Distinct owning R handles independently retain the same agent after its
+# population has been destroyed.
+multiple_handle_sim <- Simulation$new(list(list(value = 2)))
+first_handle <- multiple_handle_sim$agent(1)
+second_handle <- multiple_handle_sim$agent(1)
+multiple_handle_sim <- NULL
+first_handle <- NULL
+invisible(gc())
+stopifnot(identical(getState(second_handle)$value, 2))
+
+# A pending contact event borrows its target membership. Removing and deleting
+# the target before that event executes invalidates the event safely.
+target_removal_sim <- Simulation$new(list(S, list(state = "I")))
+target_removal_sim$addContact(newRandomMixing(
+  rate = function(time) 1,
+  type = "target-removal"
+))
+target_removal_sim$addTransition(
+  S + list(state = "I") -> list(state = "I") + list(state = "I") ~
+    "target-removal"
+)
+target <- target_removal_sim$agent(2)
+setDeathTime(target, 0.5)
+target <- NULL
+invisible(gc())
+invisible(target_removal_sim$run(c(0, 2)))
+stopifnot(identical(target_removal_sim$size, 1L))
+
+# Destroying a population clears population-specific contact events before an
+# R-owned surviving agent can move to another simulation.
+contact_owner_sim <- Simulation$new(list(S, list(state = "I")))
+contact_owner_sim$addContact(newRandomMixing(
+  rate = function(time) 1,
+  type = "destroyed-contact-owner"
+))
+contact_owner_sim$addTransition(
+  S + list(state = "I") -> list(state = "I") + list(state = "I") ~
+    "destroyed-contact-owner"
+)
+contact_survivor <- contact_owner_sim$agent(1)
+invisible(contact_owner_sim$run(0))
+contact_owner_sim <- NULL
+invisible(gc())
+contact_replacement_sim <- Simulation$new()
+contact_replacement_sim$addAgent(contact_survivor)
+invisible(contact_replacement_sim$run(c(0, 2)))
+stopifnot(identical(contact_replacement_sim$size, 1L))

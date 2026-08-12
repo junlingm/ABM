@@ -88,18 +88,21 @@ void Transition::schedule(double time, Agent &agent)
   double wait_time = _waiting_time->waitingTime(time);
   PRINT("%lf, %lf, %ld, NA, NA\n", time, wait_time, agent.id());
   if (wait_time < R_PosInf)
-    agent.schedule(std::make_shared<TransitionEvent>(time + wait_time, *this));
+    agent.schedule(makeOwned<TransitionEvent>(time + wait_time, *this));
 }
 
-ContactEvent::ContactEvent(double time, PAgent contact, Contact &source,
+ContactEvent::ContactEvent(double time, Agent &contact, Contact &source,
                            ContactTransition &rule)
-  : Event(time), _rule(rule), _source(source), _contact(contact)
+  : Event(time), _rule(rule), _source(source), _contact(&contact),
+    _contact_lease(contact.membershipLease())
 {
 }
 
 bool ContactEvent::handle(Simulation &sim, Agent &agent)
 {
   double t = time();
+  if (_contact_lease.expired())
+    return false;
   Population *owner = agent.population();
   if (owner == nullptr || owner != _contact->population() ||
       owner != _source.population()) {
@@ -194,11 +197,11 @@ void ContactTransition::schedule(
     if (next_contact == nullptr)
       stop("contact returned a null agent");
     PRINT("%lf, %lf, %ld, %ld, NA\n", time, waiting_time+time, agent.id(), next_contact->id());
-    PAgent managed = source.population()->agent(*next_contact);
+    Agent *managed = source.population()->agent(*next_contact);
     if (!managed)
       stop("contact returned an agent not managed by its population");
-    agent._contactEvents->schedule(std::make_shared<ContactEvent>(
-        waiting_time + time, managed, source, *this));
+    agent._contactEvents->schedule(makeOwned<ContactEvent>(
+        waiting_time + time, *managed, source, *this));
   }
 }
 
@@ -239,19 +242,19 @@ CharacterVector Transition::classes = CharacterVector::create("Transition");
 // [[Rcpp::export]]
 XP<WaitingTime> newExpWaitingTime(double rate)
 {
-  return XP<WaitingTime>(std::make_shared<ExpWaitingTime>(rate));
+  return XP<WaitingTime>(makeOwned<ExpWaitingTime>(rate));
 }
 
 // [[Rcpp::export]]
 XP<WaitingTime> newGammaWaitingTime(double shape, double scale)
 {
-  return XP<WaitingTime>(std::make_shared<GammaWaitingTime>(shape, scale));
+  return XP<WaitingTime>(makeOwned<GammaWaitingTime>(shape, scale));
 }
 
 // [[Rcpp::export]]
 XP<WaitingTime> newRWaitingTime(Function rng) 
 {
-  return XP<WaitingTime>(std::make_shared<RWaitingTime>(rng));
+  return XP<WaitingTime>(makeOwned<RWaitingTime>(rng));
 }
 
 // [[Rcpp::export]]

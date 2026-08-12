@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Rcpp.h>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <type_traits>
@@ -32,6 +33,151 @@ class XPLease {
 
 typedef std::shared_ptr<XPLease> PXPLease;
 
+template<class T>
+class OwnedPointer;
+
+/**
+ * Common intrusive ownership state for objects exposed to R.
+ */
+class RefCountedObject {
+public:
+  RefCountedObject(const RefCountedObject &) = delete;
+  RefCountedObject &operator=(const RefCountedObject &) = delete;
+
+protected:
+  RefCountedObject() = default;
+  virtual ~RefCountedObject() = default;
+
+private:
+  template<class T>
+  friend class OwnedPointer;
+
+  void retain() noexcept { ++_owners; }
+
+  void release() noexcept
+  {
+    if (--_owners == 0)
+      delete this;
+  }
+
+  std::size_t _owners = 0;
+};
+
+/**
+ * A small RAII pointer for intrusive ownership of an R-exposed object.
+ */
+template<class T>
+class OwnedPointer {
+public:
+  OwnedPointer() noexcept : _pointer(nullptr) {}
+  OwnedPointer(std::nullptr_t) noexcept : _pointer(nullptr) {}
+
+  explicit OwnedPointer(T *pointer) noexcept : _pointer(pointer)
+  {
+    retain();
+  }
+
+  OwnedPointer(const OwnedPointer &other) noexcept
+    : _pointer(other._pointer)
+  {
+    retain();
+  }
+
+  template<class U,
+           typename std::enable_if<
+             std::is_convertible<U*, T*>::value, int>::type = 0>
+  OwnedPointer(const OwnedPointer<U> &other) noexcept
+    : _pointer(other.get())
+  {
+    retain();
+  }
+
+  OwnedPointer(OwnedPointer &&other) noexcept
+    : _pointer(other._pointer)
+  {
+    other._pointer = nullptr;
+  }
+
+  template<class U,
+           typename std::enable_if<
+             std::is_convertible<U*, T*>::value, int>::type = 0>
+  OwnedPointer(OwnedPointer<U> &&other) noexcept
+    : _pointer(other._pointer)
+  {
+    other._pointer = nullptr;
+  }
+
+  ~OwnedPointer() { release(); }
+
+  OwnedPointer &operator=(OwnedPointer other) noexcept
+  {
+    swap(other);
+    return *this;
+  }
+
+  void reset(T *pointer = nullptr) noexcept
+  {
+    OwnedPointer replacement(pointer);
+    swap(replacement);
+  }
+
+  void swap(OwnedPointer &other) noexcept
+  {
+    std::swap(_pointer, other._pointer);
+  }
+
+  T *get() const noexcept { return _pointer; }
+  T &operator*() const { return *_pointer; }
+  T *operator->() const noexcept { return _pointer; }
+  explicit operator bool() const noexcept { return _pointer != nullptr; }
+
+  friend bool operator==(const OwnedPointer &left,
+                         const OwnedPointer &right) noexcept
+  {
+    return left._pointer == right._pointer;
+  }
+
+  friend bool operator!=(const OwnedPointer &left,
+                         const OwnedPointer &right) noexcept
+  {
+    return !(left == right);
+  }
+
+  friend bool operator==(const OwnedPointer &pointer, std::nullptr_t) noexcept
+  {
+    return pointer._pointer == nullptr;
+  }
+
+  friend bool operator!=(const OwnedPointer &pointer, std::nullptr_t) noexcept
+  {
+    return pointer._pointer != nullptr;
+  }
+
+private:
+  template<class U>
+  friend class OwnedPointer;
+
+  void retain() noexcept
+  {
+    if (_pointer)
+      static_cast<RefCountedObject*>(_pointer)->retain();
+  }
+
+  void release() noexcept
+  {
+    if (_pointer)
+      static_cast<RefCountedObject*>(_pointer)->release();
+  }
+
+  T *_pointer;
+};
+
+template<class T, class... Args>
+OwnedPointer<T> makeOwned(Args&&... args)
+{
+  return OwnedPointer<T>(new T(std::forward<Args>(args)...));
+}
+
 /**
  * Abstract storage for external pointers in one polymorphic family.
  */
@@ -44,7 +190,7 @@ public:
   virtual const T *checked() const = 0;
 
   /** Returns an owning pointer, or nullptr for a borrowed handle. */
-  virtual std::shared_ptr<T> shared() const = 0;
+  virtual OwnedPointer<T> owned() const = 0;
 };
 
 /**
@@ -53,7 +199,7 @@ public:
 template<class T>
 class SharedPointer final : public Pointer<T> {
 public:
-  explicit SharedPointer(std::shared_ptr<T> pointer)
+  explicit SharedPointer(OwnedPointer<T> pointer)
     : _pointer(std::move(pointer))
   {
     if (!_pointer)
@@ -63,10 +209,10 @@ public:
   T *checked() override { return _pointer.get(); }
   const T *checked() const override { return _pointer.get(); }
 
-  std::shared_ptr<T> shared() const override { return _pointer; }
+  OwnedPointer<T> owned() const override { return _pointer; }
 
 private:
-  std::shared_ptr<T> _pointer;
+  OwnedPointer<T> _pointer;
 };
 
 /**
@@ -85,7 +231,7 @@ public:
   T *checked() override { return checkedPointer(); }
   const T *checked() const override { return checkedPointer(); }
 
-  std::shared_ptr<T> shared() const override { return nullptr; }
+  OwnedPointer<T> owned() const override { return nullptr; }
 
 private:
   T *checkedPointer() const
@@ -166,10 +312,10 @@ public:
     validateTag(p);
   }
 
-  XP(const std::shared_ptr<T> &p)
+  XP(const OwnedPointer<T> &p)
     : XPtrBase(
         new SharedPointer<PointerBase>(
-          std::static_pointer_cast<PointerBase>(p)),
+          OwnedPointer<PointerBase>(p)),
         true,
         makeTag())
   {
@@ -193,15 +339,15 @@ public:
   operator const T*() const { return checked(); }
   operator T*() { return checked(); }
 
-  operator std::shared_ptr<T>() const
+  operator OwnedPointer<T>() const
   {
-    std::shared_ptr<PointerBase> base = holder()->shared();
+    OwnedPointer<PointerBase> base = holder()->owned();
     if (!base)
       return nullptr;
-    std::shared_ptr<T> p = std::dynamic_pointer_cast<T>(base);
-    if (!p)
+    T *pointer = dynamic_cast<T*>(base.get());
+    if (!pointer)
       Rcpp::stop("ABM external pointer has an incompatible C++ type");
-    return p;
+    return OwnedPointer<T>(pointer);
   }
 
   T &operator*() { return *checked(); }

@@ -57,14 +57,9 @@ public:
   ~Population() override;
 
   /**
-   * Token for handles borrowed for the lifetime of this population.
-   */
-  const PXPLease &lifetimeLease() const { return _lifetime_lease; }
-
-  /**
    * Add an agent to the populaton
    * 
-   * @param agent A shared_ptr<Agent> pointing to the agent to be added
+   * @param agent An owning pointer to the agent to be added
    * 
    * @details The agent is scheduled in the population. If the population 
    * is already added to a simulation, the agent will report its state
@@ -106,18 +101,21 @@ public:
    * 
    * @param i the index of the agent (starting from 0)
    * 
-   * @return a shared_ptr<Agent> pointing to the agent requested.
+   * @return a non-owning pointer to the requested agent.
    */
-  PAgent agentAtIndex(size_t i) const { return _agents[i]; }
+  Agent *agentAtIndex(size_t i) const { return _agents[i].get(); }
   
   /**
    * return a specific agent by ID
    * 
    * @param i the index of the agent (starting from 1)
    * 
-   * @return a shared_ptr<Agent> pointing to the agent requested.
+   * @return a non-owning pointer when the agent belongs to this population.
    */
-  PAgent agent(const Agent &agent) const { return agent._population == this ? _agents[agent._index] : nullptr; }
+  Agent *agent(const Agent &agent) const
+  {
+    return agent._population == this ? _agents[agent._index].get() : nullptr;
+  }
   
   /**
    * Initialize the state of agents in the population using an 
@@ -150,11 +148,6 @@ protected:
   friend class Simulation;
 
   /**
-   * Expires borrowed R handles when this population is destroyed.
-   */
-  PXPLease _lifetime_lease;
-
-  /**
    * Assign IDs to this population and all agents contained by it.
    */
   void setID(Simulation &sim) override;
@@ -180,7 +173,7 @@ protected:
    */
   std::vector<PAgent> _agents;
   /**
-   * A list of shared_ptr<Contact> pointing to the contacts
+   * Contacts owned directly by this population.
    */
   std::list<PContact> _contacts;
 
@@ -190,4 +183,4 @@ protected:
   std::list<PContact> _subcontacts;
 };
 
-typedef std::shared_ptr<Population> PPopulation;
+typedef OwnedPointer<Population> PPopulation;

@@ -66,33 +66,32 @@ double Counter::report()
 }
 
 StateLogger::StateLogger(const std::string &name, PAgent agent, const std::string &state)
-  : Logger(name), _value(R_NaN), _agent(agent), _state(state)
+  : Logger(name), _value(R_NaN), _agent(agent.get()),
+    _agent_lease(agent ? agent->lifetimeLease() : PXPLease()), _state(state)
 {
 }
 
 void StateLogger::log(const Agent &agent, const State &from_state)
 {
-  PAgent pa = _agent.lock();
-  const Agent &a = pa ? *pa : agent;
+  const Agent &a = (_agent && !_agent_lease.expired()) ? *_agent : agent;
   _value = as<double>(a.state()[_state]);
 }
 
 bool StateLogger::stateChanging(const Agent &agent, const List &state)
 {
-  return _agent.expired();
+  return !_agent || _agent_lease.expired();
 }
 
 void StateLogger::stateChanged(const Agent &agent)
 {
-  if (_agent.expired())
+  if (!_agent || _agent_lease.expired())
     _value = as<double>(agent.state()[_state]);
 }
 
 double StateLogger::report()
 {
-  PAgent pa = _agent.lock();
-  if (pa)
-    return as<double>(pa->state()[_state]);
+  if (_agent && !_agent_lease.expired())
+    return as<double>(_agent->state()[_state]);
   return _value;
 }
 
@@ -100,7 +99,7 @@ double StateLogger::report()
 XP<Counter> newCounter(std::string name, List from, Nullable<List> to=R_NilValue, int initial=0)
 {
   warning("newCounter() is deprecated; use newStateLogger() with inc() or dec() instead");
-  return XP<Counter>(std::make_shared<Counter>(name, from, to, initial));
+  return XP<Counter>(makeOwned<Counter>(name, from, to, initial));
 }
 
 // [[Rcpp::export]]
@@ -108,7 +107,7 @@ XP<StateLogger> newStateLogger(std::string name, Nullable<XP<Agent> > agent, std
 {
   PAgent pa;
   if (agent.isNotNull()) pa = XP<Agent>(agent);
-  return std::make_shared<StateLogger>(name, pa, state);
+  return XP<StateLogger>(makeOwned<StateLogger>(name, pa, state));
 }
 
 Rcpp::CharacterVector Counter::classes = CharacterVector::create("Counter", "Logger");

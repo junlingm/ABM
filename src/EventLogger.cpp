@@ -43,7 +43,7 @@ XP<EventLogger> newIncrementLogger(
     std::string variable, Nullable<Function> filter = R_NilValue)
 {
   return XP<EventLogger>(
-      std::make_shared<StateEventLogger>(variable, 1, filter));
+      makeOwned<StateEventLogger>(variable, 1, filter));
 }
 
 // [[Rcpp::export]]
@@ -51,7 +51,7 @@ XP<EventLogger> newDecrementLogger(
     std::string variable, Nullable<Function> filter = R_NilValue)
 {
   return XP<EventLogger>(
-      std::make_shared<StateEventLogger>(variable, -1, filter));
+      makeOwned<StateEventLogger>(variable, -1, filter));
 }
 
 Rcpp::CharacterVector EventLogger::classes =

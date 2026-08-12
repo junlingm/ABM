@@ -24,7 +24,7 @@ public:
    * 
    * @param agent the agent that requests the contacts
    * 
-   * @return a vector of shared_ptr<Agent> that holds the contacts
+   * @return a vector of non-owning pointers to contacted agents
    */
   virtual const std::vector<Agent*> &contact(double time, Agent &agent);
   

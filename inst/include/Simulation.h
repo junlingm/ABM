@@ -87,7 +87,7 @@ public:
    * @details without adding a logger, there will be no useful simulation
    * results returned.
    */
-  void add(std::shared_ptr<Logger> counter);
+  void add(PLogger counter);
 
   /**
    * Add a Transition rule a simulation
@@ -152,7 +152,7 @@ protected:
    */
   void stateChanged(Agent &agent, const State &from) override;
   
-  std::list<std::shared_ptr<Logger> > _loggers;
+  std::list<PLogger> _loggers;
   std::vector<Logger*> _pending_loggers;
   std::vector<Transition*> _pending_transitions;
   std::vector<ContactTransition*> _pending_contact_transitions;

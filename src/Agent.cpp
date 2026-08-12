@@ -14,11 +14,14 @@ public:
 };
 
 Agent::Agent(Nullable<List> state)
-  : Calendar(), _population(nullptr), _id(0), _index(0), _contactEvents(new Calendar)
+  : Calendar(), _population(nullptr), _id(0), _index(0),
+    _contactEvents(makeOwned<Calendar>())
 {
   if (state.isNotNull()) _state &= List(state);
   schedule(_contactEvents);
 }
+
+Agent::~Agent() = default;
 
 bool Agent::handle(Simulation &sim, Agent &agent)
 {
@@ -94,6 +97,14 @@ const PXPLease &Agent::membershipLease()
   return _membership_lease;
 }
 
+const PXPLease &Agent::lifetimeLease() const
+{
+  if (!_lifetime_lease)
+    _lifetime_lease = std::make_unique<PXPLease>(
+      std::make_shared<XPLease>());
+  return *_lifetime_lease;
+}
+
 void Agent::setID(Simulation &sim)
 {
   if (_id == 0)
@@ -125,7 +136,7 @@ const Simulation *Agent::simulation() const
 
 void Agent::setDeathTime(double time)
 {
-  schedule(std::make_shared<DeathEvent>(time));
+  schedule(makeOwned<DeathEvent>(time));
 }
 
 static State empty_state;
@@ -140,7 +151,7 @@ CharacterVector Agent::classes = CharacterVector::create("Agent", "Event");
 // [[Rcpp::export]]
 XP<Agent> newAgent(Nullable<List> state, NumericVector death_time = NA_REAL)
 {
-  XP<Agent> a = (std::make_shared<Agent>(state));
+  XP<Agent> a(makeOwned<Agent>(state));
   double d = as<double>(death_time);
   if (!std::isnan(d)) a->setDeathTime(d);
   return a;

@@ -4,12 +4,12 @@
 using namespace Rcpp;
 
 Population::Population(size_t n, Nullable<Function> initializer)
-  : Agent(), _lifetime_lease(std::make_shared<XPLease>())
+  : Agent()
 {
   if (n) _agents.reserve(n);
   if (initializer.isNull()) {
     for (size_t i = 0; i < n; ++i) {
-      auto agent = std::make_shared<Agent>();
+      auto agent = makeOwned<Agent>();
       add(agent);
     }
   } else {
@@ -18,32 +18,32 @@ Population::Population(size_t n, Nullable<Function> initializer)
       SEXP s = f(i + 1);
       if (!Rf_isNewList(s) && s != R_NilValue)
         s = List(s);
-      auto agent = std::make_shared<Agent>(Nullable<List>(s));
+      auto agent = makeOwned<Agent>(Nullable<List>(s));
       add(agent);
     }
   }
 }
 
 Population::Population(List states)
-  : Agent(), _lifetime_lease(std::make_shared<XPLease>())
+  : Agent()
 {
   size_t n = states.size();
   for (size_t i = 0; i < n; ++i) {
     SEXP s= states[i];
     if (!Rf_isNewList(s) && s != R_NilValue)
       s = List(s);
-    auto agent = std::make_shared<Agent>(s);
+    auto agent = makeOwned<Agent>(Nullable<List>(s));
     add(agent);
   }
 }
 
 Population::~Population()
 {
-  _lifetime_lease.reset();
   for (auto &contact : _contacts)
     contact->detach(*this);
   for (auto &agent : _agents) {
     if (agent && agent->_population == this) {
+      agent->_contactEvents->clearEvents();
       unschedule(agent);
       agent->_population = nullptr;
       agent->_membership_lease.reset();
@@ -160,14 +160,14 @@ CharacterVector Population::classes = CharacterVector::create("Population", "Age
 XP<Population> newPopulation(SEXP n, Nullable<Function> initializer = R_NilValue)
 {
   if (n == R_NilValue)
-    return XP<Population>(std::make_shared<Population>());
+    return XP<Population>(makeOwned<Population>());
   if (Rf_isNewList(n))
-    return XP<Population>(std::make_shared<Population>(List(n)));
+    return XP<Population>(makeOwned<Population>(List(n)));
   if (!Rf_isNumeric(n))
     stop("n must be an integer or a list");
   int N = as<int>(n); 
   if (N < 0) N = 0;
-  return XP<Population>(std::make_shared<Population>(N, initializer));
+  return XP<Population>(makeOwned<Population>(N, initializer));
 }
 
 // [[Rcpp::export]]
@@ -176,7 +176,7 @@ void addAgent(XP<Population> population, XP<Agent> agent)
   Agent *raw = agent;
   PAgent managed = agent;
   if (!managed && raw->population() != nullptr)
-    managed = raw->population()->agent(*raw);
+    managed = PAgent(raw);
   if (!managed)
     stop("agent is not managed by R or a population");
   population->add(managed);
@@ -191,7 +191,7 @@ int getSize(XP<Population> population)
 // [[Rcpp::export]]
 XP<Agent> getAgent(XP<Population> population, int i)
 {
-  return population->agentAtIndex(i - 1);
+  return XP<Agent>(PAgent(population->agentAtIndex(i - 1)));
 }
 
 // [[Rcpp::export]]

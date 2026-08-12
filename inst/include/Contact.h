@@ -7,7 +7,7 @@
 
 class Population;
 class WaitingTime;
-typedef std::shared_ptr<WaitingTime> PWaitingTime;
+typedef OwnedPointer<WaitingTime> PWaitingTime;
 
 /**
  * An abstract class that represent the contact pattern of a population. 
@@ -16,9 +16,9 @@ typedef std::shared_ptr<WaitingTime> PWaitingTime;
  * multiple contacts attached, e.g., a random mixing contact pattern and 
  * a network contact pattern.
  */
-class Contact {
+class Contact : public RefCountedObject {
 public:
-  typedef Contact PointerBase;
+  typedef RefCountedObject PointerBase;
   static constexpr std::uint32_t TAG = XP_CONTACT;
 
   /**
@@ -44,7 +44,7 @@ public:
    * 
    * @param agent the agent that requests the contacts
    * 
-   * @return a vector of shared_ptr<Agent> that holds the contacts
+   * @return a vector of non-owning pointers to contacted agents
    */
   virtual const std::vector<Agent*> &contact(double time, Agent &agent) = 0;
   Population *population() { return _population; }
@@ -146,7 +146,7 @@ protected:
   bool _explicit_rate;
 };
 
-typedef std::shared_ptr<Contact> PContact;
+typedef OwnedPointer<Contact> PContact;
 
 /**
  * The random mixing contacct pattern
