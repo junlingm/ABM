@@ -121,6 +121,13 @@ missing_contact_to <- try(
   ),
   silent = TRUE
 )
+invalid_contact_rate <- try(newRandomMixing(rate = list()), silent = TRUE)
+invalid_waiting_time <- try(
+  ABM:::addTransition(
+    validation_sim, S, NULL, I, NULL, NULL, list()
+  ),
+  silent = TRUE
+)
 stopifnot(
   inherits(invalid_callback, "try-error"),
   grepl(
@@ -129,7 +136,19 @@ stopifnot(
     fixed = TRUE
   ),
   inherits(missing_contact_to, "try-error"),
-  grepl("contact to state is NULL", missing_contact_to, fixed = TRUE)
+  grepl("contact to state is NULL", missing_contact_to, fixed = TRUE),
+  inherits(invalid_contact_rate, "try-error"),
+  grepl(
+    "contact rate must be a waiting-time object, function, number, or NULL",
+    invalid_contact_rate,
+    fixed = TRUE
+  ),
+  inherits(invalid_waiting_time, "try-error"),
+  grepl(
+    "waiting_time must be a waiting-time object, function, number, or NULL",
+    invalid_waiting_time,
+    fixed = TRUE
+  )
 )
 
 # Defining a rate on both Contact and transition is rejected.

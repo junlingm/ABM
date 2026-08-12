@@ -124,17 +124,7 @@ void ConfigurationModel::grow(Agent &agent)
 XP<ConfigurationModel> newConfigurationModel(
     Function rng, SEXP rate = R_NilValue, std::string type = "contact")
 {
-  PWaitingTime waiting_time;
-  if (rate != R_NilValue) {
-    if (TYPEOF(rate) == EXTPTRSXP)
-      waiting_time = as<XP<WaitingTime> >(rate);
-    else if (Rf_isFunction(rate))
-      waiting_time = makeOwned<RWaitingTime>(as<Function>(rate));
-    else if (Rf_isNumeric(rate))
-      waiting_time = makeOwned<ExpWaitingTime>(as<double>(rate));
-    else
-      stop("contact rate must be a waiting-time object, function, number, or NULL");
-  }
+  PWaitingTime waiting_time = parseWaitingTime(rate, "contact rate");
   return XP<ConfigurationModel>(
     makeOwned<ConfigurationModel>(
       rng, std::move(type), std::move(waiting_time)));

@@ -291,18 +291,9 @@ void addTransition(
     Nullable<List> logging = R_NilValue)
 {
   bool contact_rule = !contact_from.isNull() || !contact_to.isNull();
-  PWaitingTime w;
-  if (waiting_time == R_NilValue) {
-    if (!contact_rule)
-      stop("waiting_time is required for a spontaneous transition");
-  } else if (TYPEOF(waiting_time) == EXTPTRSXP)
-    w = as<XP<WaitingTime> >(waiting_time);
-  else if (Rf_isFunction(waiting_time)) 
-    w = makeOwned<RWaitingTime>(as<Function>(waiting_time));
-  else if (Rf_isNumeric(waiting_time))
-    w = makeOwned<ExpWaitingTime>(as<double>(waiting_time));
-  else
-    throw std::range_error("waiting_time is invalid");
+  PWaitingTime w = parseWaitingTime(waiting_time);
+  if (!w && !contact_rule)
+    stop("waiting_time is required for a spontaneous transition");
   if (contact_rule && waiting_time != R_NilValue)
     warning("Supplying waiting.time for a contact transition is deprecated; "
             "specify the rate on the Contact instead");

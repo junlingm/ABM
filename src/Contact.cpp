@@ -145,19 +145,6 @@ void RContact::remove(Agent &agent)
 
 CharacterVector Contact::classes = CharacterVector::create("Contact");
 
-static PWaitingTime parseWaitingTime(SEXP value)
-{
-  if (value == R_NilValue)
-    return nullptr;
-  if (TYPEOF(value) == EXTPTRSXP)
-    return as<XP<WaitingTime> >(value);
-  if (Rf_isFunction(value))
-    return makeOwned<RWaitingTime>(as<Function>(value));
-  if (Rf_isNumeric(value))
-    return makeOwned<ExpWaitingTime>(as<double>(value));
-  stop("contact rate must be a waiting-time object, function, number, or NULL");
-}
-
 /**
  * Create an object of the RandomMixing class
  * 
@@ -168,7 +155,7 @@ XP<Contact> newRandomMixing(SEXP rate = R_NilValue,
                             std::string type = "contact")
 {
   return XP<Contact>(makeOwned<RandomMixing>(
-      std::move(type), parseWaitingTime(rate)));
+      std::move(type), parseWaitingTime(rate, "contact rate")));
 }
   
 /**
@@ -185,7 +172,7 @@ XP<Contact> newContact(Environment r6, SEXP rate = R_NilValue,
                        std::string type = "contact")
 {
   return XP<Contact>(makeOwned<RContact>(
-      r6, std::move(type), parseWaitingTime(rate)));
+      r6, std::move(type), parseWaitingTime(rate, "contact rate")));
 }
 
 // [[Rcpp::export]]

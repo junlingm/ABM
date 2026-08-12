@@ -17,6 +17,20 @@ WaitingTime::~WaitingTime()
 {
 }
 
+PWaitingTime parseWaitingTime(SEXP value, const std::string &argument)
+{
+  if (value == R_NilValue)
+    return nullptr;
+  if (TYPEOF(value) == EXTPTRSXP)
+    return as<XP<WaitingTime> >(value);
+  if (Rf_isFunction(value))
+    return makeOwned<RWaitingTime>(as<Function>(value));
+  if (Rf_isNumeric(value))
+    return makeOwned<ExpWaitingTime>(as<double>(value));
+  stop(argument +
+       " must be a waiting-time object, function, number, or NULL");
+}
+
 TransitionEvent::TransitionEvent(double time, Transition &rule)
   : Event(time), _rule(rule)
 {

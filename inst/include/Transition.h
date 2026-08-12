@@ -448,3 +448,12 @@ protected:
    */
   Rcpp::Function _f;
 };
+
+/**
+ * Convert an R value to a waiting-time generator.
+ *
+ * @param value a WaitingTime external pointer, function, number, or NULL
+ * @param argument the argument name used in validation errors
+ */
+PWaitingTime parseWaitingTime(
+    SEXP value, const std::string &argument = "waiting_time");
