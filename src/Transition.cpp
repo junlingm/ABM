@@ -38,17 +38,27 @@ bool TransitionEvent::handle(Simulation &sim, Agent &agent)
   return false;
 }
 
-Transition::Transition(const List &from, const List &to, 
-                       PWaitingTime waiting_time, 
-                       Nullable<Function> to_change_callback, 
-                       Nullable<Function> changed_callback,
-                       const std::vector<PEventLogger> &logging)
-  : _from(from), _to(to), _waiting_time(waiting_time), _logging(logging)
+TransitionRule::TransitionRule(
+    const List &from, const List &to,
+    Nullable<Function> to_change_callback,
+    Nullable<Function> changed_callback,
+    const std::vector<PEventLogger> &logging)
+  : _from(from), _to(to), _logging(logging)
 {
   if (!to_change_callback.isNull())
     _to_change.reset(new Function(to_change_callback));
   if (!changed_callback.isNull())
     _changed.reset(new Function(changed_callback));
+}
+
+Transition::Transition(const List &from, const List &to,
+                       PWaitingTime waiting_time,
+                       Nullable<Function> to_change_callback,
+                       Nullable<Function> changed_callback,
+                       const std::vector<PEventLogger> &logging)
+  : TransitionRule(from, to, to_change_callback, changed_callback, logging),
+    _waiting_time(waiting_time)
+{
 }
 
 bool Transition::toChange(double time, Agent &agent)
@@ -72,13 +82,6 @@ void Transition::log(Simulation &simulation, TransitionEvent &event, Agent &agen
   for (auto &logger : _logging)
     logger->log(simulation, agent, event);
 }
-
-void Transition::log(Simulation &simulation, ContactEvent &event, Agent &agent)
-{
-  for (auto &logger : _logging)
-    logger->log(simulation, agent, event);
-}
-
 
 void Transition::schedule(double time, Agent &agent)
 {
@@ -104,17 +107,21 @@ bool ContactEvent::handle(Simulation &sim, Agent &agent)
     return false;
   }
   if (agent.match(_rule.from())) {
+    bool left_from = false;
     if (_contact->match(_rule.contactFrom()) && 
         _rule.toChange(t, agent, *_contact)) {
       PRINT("%lf, NA, %ld, %ld, 1\n", t, agent.id(), _contact->id());
-      if (!agent.match(_rule.to()))
+      if (!agent.match(_rule.to())) {
         agent.set(_rule.to());
+        left_from = !agent.match(_rule.from());
+      }
       if (!_contact->match(_rule.contactTo()))
         _contact->set(_rule.contactTo());
       _rule.log(sim, *this, agent);
       _rule.changed(t, agent, *_contact);
     } else PRINT("%lf, NA, %ld, %ld, 0\n", t, agent.id(), _contact->id());
-    _rule.schedule(t, agent, _source);
+    if (!left_from)
+      _rule.scheduleContact(t, agent, _source);
   } else PRINT("%lf, NA, %ld, %ld, 0\n", t, agent.id(), _contact->id());
   return false;
 }
@@ -127,10 +134,10 @@ ContactTransition::ContactTransition(
   Rcpp::Nullable<Rcpp::Function> to_change_callback, 
   Rcpp::Nullable<Rcpp::Function> changed_callback,
   const std::vector<PEventLogger> &logging)
-  : Transition(agent_from, agent_to, waiting_time, to_change_callback,
-               changed_callback, logging),
+  : TransitionRule(agent_from, agent_to, to_change_callback,
+                   changed_callback, logging),
     _contact_from(contact_from), _contact_to(contact_to),
-    _contact_type(std::move(contact_type))
+    _contact_type(std::move(contact_type)), _waiting_time(waiting_time)
 {
 }
 
@@ -155,30 +162,22 @@ void ContactTransition::changed(double time, Agent &agent, Agent &contact)
   }
 }
 
-void ContactTransition::addContact(Contact &contact)
+void ContactTransition::log(
+    Simulation &simulation, ContactEvent &event, Agent &agent)
 {
-  if (_contact == &contact)
-    return;
-  if (_contact != nullptr)
-    stop("contact transition matches multiple contact patterns");
-  _contact = &contact;
+  for (auto &logger : _logging)
+    logger->log(simulation, agent, event);
 }
 
-void ContactTransition::clearContact()
+bool ContactTransition::matches(const Contact &contact) const
 {
-  _contact = nullptr;
+  return !_contact_type || contact.type() == *_contact_type;
 }
 
-void ContactTransition::schedule(double time, Agent &agent)
+void ContactTransition::scheduleContact(
+    double time, Agent &agent, Contact &source)
 {
-  if (_contact != nullptr)
-    schedule(time, agent, *_contact);
-}
-
-void ContactTransition::schedule(double time, Agent &agent, Contact &source)
-{
-  if (_contact != &source) return;
-  if (!agent.match(from())) return;
+  if (!matches(source)) return;
   if (source.population() != agent.population()) return;
   const auto &contact = source.contact(time, agent);
   if (contact.empty()) return;

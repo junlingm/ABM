@@ -44,13 +44,34 @@ public:
 };
 
 /**
+ * State and callback storage shared by transition rule types.
+ */
+class TransitionRule {
+public:
+  TransitionRule(const Rcpp::List &from, const Rcpp::List &to,
+                 Rcpp::Nullable<Rcpp::Function> to_change_callback,
+                 Rcpp::Nullable<Rcpp::Function> changed_callback,
+                 const std::vector<PEventLogger> &logging);
+
+  const Rcpp::List &from() const { return _from; }
+  const Rcpp::List &to() const { return _to; }
+
+protected:
+  Rcpp::List _from;
+  Rcpp::List _to;
+  std::unique_ptr<Rcpp::Function> _to_change;
+  std::unique_ptr<Rcpp::Function> _changed;
+  std::vector<PEventLogger> _logging;
+};
+
+/**
  * Represents a normal (spontaneous) state transition
  * 
  * The state transitions represented by this class are not caused by 
  * agent contacts (such as disease transmission). They may be, 
  * for example, recovery. 
  */
-class Transition {
+class Transition : public TransitionRule {
 public:
   /**
    * Constructor
@@ -83,23 +104,8 @@ public:
              Rcpp::Nullable<Rcpp::Function> to_change_callback=R_NilValue, 
              Rcpp::Nullable<Rcpp::Function> changed_callback=R_NilValue,
              const std::vector<PEventLogger> &logging = {});
-  
-  /**
-   * Destructor
-   */
-  virtual ~Transition();
 
-  /**
-   * returns the state for the agent to be matched before the 
-   * transition. The transition will not happen if the state if 
-   * does not match.
-   */
-  const Rcpp::List &from() const { return _from; }
-  
-  /**
-   * returns the state for the agent to be set after the transition
-   */
-  const Rcpp::List &to() const { return _to; }
+  virtual ~Transition();
   
   /**
    * Calls the R callback function before the state change
@@ -127,14 +133,13 @@ public:
    * Invoke the event loggers after a successful transition.
    */
   void log(Simulation &simulation, TransitionEvent &event, Agent &agent);
-  void log(Simulation &simulation, ContactEvent &event, Agent &agent);
 
   /**
-   * Schedule an agent for the next contact event
+   * Schedule an agent for the next spontaneous transition event
    * 
    * @param time the currrent simulation time
    * 
-   * @param agent the agent to schedule a contact event
+   * @param agent the agent to schedule a transition event
    * 
    * @details the agent must match the state in from specified
    * in the constructor
@@ -147,34 +152,7 @@ public:
   static Rcpp::CharacterVector classes;
   
 protected:
-  /**
-   * the state of the agent to be matched before transition. The
-   * transition happens only if the state of the agent matches 
-   * this state.
-   */
-  Rcpp::List _from;
-
-  /**
-   * the state of the agent to be set to after transition
-   */
-  Rcpp::List _to;
-
   PWaitingTime _waiting_time;
-  /**
-   * The R callback function before the state changes to determine
-   * if the state change should happen (if return true) or not (if
-   * return false)
-   */
-  std::unique_ptr<Rcpp::Function> _to_change;
-  /**
-   * The R callback function after the state has changed
-   */
-  std::unique_ptr<Rcpp::Function> _changed;
-
-  /**
-   * Operations to invoke after a successful transition.
-   */
-  std::vector<PEventLogger> _logging;
 };
 
 /**
@@ -183,7 +161,7 @@ protected:
  * The state transitions represented by this class are caused by 
  * agent contacts (such as disease transmission).
  */
-class ContactTransition : public Transition {
+class ContactTransition : public TransitionRule {
 public:
   /**
    * Constructor
@@ -212,11 +190,10 @@ public:
    * @param changed_callback the R callback function after the change
    * happened. See the details section.
    * 
-   * @details the transition specifies a spontaneous state change 
-   * (i.e., not caused by a contact) from the state "from" to "to".
-   * The state of the agent should match "from", and the to_change_callback
-   * should be either R_NilValue or return true in order for this 
-   * transition to occur. 
+   * @details the transition specifies state changes caused by a contact.
+   * The initiating agent and contacted agent must match their respective
+   * source states, and the to_change_callback must be either R_NilValue or
+   * return true for the transition to occur.
    * 
    * Unlike the callbacks for the Transition class, each function takes 
    * three arguments
@@ -258,15 +235,9 @@ public:
   const PWaitingTime &waitingTime() const { return _waiting_time; }
 
   /**
-   * Associate this transition with its contact pattern. A transition must
-   * resolve to exactly one contact pattern at registration time.
+   * Whether this transition applies to a contact pattern.
    */
-  void addContact(Contact &contact);
-
-  /**
-   * Remove the contact pattern associated during registration.
-   */
-  void clearContact();
+  bool matches(const Contact &contact) const;
   
   /**
    * Calls the R callback function before the state change
@@ -293,6 +264,11 @@ public:
    * @param contact the agent to be contacted
    */
   void changed(double time, Agent &agent, Agent &contact);
+
+  /**
+   * Invoke the event loggers after a successful contact transition.
+   */
+  void log(Simulation &simulation, ContactEvent &event, Agent &agent);
   
   /**
    * Schedule an agent for the next contact event
@@ -304,9 +280,7 @@ public:
    * @details the agent must match the state in agent_from specified
    * in the constructor
    */
-  using Transition::schedule;
-  void schedule(double time, Agent &agent) override;
-  void schedule(double time, Agent &agent, Contact &contact);
+  void scheduleContact(double time, Agent &agent, Contact &contact);
   
 protected:
   /**
@@ -322,7 +296,11 @@ protected:
    * the contact type used for registration
    */
   std::optional<std::string> _contact_type;
-  Contact *_contact = nullptr;
+
+  /**
+   * Deprecated transition-level waiting-time generator.
+   */
+  PWaitingTime _waiting_time;
 };
 
 /**

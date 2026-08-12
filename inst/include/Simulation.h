@@ -97,6 +97,11 @@ public:
   void add(Transition *rule);
 
   /**
+   * Add a contact transition rule to a simulation.
+   */
+  void add(ContactTransition *rule);
+
+  /**
    * Add a numeric change to a named simulation state variable.
    * This operation does not notify agent-state loggers or transition rules.
    */
@@ -123,6 +128,12 @@ public:
   
 protected:
   /**
+   * Schedule a matching contact rule using contacts applicable to the agent.
+   */
+  void scheduleContactTransition(
+      double time, Agent &agent, ContactTransition &rule);
+
+  /**
    * Select legacy loggers that may be affected by an impending state change.
    */
   void stateChanging(Agent &agent, const Rcpp::List &state) override;
@@ -143,8 +154,10 @@ protected:
   
   std::list<std::shared_ptr<Logger> > _loggers;
   std::vector<Logger*> _pending_loggers;
-  std::vector<Transition*> _pending_rules;
-  std::list<Transition*> _rules;
+  std::vector<Transition*> _pending_transitions;
+  std::vector<ContactTransition*> _pending_contact_transitions;
+  std::list<Transition*> _transitions;
+  std::list<ContactTransition*> _contact_transitions;
   double _current_time;
   
   /**

@@ -56,6 +56,55 @@ stopifnot(
   identical(inferred_result$I, c(1, 2))
 )
 
+# Contact transitions use the direct contacts of the agent's population,
+# including for agents in a nested population.
+nested_contact_sim <- Simulation$new()
+nested_contact_population <- Population$new(
+  2,
+  function(i) list(stage = if (i == 1) "S" else "I")
+)
+nested_contact_population$addContact(newRandomMixing(
+  rate = function(time) 0,
+  type = "nested"
+))
+nested_contact_sim$addAgent(nested_contact_population)
+nested_contact_sim$state <- list(S = 1, I = 1)
+nested_contact_sim$addTransition(
+  S + I -> I + I ~ "nested",
+  logging = list(dec("S"), inc("I"))
+)
+nested_contact_sim$addLogger("S")
+nested_contact_sim$addLogger("I")
+nested_contact_result <- nested_contact_sim$run(c(0, 1))
+stopifnot(
+  identical(nested_contact_result$S, c(1, 0)),
+  identical(nested_contact_result$I, c(1, 2))
+)
+
+# A partial target state can leave the initiator matching the source state. In
+# that case the same contact rule must be scheduled again without a duplicate
+# pre-scheduling state match.
+partial_rate_calls <- 0L
+partial_sim <- Simulation$new(
+  2,
+  function(i) list(stage = if (i == 1) "S" else "I")
+)
+partial_sim$addContact(newRandomMixing(
+  rate = function(time) {
+    partial_rate_calls <<- partial_rate_calls + 1L
+    if (partial_rate_calls == 1L) 0.5 else Inf
+  },
+  type = "partial"
+))
+partial_sim$addTransition(
+  S + I -> list(observed = TRUE) + I ~ "partial"
+)
+invisible(partial_sim$run(c(0, 1)))
+stopifnot(
+  identical(partial_rate_calls, 2L),
+  identical(getState(partial_sim$agent(1))$observed, TRUE)
+)
+
 # Defining a rate on both Contact and transition is rejected.
 duplicate_rate_sim <- Simulation$new(
   2,

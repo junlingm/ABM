@@ -20,14 +20,15 @@ Simulation::Simulation(List states)
 
 Simulation::~Simulation()
 {
-  for (auto r : _rules)
+  for (auto r : _transitions)
+    delete r;
+  for (auto r : _contact_transitions)
     delete r;
 }
 
 void Simulation::report()
 {
   std::set<std::string> types;
-  std::vector<ContactTransition*> contact_transitions;
 
   auto prepare_contacts = [&types](const std::list<PContact> &contacts) {
     for (const auto &contact : contacts) {
@@ -39,29 +40,20 @@ void Simulation::report()
   prepare_contacts(_contacts);
   prepare_contacts(_subcontacts);
 
-  for (auto rule : _rules) {
-    ContactTransition *transition = dynamic_cast<ContactTransition*>(rule);
-    if (!transition)
-      continue;
+  for (auto transition : _contact_transitions) {
     if (!transition->contactType() && types.size() != 1)
       stop("a contact transition without a type requires exactly one "
            "contact pattern");
-    transition->clearContact();
-    contact_transitions.push_back(transition);
   }
 
-  auto register_contacts = [&contact_transitions, &types](
+  auto register_contacts = [this](
       const std::list<PContact> &contacts) {
     for (const auto &contact : contacts) {
-      for (auto transition : contact_transitions) {
-        if (
-          ((!transition->contactType() && types.size() == 1) ||
-           (transition->contactType() &&
-            contact->type() == *transition->contactType())))
+      for (auto transition : _contact_transitions) {
+        if (transition->matches(*contact))
         {
           if (transition->waitingTime())
             contact->assignLegacyRate(transition->waitingTime());
-          transition->addContact(*contact);
         }
       }
       if (!contact->hasRate())
@@ -73,6 +65,17 @@ void Simulation::report()
   register_contacts(_subcontacts);
 
   Population::report();
+}
+
+void Simulation::scheduleContactTransition(
+    double time, Agent &agent, ContactTransition &rule)
+{
+  Population *population = agent.population();
+  if (population == nullptr)
+    return;
+  for (const auto &contact : population->_contacts)
+    if (rule.matches(*contact))
+      rule.scheduleContact(time, agent, *contact);
 }
 
 List Simulation::run(const NumericVector &time)
@@ -116,9 +119,13 @@ void Simulation::stateChanged(Agent &agent, const State &from)
   if (!std::isnan(_current_time)) {
     for (auto c : _loggers)
       c->log(agent, from);
-    for (auto r : _rules) {
+    for (auto r : _transitions) {
       if (!from.match(r->from()) && agent.match(r->from()))
         r->schedule(_current_time, agent);
+    }
+    for (auto r : _contact_transitions) {
+      if (!from.match(r->from()) && agent.match(r->from()))
+        scheduleContactTransition(_current_time, agent, *r);
     }
   }
 }
@@ -126,14 +133,18 @@ void Simulation::stateChanged(Agent &agent, const State &from)
 void Simulation::stateChanging(Agent &agent, const Rcpp::List &state)
 {
   _pending_loggers.clear();
-  _pending_rules.clear();
+  _pending_transitions.clear();
+  _pending_contact_transitions.clear();
   if (!std::isnan(_current_time)) {
     for (auto logger : _loggers)
       if (logger->stateChanging(agent, state))
         _pending_loggers.push_back(logger.get());
-    for (auto rule : _rules)
+    for (auto rule : _transitions)
       if (!agent.match(rule->from()))
-        _pending_rules.push_back(rule);
+        _pending_transitions.push_back(rule);
+    for (auto rule : _contact_transitions)
+      if (!agent.match(rule->from()))
+        _pending_contact_transitions.push_back(rule);
   }
 }
 
@@ -142,14 +153,20 @@ void Simulation::stateChanged(Agent &agent)
   if (!std::isnan(_current_time)) {
     for (auto logger : _pending_loggers)
       logger->stateChanged(agent);
-    for (auto rule : _pending_rules) {
+    for (auto rule : _pending_transitions) {
       if (!agent.match(rule->from()))
         continue;
       rule->schedule(_current_time, agent);
     }
+    for (auto rule : _pending_contact_transitions) {
+      if (!agent.match(rule->from()))
+        continue;
+      scheduleContactTransition(_current_time, agent, *rule);
+    }
   }
   _pending_loggers.clear();
-  _pending_rules.clear();
+  _pending_transitions.clear();
+  _pending_contact_transitions.clear();
 }
 
 void Simulation::add(std::shared_ptr<Logger> logger)
@@ -166,9 +183,19 @@ void Simulation::add(Transition *rule)
 {
   if (rule != NULL) {
     // preventing the same rule added twice
-    for (auto r : _rules) 
+    for (auto r : _transitions)
       if (r == rule) return;
-    _rules.push_back(rule);
+    _transitions.push_back(rule);
+  }
+}
+
+void Simulation::add(ContactTransition *rule)
+{
+  if (rule != NULL) {
+    // preventing the same rule added twice
+    for (auto r : _contact_transitions)
+      if (r == rule) return;
+    _contact_transitions.push_back(rule);
   }
 }
 
