@@ -85,6 +85,15 @@ PAgent Agent::leave()
   return agent;
 }
 
+const PXPLease &Agent::membershipLease()
+{
+  if (_population == nullptr)
+    stop("cannot borrow an agent without a population membership");
+  if (!_membership_lease)
+    _membership_lease = std::make_shared<XPLease>();
+  return _membership_lease;
+}
+
 void Agent::setID(Simulation &sim)
 {
   if (_id == 0)

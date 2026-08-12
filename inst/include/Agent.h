@@ -114,9 +114,10 @@ public:
   const Population *population() const { return _population; }
 
   /**
-   * Token for handles borrowed by the current population membership.
+   * Lazily create and return the token for handles borrowed by the current
+   * population membership.
    */
-  const PXPLease &membershipLease() const { return _membership_lease; }
+  const PXPLease &membershipLease();
 
   /** the simulation that it is in */
   virtual Simulation *simulation();

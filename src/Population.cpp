@@ -60,7 +60,6 @@ void Population::add(PAgent agent)
   _agents.push_back(agent);
   schedule(agent);
   agent->_population = this;
-  agent->_membership_lease = std::make_shared<XPLease>();
   agent->registered(*this);
   agent->report();
   for (auto c : _contacts)
