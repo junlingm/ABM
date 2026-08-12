@@ -1,4 +1,22 @@
 # Version 0.6.0
+* Contact transitions can now select named contact types, allowing a simulation
+  to use multiple contact patterns. Contact rates now belong to `Contact`
+  objects; passing a contact object or transition-level rate remains supported
+  temporarily with a deprecation warning.
+* `Population` and `Simulation` constructors now accept a list of initial
+  states, with one list element corresponding to each agent.
+* Population contact registries are maintained incrementally as populations
+  and contacts join or leave the hierarchy, avoiding repeated full population
+  scans. Contact neighborhoods are also used by reference rather than copied.
+* External-pointer ownership and lifetime handling has been redesigned to make
+  borrowed R callback handles expire safely, retain R-defined contacts for the
+  simulation lifetime, and prevent stale R6 attachment state after detachment.
+* Destroying or removing populations now unschedules their agents and contact
+  events. Invalid population cycles and ownership operations are rejected, and
+  adding the same contact more than once remains a no-op.
+* Membership leases are allocated only when an object is borrowed across the
+  R/C++ boundary, reducing overhead for agents used only within C++.
+* The package now requires C++17.
 
 # Version 0.5.1
 * External pointers now validate their capability tags. Borrowed handles
