@@ -152,9 +152,21 @@ protected:
   virtual void stateChanged(Agent &agent, const State &from);
 
   /**
-   * getting noticed that the agent is added to a simulation
+   * Assign an ID from a simulation if this agent does not yet have one.
    */
-  virtual void attached(Simulation &sim);
+  virtual void setID(Simulation &sim);
+
+  /**
+   * Notify an agent that it has been registered with a population.
+   * Population subclasses use this to propagate their contact registry.
+   */
+  virtual void registered(Population &owner);
+
+  /**
+   * Notify an agent before it is deregistered from a population.
+   * Population subclasses use this to remove their propagated contacts.
+   */
+  virtual void deregistered(Population &owner);
   
   /**
    * The population that the agent is in

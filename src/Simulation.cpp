@@ -1,5 +1,6 @@
 #include "../inst/include/Simulation.h"
 #include <cmath>
+#include <set>
 
 using namespace Rcpp;
 
@@ -7,14 +8,14 @@ Simulation::Simulation(size_t n, Rcpp::Nullable<Rcpp::Function> initializer)
   : Population(n, initializer), _current_time(R_NaN), _next_id(0)
 {
   for (auto a : _agents)
-    a->attached(*this);
+    a->setID(*this);
 }
 
 Simulation::Simulation(List states)
   : Population(states), _current_time(R_NaN), _next_id(0)
 {
   for (auto a : _agents)
-    a->attached(*this);
+    a->setID(*this);
 }
 
 Simulation::~Simulation()
@@ -25,71 +26,53 @@ Simulation::~Simulation()
 
 void Simulation::report()
 {
-  resetContactRates(*this);
   std::set<std::string> types;
-  collectContactTypes(*this, types);
+  std::vector<ContactTransition*> contact_transitions;
+
+  auto prepare_contacts = [&types](const std::list<PContact> &contacts) {
+    for (const auto &contact : contacts) {
+      contact->resetLegacyRate();
+      if (!types.insert(contact->type()).second)
+        stop("multiple contact patterns have the same type");
+    }
+  };
+  prepare_contacts(_contacts);
+  prepare_contacts(_subcontacts);
+
   for (auto rule : _rules) {
     ContactTransition *transition = dynamic_cast<ContactTransition*>(rule);
-    if (transition && !transition->contactType() && types.size() != 1)
+    if (!transition)
+      continue;
+    if (!transition->contactType() && types.size() != 1)
       stop("a contact transition without a type requires exactly one "
            "contact pattern");
-    if (transition)
-      transition->clearContact();
+    transition->clearContact();
+    contact_transitions.push_back(transition);
   }
-  registerTransitions(*this, types);
-  Population::report();
-}
 
-void Simulation::resetContactRates(Population &population)
-{
-  for (auto &contact : population._contacts)
-    contact->resetLegacyRate();
-  for (auto &agent : population._agents) {
-    Population *nested = dynamic_cast<Population*>(agent.get());
-    if (nested)
-      resetContactRates(*nested);
-  }
-}
-
-void Simulation::collectContactTypes(
-    Population &population, std::set<std::string> &types)
-{
-  for (auto &contact : population._contacts) {
-    if (!types.insert(contact->type()).second)
-      stop("multiple contact patterns have the same type");
-  }
-  for (auto &agent : population._agents) {
-    Population *nested = dynamic_cast<Population*>(agent.get());
-    if (nested)
-      collectContactTypes(*nested, types);
-  }
-}
-
-void Simulation::registerTransitions(
-    Population &population, const std::set<std::string> &types)
-{
-  for (auto &contact : population._contacts) {
-    for (auto rule : _rules) {
-      ContactTransition *transition = dynamic_cast<ContactTransition*>(rule);
-      if (transition &&
+  auto register_contacts = [&contact_transitions, &types](
+      const std::list<PContact> &contacts) {
+    for (const auto &contact : contacts) {
+      for (auto transition : contact_transitions) {
+        if (
           ((!transition->contactType() && types.size() == 1) ||
            (transition->contactType() &&
             contact->type() == *transition->contactType())))
-      {
-        if (transition->waitingTime())
-          contact->assignLegacyRate(transition->waitingTime());
-        transition->addContact(*contact);
+        {
+          if (transition->waitingTime())
+            contact->assignLegacyRate(transition->waitingTime());
+          transition->addContact(*contact);
+        }
       }
+      if (!contact->hasRate())
+        warning("Contact has no rate; specify rate when creating the Contact; "
+                "transition-level rates are deprecated");
     }
-    if (!contact->hasRate())
-      warning("Contact has no rate; specify rate when creating the Contact; "
-              "transition-level rates are deprecated");
-  }
-  for (auto &agent : population._agents) {
-    Population *nested = dynamic_cast<Population*>(agent.get());
-    if (nested)
-      registerTransitions(*nested, types);
-  }
+  };
+  register_contacts(_contacts);
+  register_contacts(_subcontacts);
+
+  Population::report();
 }
 
 List Simulation::run(const NumericVector &time)

@@ -104,6 +104,57 @@ same_r_contact_sim$addContact(same_r_contact)
 invisible(same_r_contact_sim$run(0))
 stopifnot(identical(build_count, 1L))
 
+# Contacts in a subpopulation are propagated to the simulation registry when
+# the subpopulation is attached, and are removed when it leaves.
+registry_sim <- Simulation$new(1)
+registry_sim$addContact(newRandomMixing(rate = 1, type = "registry"))
+registry_subpopulation <- Population$new()
+registry_subpopulation$addContact(
+  newRandomMixing(rate = 1, type = "registry")
+)
+registry_sim$addAgent(registry_subpopulation)
+registry_duplicate <- try(registry_sim$run(0), silent = TRUE)
+stopifnot(
+  inherits(registry_duplicate, "try-error"),
+  grepl("multiple contact patterns", registry_duplicate, fixed = TRUE)
+)
+registry_subpopulation$leave()
+stopifnot(!inherits(try(registry_sim$run(0), silent = TRUE), "try-error"))
+
+# Contacts added after a subpopulation is attached propagate through the same
+# registration hook.
+late_registry_sim <- Simulation$new(1)
+late_registry_sim$addContact(newRandomMixing(rate = 1, type = "late"))
+late_registry_subpopulation <- Population$new()
+late_registry_sim$addAgent(late_registry_subpopulation)
+late_registry_subpopulation$addContact(
+  newRandomMixing(rate = 1, type = "late")
+)
+late_registry_duplicate <- try(late_registry_sim$run(0), silent = TRUE)
+stopifnot(
+  inherits(late_registry_duplicate, "try-error"),
+  grepl("multiple contact patterns", late_registry_duplicate, fixed = TRUE)
+)
+
+# An already-populated contact registry propagates through multiple population
+# levels without scanning descendant agents.
+deep_registry_sim <- Simulation$new(1)
+deep_registry_sim$addContact(newRandomMixing(rate = 1, type = "deep"))
+deep_registry_parent <- Population$new()
+deep_registry_child <- Population$new()
+deep_registry_child$addContact(newRandomMixing(rate = 1, type = "deep"))
+deep_registry_parent$addAgent(deep_registry_child)
+deep_registry_sim$addAgent(deep_registry_parent)
+deep_registry_duplicate <- try(deep_registry_sim$run(0), silent = TRUE)
+stopifnot(
+  inherits(deep_registry_duplicate, "try-error"),
+  grepl("multiple contact patterns", deep_registry_duplicate, fixed = TRUE)
+)
+deep_registry_parent$leave()
+stopifnot(
+  !inherits(try(deep_registry_sim$run(0), silent = TRUE), "try-error")
+)
+
 # A transition type must identify one contact pattern, not several patterns.
 duplicate_sim <- Simulation$new(
   2,

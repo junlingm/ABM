@@ -85,10 +85,23 @@ PAgent Agent::leave()
   return agent;
 }
 
-void Agent::attached(Simulation &sim)
+void Agent::setID(Simulation &sim)
 {
   if (_id == 0)
     _id = sim.nextID();
+}
+
+void Agent::registered(Population &owner)
+{
+  if (_id != 0)
+    return;
+  Simulation *sim = owner.simulation();
+  if (sim != nullptr)
+    setID(*sim);
+}
+
+void Agent::deregistered(Population &owner)
+{
 }
 
 Simulation *Agent::simulation()

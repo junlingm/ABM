@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 #include <list>
-#include <set>
 #include <utility>
 #include <Rcpp.h>
 
@@ -156,9 +155,25 @@ protected:
   PXPLease _lifetime_lease;
 
   /**
-   * getting noticed that the agent is added to a simulation
+   * Assign IDs to this population and all agents contained by it.
    */
-  void attached(Simulation &sim) override;
+  void setID(Simulation &sim) override;
+
+  /**
+   * Propagate this population's contacts when it joins an owner population.
+   */
+  void registered(Population &owner) override;
+
+  /**
+   * Remove this population's propagated contacts before it leaves its owner.
+   */
+  void deregistered(Population &owner) override;
+
+  /**
+   * Register or deregister a contact contributed by a descendant population.
+   */
+  void registerSubcontact(const PContact &contact);
+  void deregisterSubcontact(const PContact &contact);
   
   /**
    * A vector holding all agents in the population
@@ -168,6 +183,11 @@ protected:
    * A list of shared_ptr<Contact> pointing to the contacts
    */
   std::list<PContact> _contacts;
+
+  /**
+   * Contacts owned by descendant populations.
+   */
+  std::list<PContact> _subcontacts;
 };
 
 typedef std::shared_ptr<Population> PPopulation;

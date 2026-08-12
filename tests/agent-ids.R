@@ -40,3 +40,14 @@ stopifnot(
   first$size == 2,
   second$size == 3
 )
+
+# Re-registering a Population assigns IDs to agents added while it was
+# detached, even though the Population itself already has an ID.
+detached <- Population$new()
+sim$addAgent(detached)
+detached$leave()
+added_while_detached <- Agent$new()
+detached$addAgent(added_while_detached)
+stopifnot(getID(added_while_detached$get) == 0)
+sim$addAgent(detached)
+stopifnot(getID(added_while_detached$get) != 0)

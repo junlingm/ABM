@@ -1,4 +1,5 @@
 #include "../inst/include/Population.h"
+#include <algorithm>
 
 using namespace Rcpp;
 
@@ -60,11 +61,10 @@ void Population::add(PAgent agent)
   schedule(agent);
   agent->_population = this;
   agent->_membership_lease = std::make_shared<XPLease>();
+  agent->registered(*this);
   agent->report();
   for (auto c : _contacts)
     c->add(*agent);
-  Simulation *sim = simulation();
-  if (agent->_id == 0 && sim) agent->attached(*sim);
 }
 
 void Population::add(PContact contact)
@@ -73,6 +73,8 @@ void Population::add(PContact contact)
     if (existing == contact)
       return;
   _contacts.push_back(contact);
+  if (_population != nullptr)
+    _population->registerSubcontact(contact);
   for (auto &a : _agents)
     contact->add(*a);
 }
@@ -93,6 +95,7 @@ PAgent Population::remove(Agent &agent)
   for (auto &c : _contacts)
     c->remove(agent);
   agent._contactEvents->clearEvents();
+  agent.deregistered(*this);
   agent._population = nullptr;
   agent._membership_lease.reset();
   unsigned int i = agent._index;
@@ -109,11 +112,47 @@ PAgent Population::remove(Agent &agent)
   return a;
 }
 
-void Population::attached(Simulation &sim)
+void Population::setID(Simulation &sim)
 {
-  Agent::attached(sim);
+  Agent::setID(sim);
   for (auto &a : _agents)
-    a->attached(sim);
+    a->setID(sim);
+}
+
+void Population::registered(Population &owner)
+{
+  Simulation *sim = owner.simulation();
+  if (sim != nullptr)
+    setID(*sim);
+  for (const auto &contact : _contacts)
+    owner.registerSubcontact(contact);
+  for (const auto &contact : _subcontacts)
+    owner.registerSubcontact(contact);
+}
+
+void Population::deregistered(Population &owner)
+{
+  for (const auto &contact : _contacts)
+    owner.deregisterSubcontact(contact);
+  for (const auto &contact : _subcontacts)
+    owner.deregisterSubcontact(contact);
+}
+
+void Population::registerSubcontact(const PContact &contact)
+{
+  _subcontacts.push_back(contact);
+  if (_population != nullptr)
+    _population->registerSubcontact(contact);
+}
+
+void Population::deregisterSubcontact(const PContact &contact)
+{
+  auto position = std::find(_subcontacts.begin(), _subcontacts.end(), contact);
+  if (position == _subcontacts.end())
+    stop("subpopulation contact is not registered");
+  _subcontacts.erase(position);
+  if (_population != nullptr)
+    _population->deregisterSubcontact(contact);
 }
 
 CharacterVector Population::classes = CharacterVector::create("Population", "Agent", "Event");
