@@ -105,6 +105,33 @@ stopifnot(
   identical(getState(partial_sim$agent(1))$observed, TRUE)
 )
 
+# The low-level transition boundary rejects malformed callbacks and incomplete
+# pairs of contact states with its documented errors.
+validation_sim <- ABM:::newSimulation(0)
+invalid_callback <- try(
+  ABM:::addTransition(
+    validation_sim, S, NULL, I, NULL, NULL, 1,
+    to_change_callback = 1
+  ),
+  silent = TRUE
+)
+missing_contact_to <- try(
+  ABM:::addTransition(
+    validation_sim, S, I, I, NULL, NULL, NULL
+  ),
+  silent = TRUE
+)
+stopifnot(
+  inherits(invalid_callback, "try-error"),
+  grepl(
+    "to_change_callback must be a function or NULL",
+    invalid_callback,
+    fixed = TRUE
+  ),
+  inherits(missing_contact_to, "try-error"),
+  grepl("contact to state is NULL", missing_contact_to, fixed = TRUE)
+)
+
 # Defining a rate on both Contact and transition is rejected.
 duplicate_rate_sim <- Simulation$new(
   2,

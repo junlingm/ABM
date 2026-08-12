@@ -307,9 +307,9 @@ void addTransition(
     warning("Supplying waiting.time for a contact transition is deprecated; "
             "specify the rate on the Contact instead");
   if (to_change_callback != R_NilValue && !Rf_isFunction(to_change_callback))
-    std::range_error("to_change_callback must be a function or NULL");
+    stop("to_change_callback must be a function or NULL");
   if (changed_callback != R_NilValue && !Rf_isFunction(changed_callback))
-    std::range_error("changed_callback must be a function or NULL");
+    stop("changed_callback must be a function or NULL");
 
   std::vector<PEventLogger> event_loggers;
   if (!logging.isNull()) {
@@ -330,9 +330,9 @@ void addTransition(
       from, to, w, to_change_callback, changed_callback, event_loggers));
   } else {
     if (contact_from.isNull())
-      std::range_error("contact from state is NULL");
+      stop("contact from state is NULL");
     if (contact_to.isNull())
-      std::range_error("contact to state is NULL");
+      stop("contact to state is NULL");
     List cf(contact_from), ct(contact_to);
     std::optional<std::string> type;
     if (contact != R_NilValue)
