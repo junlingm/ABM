@@ -1,3 +1,5 @@
+# Version 0.6.99
+
 # Version 0.6.0
 * Contact transitions can now select named contact types, allowing a simulation
   to use multiple contact patterns. Contact rates now belong to `Contact`
