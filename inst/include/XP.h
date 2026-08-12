@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 /**
  * Capabilities supported by objects exposed through external pointers.
@@ -32,64 +33,69 @@ class XPLease {
 typedef std::shared_ptr<XPLease> PXPLease;
 
 /**
- * Storage shared by all external-pointer types in one polymorphic family.
- *
- * Managed pointers own the object through _p. Borrowed pointers keep a raw
- * pointer whose validity is limited by a required lease.
+ * Abstract storage for external pointers in one polymorphic family.
  */
 template<class T>
 class Pointer {
 public:
-  explicit Pointer(std::shared_ptr<T> p)
-    : _p(std::move(p)), _borrowed(nullptr)
+  virtual ~Pointer() = default;
+
+  virtual T *checked() = 0;
+  virtual const T *checked() const = 0;
+
+  /** Returns an owning pointer, or nullptr for a borrowed handle. */
+  virtual std::shared_ptr<T> shared() const = 0;
+};
+
+/**
+ * External-pointer storage that shares ownership of its object.
+ */
+template<class T>
+class SharedPointer final : public Pointer<T> {
+public:
+  explicit SharedPointer(std::shared_ptr<T> pointer)
+    : _pointer(std::move(pointer))
   {
-    if (!_p)
+    if (!_pointer)
       Rcpp::stop("cannot create an ABM handle for a null object");
   }
 
-  Pointer(T &p, const PXPLease &lease)
-    : _borrowed(&p), _lease(lease)
+  T *checked() override { return _pointer.get(); }
+  const T *checked() const override { return _pointer.get(); }
+
+  std::shared_ptr<T> shared() const override { return _pointer; }
+
+private:
+  std::shared_ptr<T> _pointer;
+};
+
+/**
+ * External-pointer storage that borrows an object for a leased lifetime.
+ */
+template<class T>
+class BorrowedPointer final : public Pointer<T> {
+public:
+  BorrowedPointer(T &pointer, const PXPLease &lease)
+    : _pointer(&pointer), _lease(lease)
   {
     if (!lease)
       Rcpp::stop("cannot create a borrowed ABM handle without a lease");
   }
 
-  T *checked()
-  {
-    if (_p)
-      return _p.get();
-    if (_borrowed == nullptr)
-      Rcpp::stop("ABM handle has no object");
-    if (_lease.expired())
-      Rcpp::stop("ABM borrowed handle has expired");
-    return _borrowed;
-  }
+  T *checked() override { return checkedPointer(); }
+  const T *checked() const override { return checkedPointer(); }
 
-  const T *checked() const
-  {
-    if (_p)
-      return _p.get();
-    if (_borrowed == nullptr)
-      Rcpp::stop("ABM handle has no object");
-    if (_lease.expired())
-      Rcpp::stop("ABM borrowed handle has expired");
-    return _borrowed;
-  }
-
-  operator const T*() const { return checked(); }
-  operator T*() { return checked(); }
-
-  /** Returns nullptr for borrowed pointers, including scoped borrows. */
-  operator std::shared_ptr<T>() const { return _p; }
-
-  T *operator->() { return checked(); }
-  const T *operator->() const { return checked(); }
-
-  bool managed() const { return bool(_p); }
+  std::shared_ptr<T> shared() const override { return nullptr; }
 
 private:
-  std::shared_ptr<T> _p;
-  T *_borrowed;
+  T *checkedPointer() const
+  {
+    if (_lease.expired())
+      Rcpp::stop("ABM borrowed handle has expired");
+    return _pointer;
+  }
+
+  T *_pointer;
   std::weak_ptr<XPLease> _lease;
 };
 
@@ -162,7 +168,8 @@ public:
 
   XP(const std::shared_ptr<T> &p)
     : XPtrBase(
-        new Holder(std::static_pointer_cast<PointerBase>(p)),
+        new SharedPointer<PointerBase>(
+          std::static_pointer_cast<PointerBase>(p)),
         true,
         makeTag())
   {
@@ -173,7 +180,8 @@ public:
 
   XP(T &p, const PXPLease &lease)
     : XPtrBase(
-        new Holder(static_cast<PointerBase&>(p), lease),
+        new BorrowedPointer<PointerBase>(
+          static_cast<PointerBase&>(p), lease),
         true,
         makeTag())
   {
@@ -187,7 +195,7 @@ public:
 
   operator std::shared_ptr<T>() const
   {
-    std::shared_ptr<PointerBase> base = *holder();
+    std::shared_ptr<PointerBase> base = holder()->shared();
     if (!base)
       return nullptr;
     std::shared_ptr<T> p = std::dynamic_pointer_cast<T>(base);
