@@ -22,7 +22,7 @@ install_github("https://github.com/junlingm/ABM.git")
 
 See more information on the [Wiki](https://github.com/junlingm/ABM/wiki/)
 
-# Examples
+# Examples (Please note that these examples use the new R interface for contacts and contact transitions in the latest release >= v0.6.0)
   1. [Simulate an SIR model using the Gillespie method](https://github.com/junlingm/ABM/wiki/Gillespie-SIR)
   2. [Simulate an agent based SEIR model](https://github.com/junlingm/ABM/wiki/Agent-SEIR)
   3. [Simulate a multi-group SEIR model](https://github.com/junlingm/ABM/wiki/Agent-Multigroup)
