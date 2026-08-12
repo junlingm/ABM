@@ -141,7 +141,7 @@ public:
    * This method should not be called by the user. It is automatically
    * called by the Simulation class.
    */
-  virtual bool handle(Simulation &sim, Agent &agent);
+  bool handle(Simulation &sim, Agent &agent) override;
 
 protected:
   /**
@@ -165,6 +165,9 @@ public:
    * Constructor that creates an empty calendar
    */
   Calendar();
+
+  /** Detach events that survive this calendar. */
+  ~Calendar() override;
   
   /**
    * Schedules an event
@@ -200,7 +203,7 @@ public:
    * This method should not be called by the user. It is automatically
    * called by the Simulation class.
    */
-  virtual bool handle(Simulation &sim, Agent &agent);
+  bool handle(Simulation &sim, Agent &agent) override;
 
   /**
    * unschedule all events scheduled to an agent

@@ -44,6 +44,12 @@ Calendar::Calendar()
 {
 }
 
+Calendar::~Calendar()
+{
+  for (auto &entry : _events)
+    entry.second->_owner = nullptr;
+}
+
 bool Calendar::handle(Simulation &sim, Agent &agent)
 {
   if (!_events.empty()) {

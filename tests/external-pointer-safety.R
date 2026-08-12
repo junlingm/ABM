@@ -218,6 +218,21 @@ stopifnot(
   )
 )
 
+# An R-owned event can outlive its original calendar and be scheduled again.
+handled_after_calendar_destruction <- 0L
+surviving_event <- newEvent(1, function(...) {
+  handled_after_calendar_destruction <<-
+    handled_after_calendar_destruction + 1L
+})
+event_owner_sim <- Simulation$new(1)
+schedule(event_owner_sim$agent(1), surviving_event)
+event_owner_sim <- NULL
+invisible(gc())
+replacement_event_sim <- Simulation$new(1)
+schedule(replacement_event_sim$agent(1), surviving_event)
+invisible(replacement_event_sim$run(c(0, 2)))
+stopifnot(identical(handled_after_calendar_destruction, 1L))
+
 # C++ detachment is authoritative for an R6 Contact, which can then be
 # attached to a replacement Population without retaining stale R6 state.
 replacement_contact_sim <- Simulation$new(list(S))
@@ -261,6 +276,28 @@ target <- NULL
 invisible(gc())
 invisible(target_removal_sim$run(c(0, 2)))
 stopifnot(identical(target_removal_sim$size, 1L))
+
+# A contact transition callback may remove and collect the contacted agent.
+# The event must observe the expired membership before using that pointer again.
+callback_removal_sim <- Simulation$new(list(S, list(state = "I")))
+callback_removal_sim$addContact(newRandomMixing(
+  rate = function(time) 0,
+  type = "callback-removal"
+))
+callback_removal_sim$addTransition(
+  S + list(state = "I") -> list(state = "I") + list(state = "I") ~
+    "callback-removal",
+  to_change_callback = function(time, agent, contact) {
+    invisible(leave(contact))
+    invisible(gc())
+    TRUE
+  }
+)
+invisible(callback_removal_sim$run(c(0, 1)))
+stopifnot(
+  identical(callback_removal_sim$size, 1L),
+  identical(getState(callback_removal_sim$agent(1))$state, "S")
+)
 
 # Destroying a population clears population-specific contact events before an
 # R-owned surviving agent can move to another simulation.

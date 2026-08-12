@@ -53,6 +53,14 @@ Population::~Population()
 
 void Population::add(PAgent agent)
 {
+  Population *nested = dynamic_cast<Population*>(agent.get());
+  if (nested != nullptr) {
+    for (Population *owner = this; owner != nullptr;
+         owner = owner->_population) {
+      if (owner == nested)
+        stop("cannot add a population to itself or one of its descendants");
+    }
+  }
   if (agent->_population == this) return;
   if (agent->_population != nullptr)
     agent->leave();
@@ -191,6 +199,8 @@ int getSize(XP<Population> population)
 // [[Rcpp::export]]
 XP<Agent> getAgent(XP<Population> population, int i)
 {
+  if (i < 1 || static_cast<size_t>(i) > population->size())
+    stop("agent index is out of range");
   return XP<Agent>(PAgent(population->agentAtIndex(i - 1)));
 }
 

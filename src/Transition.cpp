@@ -111,8 +111,16 @@ bool ContactEvent::handle(Simulation &sim, Agent &agent)
   }
   if (agent.match(_rule.from())) {
     bool left_from = false;
-    if (_contact->match(_rule.contactFrom()) && 
-        _rule.toChange(t, agent, *_contact)) {
+    bool contact_matches = _contact->match(_rule.contactFrom());
+    bool change = contact_matches && _rule.toChange(t, agent, *_contact);
+    if (contact_matches) {
+      if (_contact_lease.expired() || agent.population() != owner ||
+          _source.population() != owner)
+        return false;
+      if (_contact->population() != owner)
+        return false;
+    }
+    if (change) {
       PRINT("%lf, NA, %ld, %ld, 1\n", t, agent.id(), _contact->id());
       if (!agent.match(_rule.to())) {
         agent.set(_rule.to());
