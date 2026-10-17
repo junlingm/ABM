@@ -231,6 +231,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getNeighbors
+List getNeighbors(XP<Contact> network, XP<Agent> agent);
+RcppExport SEXP _ABM_getNeighbors(SEXP networkSEXP, SEXP agentSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XP<Contact> >::type network(networkSEXP);
+    Rcpp::traits::input_parameter< XP<Agent> >::type agent(agentSEXP);
+    rcpp_result_gen = Rcpp::wrap(getNeighbors(network, agent));
+    return rcpp_result_gen;
+END_RCPP
+}
 // newConfigurationModel
 XP<ConfigurationModel> newConfigurationModel(Function rng, SEXP rate, std::string type);
 RcppExport SEXP _ABM_newConfigurationModel(SEXP rngSEXP, SEXP rateSEXP, SEXP typeSEXP) {
@@ -457,6 +469,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ABM_getTime", (DL_FUNC) &_ABM_getTime, 1},
     {"_ABM_newIncrementLogger", (DL_FUNC) &_ABM_newIncrementLogger, 2},
     {"_ABM_newDecrementLogger", (DL_FUNC) &_ABM_newDecrementLogger, 2},
+    {"_ABM_getNeighbors", (DL_FUNC) &_ABM_getNeighbors, 2},
     {"_ABM_newConfigurationModel", (DL_FUNC) &_ABM_newConfigurationModel, 3},
     {"_ABM_newPopulation", (DL_FUNC) &_ABM_newPopulation, 2},
     {"_ABM_addAgent", (DL_FUNC) &_ABM_addAgent, 2},

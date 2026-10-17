@@ -1,4 +1,8 @@
 # Version 0.6.99
+* `getNeighbors(network, agent)` exposes the complete stored network
+  neighbourhood without drawing contacts or scheduling events. It validates
+  population membership and returns borrowed agent pointers that expire when
+  neighbours leave the population.
 
 # Version 0.6.0
 * Contact transitions can now select named contact types, allowing a simulation

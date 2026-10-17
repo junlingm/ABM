@@ -17,8 +17,7 @@ public:
   /**
    * Return the contacts of an agent at a given time
    * 
-   * @details A random agent in the population (other than the requesting
-   * agent) is returned.
+   * @details Returns the complete stored neighbourhood of the agent.
    * 
    * @param time the current time for requesting the contacts
    * 
@@ -27,6 +26,9 @@ public:
    * @return a vector of non-owning pointers to contacted agents
    */
   virtual const std::vector<Agent*> &contact(double time, Agent &agent);
+
+  /** Return stored neighbours without drawing contacts or scheduling events. */
+  const std::vector<Agent*> &neighbors(const Agent &agent) const;
   
   /** 
    * Add an agent to the contact pattern

@@ -115,6 +115,30 @@ Contact = R6::R6Class(
   )
 )
 
+#' Get all neighbours of an agent in a stored network
+#'
+#' @param network A network pointer returned by [newConfigurationModel()].
+#' @param agent An agent pointer, for example from `sim$agent(i)` or a
+#'   transition callback.
+#' @return A list of agent pointers, or an empty list for an isolated agent.
+#' @details The network must have been initialized, for example by
+#'   `sim$run(0)`, and the agent must belong to its population. This reads the
+#'   complete current neighbourhood regardless of epidemiological state or
+#'   contact history. It does not draw random numbers or schedule events.
+#'   Random-mixing and custom contact patterns are not stored networks and
+#'   are not supported. Returned pointers remain valid while the neighbours
+#'   remain in the population; query again after network changes.
+#' @examples
+#' sim <- Simulation$new(2, function(i) list("I"))
+#' network <- newConfigurationModel(function(n) rep.int(1L, n), rate = 1)
+#' sim$addContact(network)
+#' invisible(sim$run(0))
+#' vapply(getNeighbors(network, sim$agent(1)), getID, numeric(1))
+#' @usage getNeighbors(network, agent)
+#' @name getNeighbors
+#' @export
+NULL
+
 #' Creates a RandomMixing object
 #' 
 #' @return an external pointer.

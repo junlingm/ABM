@@ -77,6 +77,10 @@ newDecrementLogger <- function(variable, filter = NULL) {
     .Call(`_ABM_newDecrementLogger`, variable, filter)
 }
 
+getNeighbors <- function(network, agent) {
+    .Call(`_ABM_getNeighbors`, network, agent)
+}
+
 newConfigurationModel <- function(rng, rate = NULL, type = "contact") {
     .Call(`_ABM_newConfigurationModel`, rng, rate, type)
 }

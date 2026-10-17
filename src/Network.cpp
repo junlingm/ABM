@@ -17,6 +17,32 @@ const std::vector<Agent*> &Network::contact(double time, Agent &agent)
   return _neighbors[agent.index()];
 }
 
+const std::vector<Agent*> &Network::neighbors(const Agent &agent) const
+{
+  if (_population == nullptr)
+    stop("network is not initialized; run the simulation at its initial time first");
+  if (agent.population() != _population)
+    stop("agent does not belong to the network's population");
+  size_t i = agent.index();
+  if (i >= _neighbors.size() || _population->agentAtIndex(i) != &agent)
+    stop("agent is not a current member of the network");
+  return _neighbors[i];
+}
+
+// [[Rcpp::export]]
+List getNeighbors(XP<Contact> network, XP<Agent> agent)
+{
+  Contact *contact = network;
+  Network *stored_network = dynamic_cast<Network*>(contact);
+  if (stored_network == nullptr)
+    stop("network must be a stored network, such as newConfigurationModel()");
+  const auto &neighbors = stored_network->neighbors(*agent);
+  List result(neighbors.size());
+  for (size_t i = 0; i < neighbors.size(); ++i)
+    result[i] = XP<Agent>(*neighbors[i], neighbors[i]->membershipLease());
+  return result;
+}
+
 void Network::add(Agent &agent)
 {
   // have we finalized?
