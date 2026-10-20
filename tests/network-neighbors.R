@@ -37,3 +37,23 @@ nested_sim$addAgent(nested)
 invisible(nested_sim$run(0))
 stopifnot(getID(getNeighbors(nested_network, nested$agent(1))[[1]]) ==
             getID(nested$agent(2)))
+
+# Population nodes retain their capabilities without extending membership.
+population_sim <- Simulation$new()
+left <- Population$new(2)
+right <- Population$new(3)
+population_sim$addAgent(left)
+population_sim$addAgent(right)
+population_network <- newConfigurationModel(function(n) rep.int(1L, n), rate = 0)
+population_sim$addContact(population_network)
+invisible(population_sim$run(0))
+population_neighbor <- getNeighbors(population_network, left$get)[[1]]
+stopifnot(inherits(population_neighbor, 'Population'),
+          getSize(population_neighbor) == 3L,
+          getID(getAgent(population_neighbor, 1)) == getID(right$agent(1)))
+removed_population <- leave(right$get)
+stopifnot(getID(removed_population) == right$id,
+          getSize(right$get) == 3L,
+          length(getNeighbors(population_network, left$get)) == 0L)
+expect_error(getSize(population_neighbor), 'expired')
+expect_error(getAgent(population_neighbor, 1), 'expired')

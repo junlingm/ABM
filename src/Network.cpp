@@ -38,8 +38,13 @@ List getNeighbors(XP<Contact> network, XP<Agent> agent)
     stop("network must be a stored network, such as newConfigurationModel()");
   const auto &neighbors = stored_network->neighbors(*agent);
   List result(neighbors.size());
-  for (size_t i = 0; i < neighbors.size(); ++i)
-    result[i] = XP<Agent>(*neighbors[i], neighbors[i]->membershipLease());
+  for (size_t i = 0; i < neighbors.size(); ++i) {
+    Population *population = dynamic_cast<Population*>(neighbors[i]);
+    if (population != nullptr)
+      result[i] = XP<Population>(*population, population->membershipLease());
+    else
+      result[i] = XP<Agent>(*neighbors[i], neighbors[i]->membershipLease());
+  }
   return result;
 }
 
